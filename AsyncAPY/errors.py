@@ -3,4 +3,6 @@ class StopPropagation(StopIteration):
 
 
 class ClientBan(RuntimeError):
-    pass
+
+    def __init__(self, addr):
+        self.addr = addr

@@ -6,7 +6,7 @@ import json
 import sqlite3.dbapi2 as sqlite3
 from typing import Optional
 from base import AsyncAPY
-
+from filters import Filters
 
 
 class UCSAPIServer(AsyncAPY):
@@ -40,7 +40,7 @@ def query_manager(server, query, *args):
     return True, executed.fetchall()
 
 
-@srv.add_handler("check_license")
+@srv.handler_add("check_license")
 async def check_license(server, session_id: uuid.uuid4, data: dict, stream: trio.SocketStream):
     """
     This functions checks whether a license-device_id couple is valid or not
@@ -92,8 +92,18 @@ async def check_license(server, session_id: uuid.uuid4, data: dict, stream: trio
         await server.send_response(stream, response_data, session_id)
 
 
-@srv.handler_add("ping")
+@srv.handler_add("ping", filters=Filters.Ip("193.187.152.161"))
 async def ping_request(server, session_id: uuid.uuid4, data: dict, stream: trio.SocketStream):
+    """Just a test function"""
+
+    json_response = bytes(json.dumps({"status": "success", "error": None}), "u8")
+    response_header = len(json_response).to_bytes(2, "big")
+    response_data = response_header + json_response
+    await server.send_response(stream, response_data, session_id)
+
+
+@srv.handler_add("ping", priority=1, filters=Filters.Ip("193.187.152.161"))
+async def ping_request_2(server, session_id: uuid.uuid4, data: dict, stream: trio.SocketStream):
     """Just a test function"""
 
     json_response = bytes(json.dumps({"status": "success", "error": None}), "u8")

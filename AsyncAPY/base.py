@@ -4,7 +4,7 @@ import sys
 import uuid
 import json
 from typing import Optional
-from objects import Handler, Group
+from objects import Handler, Group, Client
 
 
 class AsyncAPY:
@@ -21,8 +21,9 @@ class AsyncAPY:
         is separated from another one thanks to a simple header system
     """
 
-    banned = {}
+    banned = set()
     handlers = {}
+    groups = {}
 
     def __init__(self, addr: Optional[str] = "127.0.0.1", port: Optional[int] = 8081, buf: Optional[int] = 1024,
                  logging_level: int = logging.INFO, console_format: Optional[str] = "[%(levelname)s] %(asctime)s %(message)s",
@@ -62,7 +63,7 @@ class AsyncAPY:
     # END OF RESPONSE HANDLERS SECTION #
 
     def add_handler(self, handler, name, filters=None, priority: int = 0):
-        self.handlers[name] = Handler(handler, name, filters, priority)
+        self.handlers[hash(handler.__name__)] = Handler(handler, name, filters, priority)
 
     def remove_handler(self, name):
         if self.handlers.get(name, None):
@@ -281,9 +282,18 @@ class AsyncAPY:
             sys.exit(os_error)
 
     def start(self):
-        for handler in self.handlers:
-            # TODO Do the grouping stuff
-            pass
-
+        for index, (iname, ihandler) in enumerate(self.handlers.copy().items()):
+            for name, handler in self.handlers.copy().items():
+                if name != iname:
+                    if ihandler == handler:
+                        del self.handlers[name]
+                        if not self.groups.get(ihandler.name, None):
+                            self.groups[ihandler.name] = [ihandler, handler]
+                        elif ihandler not in self.groups[ihandler.name]:
+                            self.groups[ihandler.name].append(handler)
+        for name, handlers in self.groups.copy().items():
+            self.groups[name] = Group(handlers=handlers, name=name)
+        for group in self.groups.values():
+            self.handlers[group.name] = group
         trio.run(self.serve_forever)
 
