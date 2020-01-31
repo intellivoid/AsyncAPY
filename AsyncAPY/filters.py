@@ -29,8 +29,8 @@ class Filters(Filter):
             if isinstance(other, Filters.Ip):
                 return True if self.ips - other.ips == set() else False
 
-        def check(self, c):
-            return c.address not in c._server.banned and c.address in self.ips
+        def check(self, c, _):
+            return c.address in self.ips
 
         def __call__(self, c):
             return self.check(c)

@@ -3,12 +3,12 @@ import logging
 import sys
 import uuid
 import json
-from typing import Optional, Union
-from .objects import Handler, Group, Client
+from typing import Optional
+from .objects import Handler, Group, Client, Packet
+from .errors import StopPropagation
 
 
 class AsyncAPY:
-
     """This class is the base class for the AsyncAPython framework.
 
         It implements a simple but reliable protocol over TCP with JSON requests,
@@ -26,8 +26,10 @@ class AsyncAPY:
     groups = {}
 
     def __init__(self, addr: Optional[str] = "127.0.0.1", port: Optional[int] = 8081, buf: Optional[int] = 1024,
-                 logging_level: int = logging.INFO, console_format: Optional[str] = "[%(levelname)s] %(asctime)s %(message)s",
-                 datefmt: Optional[str] = "%d/%m/%Y %H:%M:%S %p", timeout: Optional[int] = 60, header_size: int = 2, byteorder: Union["big", "little"] = "big")
+                 logging_level: int = logging.INFO,
+                 console_format: Optional[str] = "[%(levelname)s] %(asctime)s %(message)s",
+                 datefmt: Optional[str] = "%d/%m/%Y %H:%M:%S %p", timeout: Optional[int] = 60, header_size: int = 2,
+                 byteorder: str = "big"):
         """Initializes server"""
 
         self.addr = addr
@@ -74,6 +76,7 @@ class AsyncAPY:
     def handler_add(self, name, filters=None, priority: int = 0):
         def decorator(func):
             self.add_handler(func, name, filters, priority)
+
         return decorator
 
     async def send_response(self, stream: trio.SocketStream, response_data: bytes, session_id):
@@ -167,25 +170,33 @@ class AsyncAPY:
                 await self.missing_json_field(session_id, stream, "request_type")
             else:
                 to_call = self.handlers.get(request_type, None)
+                handle = []
                 if to_call:
-                    client = Client(stream.socket.getsockname()[0], self)
+                    client = Client(stream.socket.getsockname()[0], self, stream, session_id)
                     if client.address not in self.banned:
                         packet = Packet(data, client)
                         if isinstance(to_call, Group):
                             for handler in to_call:
-                                try:
-                                    await handler(client, packet)
-                                except StopPropagation:
-                                    await client.close()
-                                    break
-                         else:
-                             try:
-                                 await to_call(client, packet)
-                             except StopPropagation:
-                                 await client.close()
+                                if handler.filters:
+                                    for fil in handler.filters:
+                                        handle.append(fil.check(client, packet))
+                                if all(handle):
+                                    handle = []
+                                    try:
+                                        await handler.call(client, packet)
+                                    except StopPropagation:
+                                        await client.close()
+                                        break
+                                else:
+                                    handle = []
+                        else:
+                            try:
+                                await to_call.call(client, packet)
+                            except StopPropagation:
+                                await client.close()
                 else:
-                   logging.warning(f"({session_id}) {{API Parser}} Unimplemented API method '{request_type}'")
-                   await self.invalid_json_request(session_id, stream)
+                    logging.warning(f"({session_id}) {{API Parser}} Unimplemented API method '{request_type}'")
+                    await self.invalid_json_request(session_id, stream)
 
     async def setup(self):
         """This function is called when the server is started"""
@@ -256,7 +267,8 @@ class AsyncAPY:
                         await self.parse_call(session_id, raw_data[self.header_size:], stream)
                     else:
                         logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
-                        stream_complete = await self.complete_stream(header - len(raw_data[self.header_size:]), stream, session_id)
+                        stream_complete = await self.complete_stream(header - len(raw_data[self.header_size:]), stream,
+                                                                     session_id)
                         if stream_complete is None:
                             logging.debug(f"({session_id}) {{Client handler}} The operation has timed out")
                             await stream.aclose()
@@ -314,4 +326,3 @@ class AsyncAPY:
                 self.handlers[value.name] = value
                 del self.handlers[key]
         trio.run(self.serve_forever)
-

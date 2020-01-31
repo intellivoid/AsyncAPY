@@ -4,18 +4,23 @@ from types import FunctionType
 from .errors import StopPropagation
 import json
 
+
 class Client:
 
-    def __init__(self, addr: str, server, stream = None):
+    def __init__(self, addr: str, server, stream=None, session: str = None):
         self.address = addr
         self._server = server
         self._stream = stream
+        self.session = session
 
     async def ban(self):
         self._server.add(self.address)
 
-    async def send(self, payload):
-        self._server.send_response(stream
+    async def send(self, packet):
+        payload = packet.payload.encode("utf-8")
+        header = packet.length.to_bytes(self._server.header_size, self._server.byteorder)
+        data = header + payload
+        await self._server.send_response(self._stream, data, self.session)
 
     async def close(self):
         await self._stream.close()
@@ -23,12 +28,15 @@ class Client:
 
 class Packet:
 
-    def __init__(self, fields: Union[Dict[str, str], str], sender: Client):
+    def __init__(self, fields: Union[Dict[str, str], str, bytes], sender: Client or None):
         self.sender = sender
         if isinstance(fields, dict):
             self.payload = json.dumps(fields)
+        elif isinstance(fields, bytes):
+            self.payload = json.dumps(json.loads(fields.decode("utf-8")))
         else:
             self.payload = json.dumps(json.loads(fields))
+        self.length = len(self.payload)
 
     async def stop_propagation(self):
         raise StopPropagation
@@ -77,7 +85,7 @@ class Handler:
         else:
             return False
 
-    def __call__(self, *args):
+    def call(self, *args):
         return self.function.__call__(*args)
 
 
