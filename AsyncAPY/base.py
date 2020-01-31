@@ -182,18 +182,24 @@ class AsyncAPY:
                                         handle.append(fil.check(client, packet))
                                 if all(handle):
                                     handle = []
-                                    try:
-                                        await handler.call(client, packet)
-                                    except StopPropagation:
-                                        await client.close()
-                                        break
+                                    await handler.call(client, packet)
                                 else:
-                                    handle = []
+                                    logging.info(f"({session_id}) {{API Parser}} The IP client's IP is unauthorized!")
+                                    await client.close()
+                                    await packet.stop_propagation()
                         else:
-                            try:
+                            if to_call.filters:
+                                for fil in to_call.filters:
+                                    handle.append(fil.check(client, packet))
+                            if all(handle):
+                                handle = []
                                 await to_call.call(client, packet)
-                            except StopPropagation:
                                 await client.close()
+                            else:
+                                logging.info(f"({session_id}) {{API Parser}} The IP client's IP is unauthorized!")
+                                await client.close()
+                                await packet.stop_propagation()
+                                handle = []
                 else:
                     logging.warning(f"({session_id}) {{API Parser}} Unimplemented API method '{request_type}'")
                     await self.invalid_json_request(session_id, stream)
@@ -248,7 +254,10 @@ class AsyncAPY:
                         logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
                         if len(raw_data) - self.header_size == header:
                             logging.debug(f"({session_id}) {{Client handler}} Stream completed, processing API call")
-                            await self.parse_call(session_id, raw_data, stream)
+                            try:
+                                await self.parse_call(session_id, raw_data, stream)
+                            except StopPropagation:
+                                break
                         else:
                             logging.debug(
                                 f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding in progress")
@@ -258,13 +267,19 @@ class AsyncAPY:
                                 await stream.aclose()
                                 break
                             logging.debug(f"({session_id}) {{Client handler}} Stream completed, processing API call")
-                            await self.parse_call(session_id, actual_data, stream)
+                            try:
+                                await self.parse_call(session_id, raw_data, stream)
+                            except StopPropagation:
+                                break
                 else:
                     header = int.from_bytes(raw_data[0:self.header_size], self.byteorder)
                     logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
                     if len(raw_data[self.header_size:]) == header:
                         logging.debug(f"({session_id}) {{Client handler}} Stream complete, processing API call")
-                        await self.parse_call(session_id, raw_data[self.header_size:], stream)
+                        try:
+                            await self.parse_call(session_id, raw_data[self.header_size:], stream)
+                        except StopPropagation:
+                            break
                     else:
                         logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
                         stream_complete = await self.complete_stream(header - len(raw_data[self.header_size:]), stream,
@@ -275,7 +290,10 @@ class AsyncAPY:
                             break
                         else:
                             raw_data += stream_complete
-                            await self.parse_call(session_id, raw_data[self.header_size:], stream)
+                            try:
+                                await self.parse_call(session_id, raw_data[self.header_size:], stream)
+                            except StopPropagation:
+                                break
         if cancel_scope.cancelled_caught:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
 

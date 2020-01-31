@@ -23,7 +23,7 @@ class Client:
         await self._server.send_response(self._stream, data, self.session)
 
     async def close(self):
-        await self._stream.close()
+        await self._stream.aclose()
 
 
 class Packet:
