@@ -5,8 +5,8 @@ import uuid
 import json
 import sqlite3.dbapi2 as sqlite3
 from typing import Optional
-from base import AsyncAPY
-from filters import Filters
+from AsyncAPY.base import AsyncAPY
+from AsyncAPY.filters import Filters
 
 
 class UCSAPIServer(AsyncAPY):
@@ -92,7 +92,7 @@ async def check_license(server, session_id: uuid.uuid4, data: dict, stream: trio
         await server.send_response(stream, response_data, session_id)
 
 
-@srv.handler_add("ping", filters=Filters.Ip("193.187.152.161"))
+@srv.handler_add("ping", filters=[Filters.Ip("193.187.152.161")], priority=2)
 async def ping_request(server, session_id: uuid.uuid4, data: dict, stream: trio.SocketStream):
     """Just a test function"""
 
@@ -101,8 +101,7 @@ async def ping_request(server, session_id: uuid.uuid4, data: dict, stream: trio.
     response_data = response_header + json_response
     await server.send_response(stream, response_data, session_id)
 
-
-@srv.handler_add("ping", priority=1, filters=Filters.Ip("193.187.152.161"))
+@srv.handler_add("ping", priority=1, filters=[Filters.Ip("193.187.152.161")])
 async def ping_request_2(server, session_id: uuid.uuid4, data: dict, stream: trio.SocketStream):
     """Just a test function"""
 

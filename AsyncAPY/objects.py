@@ -1,7 +1,7 @@
 from typing import List, Dict
-from filters import Filter
+from .filters import Filter
 from types import FunctionType
-from errors import StopPropagation, ClientBan
+from .errors import StopPropagation
 
 
 class Client:
@@ -11,8 +11,7 @@ class Client:
         self._server = server
 
     def ban(self):
-        raise ClientBan(self.address)
-
+        self._server.add(self.address)
 
 class Packet:
 
@@ -26,26 +25,46 @@ class Packet:
 
 class Handler:
 
-    def __init__(self, function: FunctionType, name: str, filters: Filter = None, priority: int = 0):
+    def __init__(self, function: FunctionType, name: str, filters: List[Filter] = None, priority: int = 0):
         self.filters = filters
         self.function = function
         self.name = name
         self.priority = priority
 
     def __repr__(self):
-        return f"Handler({self.function}, '{self.name}', {self.filters})"
+        return f"Handler({self.function}, '{self.name}', {self.filters}, {self.priority})"
+
+    def compare_names(self, other):
+        return other.name == self.name
+
+    def compare_priority(self, other):
+        return self.priority != other.priority
+
+    def compare_filters(self, other):
+        if len(self.filters) != len(other.filters):
+            return False
+        for index, filter in enumerate(self.filters):
+            ofilter = other.filters[index]
+            if ofilter != filter:
+                return False
+        return True
+
 
     def __eq__(self, other):
         if not isinstance(other, Handler):
             raise TypeError("The __eq__ operator is meant to compare Handler objects only!")
-        if other.filters == self.filters and self.priority != other.priority and other.name == self.name:
-            return True
-        elif other is self:
-            return True
-        elif other.filters == self.filters and self.priority == other.priority and other.name == self.name:
-            raise RuntimeError(f"Invalid priority for handlers {other} and {self}!")
-
-        return False
+        if self.compare_names(other) and self.compare_filters(other) and not self.compare_priority(other):
+            raise RuntimeError("Multiple handlers with identical filters and names cannot share priority level!")
+        elif self.compare_names(other):
+            if self.compare_priority(other):
+                if self.compare_filters(other):
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        else:
+            return False
 
     def __call__(self, *args):
         return self.function.__call__(*args)

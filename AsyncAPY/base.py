@@ -4,7 +4,7 @@ import sys
 import uuid
 import json
 from typing import Optional
-from objects import Handler, Group, Client
+from .objects import Handler, Group, Client
 
 
 class AsyncAPY:
@@ -295,5 +295,10 @@ class AsyncAPY:
             self.groups[name] = Group(handlers=handlers, name=name)
         for group in self.groups.values():
             self.handlers[group.name] = group
+        for key, value in self.handlers.copy().items():
+            if isinstance(key, int):
+                self.handlers[value.name] = value
+                del self.handlers[key]
+        print(self.handlers)
         trio.run(self.serve_forever)
 
