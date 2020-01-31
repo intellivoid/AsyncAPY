@@ -3,7 +3,7 @@ import logging
 import sys
 import uuid
 import json
-from typing import Optional
+from typing import Optional, Union
 from .objects import Handler, Group, Client
 
 
@@ -27,7 +27,7 @@ class AsyncAPY:
 
     def __init__(self, addr: Optional[str] = "127.0.0.1", port: Optional[int] = 8081, buf: Optional[int] = 1024,
                  logging_level: int = logging.INFO, console_format: Optional[str] = "[%(levelname)s] %(asctime)s %(message)s",
-                 datefmt: Optional[str] = "%d/%m/%Y %H:%M:%S %p", timeout: Optional[int] = 60, header_size: int = 2):
+                 datefmt: Optional[str] = "%d/%m/%Y %H:%M:%S %p", timeout: Optional[int] = 60, header_size: int = 2, byteorder: Union["big", "little"] = "big")
         """Initializes server"""
 
         self.addr = addr
@@ -38,25 +38,26 @@ class AsyncAPY:
         self.datefmt = datefmt
         self.timeout = timeout
         self.header_size = header_size
+        self.byteorder = byteorder
 
     # API RESPONSE HANDLERS #
 
     async def malformed_request(self, session_id: uuid.uuid4, stream: trio.SocketStream):
         json_response = bytes(json.dumps({"status": "failure", "error": "ERR_REQUEST_MALFORMED"}), "u8")
-        response_header = len(json_response).to_bytes(self.header_size, "big")
+        response_header = len(json_response).to_bytes(self.header_size, self.byteorder)
         response_data = response_header + json_response
         await self.send_response(stream, response_data, session_id)
 
     async def invalid_json_request(self, session_id: uuid.uuid4, stream: trio.SocketStream):
         json_response = bytes(json.dumps({"status": "failure", "error": "ERR_REQUEST_INVALID"}), "u8")
-        response_header = len(json_response).to_bytes(self.header_size, "big")
+        response_header = len(json_response).to_bytes(self.header_size, self.byteorder)
         response_data = response_header + json_response
         await self.send_response(stream, response_data, session_id)
 
     async def missing_json_field(self, session_id: uuid.uuid4, stream: trio.SocketStream, missing_field: str):
         missing_field = missing_field.upper().strip("'")
         json_response = bytes(json.dumps({"status": "failure", "error": f"ERR_MISSING_{missing_field}_FIELD"}), "u8")
-        response_header = len(json_response).to_bytes(self.header_size, "big")
+        response_header = len(json_response).to_bytes(self.header_size, self.byteorder)
         response_data = response_header + json_response
         await self.send_response(stream, response_data, session_id)
 
@@ -101,12 +102,12 @@ class AsyncAPY:
 
     async def rebuild_incomplete_stream(self, session_id: uuid.uuid4, stream: trio.SocketStream, raw_data):
         """
-        This function gets called when a stream's length is smaller than 2 bytes, that
+        This function gets called when a stream's length is smaller than self.header_size bytes, which
         is the minimum amount of data needed to parse an API call (The length header)
         """
 
         with trio.move_on_after(self.timeout) as cancel_scope:
-            while len(raw_data) < 2:
+            while len(raw_data) < self.header_size:
                 try:
                     logging.debug(f"({session_id}) {{Stream rebuilder}} Requesting 1 more byte")
                     raw_data += await stream.receive_some(1)
@@ -120,7 +121,7 @@ class AsyncAPY:
                     break
         if cancel_scope.cancelled_caught:
             return None
-        logging.debug(f"({session_id}) {{Stream rebuilder}} Stream is now 2 bytes long")
+        logging.debug(f"({session_id}) {{Stream rebuilder}} Stream is now {self.header_size} byte(s) long")
         return raw_data
 
     async def complete_stream(self, header, stream: trio.SocketStream, session_id: uuid.uuid4):
@@ -160,15 +161,28 @@ class AsyncAPY:
             logging.error(f"({session_id}) {{API Parser}} Invalid JSON data, full exception -> {json_error}")
             await self.malformed_request(session_id, stream)
         else:
-            try:
-                request_type = data["request_type"]
-            except KeyError:
+            request_type = data.get("request_type", None)
+            if not request_type:
                 logging.error(f"({session_id}) {{API Parser}} Missing request_type field in JSON request")
                 await self.missing_json_field(session_id, stream, "request_type")
             else:
                 to_call = self.handlers.get(request_type, None)
                 if to_call:
-                    await to_call(session_id, data, stream)
+                    client = Client(stream.socket.getsockname()[0], self)
+                    if client.address not in self.banned:
+                        packet = Packet(data, client)
+                        if isinstance(to_call, Group):
+                            for handler in to_call:
+                                try:
+                                    await handler(client, packet)
+                                except StopPropagation:
+                                    await client.close()
+                                    break
+                         else:
+                             try:
+                                 await to_call(client, packet)
+                             except StopPropagation:
+                                 await client.close()
                 else:
                    logging.warning(f"({session_id}) {{API Parser}} Unimplemented API method '{request_type}'")
                    await self.invalid_json_request(session_id, stream)
@@ -210,8 +224,8 @@ class AsyncAPY:
                     logging.info(f"({session_id}) {{Client handler}} Stream has ended")
                     await stream.aclose()
                     break
-                if len(raw_data) < 2:
-                    logging.debug(f"({session_id}) {{Client handler}} Stream is shorter than 2 bytes, rebuilding")
+                if len(raw_data) < self.header_size:
+                    logging.debug(f"({session_id}) {{Client handler}} Stream is shorter than header size, rebuilding")
                     stream_complete = await self.rebuild_incomplete_stream(session_id, stream, raw_data)
                     if stream_complete is None:
                         logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
@@ -219,9 +233,9 @@ class AsyncAPY:
                         break
                     else:
                         raw_data = stream_complete
-                        header = int.from_bytes(raw_data[0:2], "big")
+                        header = int.from_bytes(raw_data[0:self.header_size], self.byteorder)
                         logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
-                        if len(raw_data) - 2 == header:
+                        if len(raw_data) - self.header_size == header:
                             logging.debug(f"({session_id}) {{Client handler}} Stream completed, processing API call")
                             await self.parse_call(session_id, raw_data, stream)
                         else:
@@ -235,21 +249,21 @@ class AsyncAPY:
                             logging.debug(f"({session_id}) {{Client handler}} Stream completed, processing API call")
                             await self.parse_call(session_id, actual_data, stream)
                 else:
-                    header = int.from_bytes(raw_data[0:2], "big")
+                    header = int.from_bytes(raw_data[0:self.header_size], self.byteorder)
                     logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
-                    if len(raw_data[2:]) == header:
+                    if len(raw_data[self.header_size:]) == header:
                         logging.debug(f"({session_id}) {{Client handler}} Stream complete, processing API call")
-                        await self.parse_call(session_id, raw_data[2:], stream)
+                        await self.parse_call(session_id, raw_data[self.header_size:], stream)
                     else:
                         logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
-                        stream_complete = await self.complete_stream(header - len(raw_data[2:]), stream, session_id)
+                        stream_complete = await self.complete_stream(header - len(raw_data[self.header_size:]), stream, session_id)
                         if stream_complete is None:
                             logging.debug(f"({session_id}) {{Client handler}} The operation has timed out")
                             await stream.aclose()
                             break
                         else:
                             raw_data += stream_complete
-                            await self.parse_call(session_id, raw_data[2:], stream)
+                            await self.parse_call(session_id, raw_data[self.header_size:], stream)
         if cancel_scope.cancelled_caught:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
 
@@ -262,7 +276,7 @@ class AsyncAPY:
         """
 
         logging.basicConfig(datefmt=self.datefmt, format=self.console_format, level=self.logging_level)
-        logging.info(" {API main} AsyncApy server is starting up")
+        logging.info(" {API main} AsyncAPY server is starting up")
         logging.debug("{API main} Running setup function...")
         await self.setup()
         logging.debug(f"{{API main}} The buffer is set to {self.buf} bytes, logging is set to {self.logging_level}")
@@ -299,6 +313,5 @@ class AsyncAPY:
             if isinstance(key, int):
                 self.handlers[value.name] = value
                 del self.handlers[key]
-        print(self.handlers)
         trio.run(self.serve_forever)
 

@@ -1,23 +1,34 @@
-from typing import List, Dict
+from typing import List, Dict, Union
 from .filters import Filter
 from types import FunctionType
 from .errors import StopPropagation
-
+import json
 
 class Client:
 
-    def __init__(self, addr: str, server):
+    def __init__(self, addr: str, server, stream = None):
         self.address = addr
         self._server = server
+        self._stream = stream
 
-    def ban(self):
+    async def ban(self):
         self._server.add(self.address)
+
+    async def send(self, payload):
+        self._server.send_response(stream
+
+    async def close(self):
+        await self._stream.close()
+
 
 class Packet:
 
-    def __init__(self, fields: Dict[str, str], sender: Client):
-        self.fields = fields
+    def __init__(self, fields: Union[Dict[str, str], str], sender: Client):
         self.sender = sender
+        if isinstance(fields, dict):
+            self.payload = json.dumps(fields)
+        else:
+            self.payload = json.dumps(json.loads(fields))
 
     async def stop_propagation(self):
         raise StopPropagation
