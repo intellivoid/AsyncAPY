@@ -1,2 +1,2 @@
-class StopPropagation(StopIteration):
+class StopPropagation(Exception):
     pass
