@@ -221,6 +221,7 @@ class AsyncAPY:
                                         await handler.call(client, packet)
                                     else:
                                         logging.debug(f"({session_id}) {{API Parser}} Filters check failed for '{handler.function.__name__}', request won't be hanled")
+                                        await client.close()"
                                         await packet.stop_propagation()
                             else:
                                 if to_call.filters:
@@ -234,9 +235,11 @@ class AsyncAPY:
                                 else:
                                     logging.debug(f"({session_id}) {{API Parser}} Filters check failed for '{to_call.function.__name__}', request won't be handled")
                                     handle = []
+                                    await client.close()
                 else:
                     logging.warning(f"({session_id}) {{API Parser}} Unimplemented API method '{request_type}'")
-                    await self.invalid_request(session_id, stream)
+                    await self.invalid_json_request(session_id, stream)
+
 
     async def setup(self):
         """This function is called when the server is started"""
