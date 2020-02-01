@@ -75,3 +75,29 @@ __Note 5__: Just as the server must be able to manage any package fragmentation,
 
 
 ## AsyncAPY - The framework 
+
+After all those nasty words, let's write some code!
+
+A simple Hello World with AsyncAPY looks like this
+
+
+```from AsyncAPY.base import AsyncAPY
+
+server = AsyncAPY(port=1500, addr='0.0.0.0', proto='json')
+
+@server.handler_add("ping")
+async def hello_world(client, packet):
+
+    print("Hello world from {client}!")
+    await client.send(json.dumps({"status": "success", "response_code": "OK", "message": "Hello world!")"
+
+server.start()```
+
+
+Ok, this is lots of code so let's break it into pieces:
+
+- First, we imported the `AsyncAPY` class from the `AsyncAPY.base` python file
+- Then, we defined a server object that binds to our public IP address on port 1500, we chose JSON as the formatting stile as it's more human-readable, but you could have also used ziproto instead
+- Here comes the fun part, the line `@server.handler_add()`, which is a Python decorator, is just a shorthand for `server.add_handler()`: This function registers the handle
+inside our server so that it can handle incoming requests
+- Then we defined our async handler, a handler in AsyncAPY is an asynchronous function which takes two parameters: A Client object and a Packet object which are high-level wrappers around the internal objects of AsyncAPY
