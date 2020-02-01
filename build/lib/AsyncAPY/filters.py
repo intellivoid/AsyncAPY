@@ -45,7 +45,7 @@ class Filters(Filter):
                 if value is None:
                     self.fields[key] = value
                 else:
-                    self.fields[key] = re.compile(value)
+                    self.fields[key] = re.compile(str(value))
 
         def __eq__(self, other):
             return self.fields == other.fields
