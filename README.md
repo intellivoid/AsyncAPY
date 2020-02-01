@@ -83,6 +83,7 @@ A simple Hello World with AsyncAPY looks like this
 
 ```
 from AsyncAPY.base import AsyncAPY
+from AsyncAPY.objects import Packet
 
 server = AsyncAPY(port=1500, addr='0.0.0.0', proto='json')
 
@@ -90,17 +91,20 @@ server = AsyncAPY(port=1500, addr='0.0.0.0', proto='json')
 async def hello_world(client, packet):
 
     print("Hello world from {client}!")
-    await client.send(json.dumps({"status": "success", "response_code": "OK", "message": "Hello world!")"
-
+    await client.send(Packet({"status": "success", "response_code": "OK", "message": "Hello world!")
+    
 server.start()
 ```
 
 
 Ok, this is lots of code so let's break it into pieces:
 
-- First, we imported the `AsyncAPY` class from the `AsyncAPY.base` python file
+- First, we imported the `AsyncAPY` class from the `AsyncAPY.base` Python file. We also imported `AsyncAPY.objects.Packet`, which is AsyncAPY's standard API for packets
 - Then, we defined a server object that binds to our public IP address on port 1500, we chose JSON as the formatting stile as it's more human-readable, but you could have also used ziproto instead
-- Here comes the fun part, the line `@server.handler_add()`, which is a Python decorator, is just a shorthand for `server.add_handler()`: This function registers the handle
+- Here comes the fun part, the line `@server.handler_add()`, which is a Python decorator, is just a shorthand for `server.add_handler()`: This function registers the handler
 inside our server so that it can handle incoming requests. As we registered our handler with the name 'ping', all requests which have `"ping"` as their `request_type` field will be forwarded to this handler
 - Then we defined our async handler, a handler in AsyncAPY is an asynchronous function which takes two parameters: A Client object and a Packet object which are high-level wrappers around the internal objects of AsyncAPY
+What this handler does is just calling the client's method `send()` with a `Packet` object, and that's done! The internals of AsyncAPY will handle all the nasty low-level socket operations such as errors and timeouts!
+
+__Note 6__: The payload, which is the parameter to the `Packet` object, can be any valid JSON string or Python dict, but not a ZiProto encoded object! The conversion to ZiProto is handled internally to avoid human errors
 
