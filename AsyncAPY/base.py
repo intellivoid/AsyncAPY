@@ -236,7 +236,8 @@ class AsyncAPY:
                                     handle = []
                 else:
                     logging.warning(f"({session_id}) {{API Parser}} Unimplemented API method '{request_type}'")
-                    await self.invalid_request(session_id, stream)
+                    await self.invalid_json_request(session_id, stream)
+
 
     async def setup(self):
         """This function is called when the server is started"""
