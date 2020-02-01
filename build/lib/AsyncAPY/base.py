@@ -221,7 +221,7 @@ class AsyncAPY:
                                         await handler.call(client, packet)
                                     else:
                                         logging.debug(f"({session_id}) {{API Parser}} Filters check failed for '{handler.function.__name__}', request won't be hanled")
-                                        await client.close()"
+                                        await client.close()
                                         await packet.stop_propagation()
                             else:
                                 if to_call.filters:
