@@ -58,7 +58,7 @@ class Filters(Filter):
                 if field_name not in fields:
                     return False
                 elif regex is not None:
-                    if not regex.match(str(ields[field_name])):
+                    if not regex.match(str(fields[field_name])):
                         return False
                 del fields[field_name]
 
