@@ -71,7 +71,7 @@ class Handler:
 
     def __eq__(self, other):
         if not isinstance(other, Handler):
-            raise TypeError("The __eq__ operator is meant to compare Handler objects only!")
+            raise TypeError(f"The __eq__ operator is meant to compare Handler objects only, not {other}!")
         if self.compare_names(other) and self.compare_filters(other) and not self.compare_priority(other):
             raise RuntimeError("Multiple handlers with identical filters and names cannot share priority level!")
         elif self.compare_names(other):
@@ -88,6 +88,8 @@ class Handler:
     def call(self, *args):
         return self.function.__call__(*args)
 
+    def __hash__(self):
+        return self.function.__name__.__hash__()
 
 class Group:
 

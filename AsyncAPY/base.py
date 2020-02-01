@@ -7,6 +7,7 @@ from typing import Optional
 from .objects import Handler, Group, Client, Packet
 from .errors import StopPropagation
 import ziproto
+from copy import deepcopy
 
 
 class AsyncAPY:
@@ -71,7 +72,10 @@ class AsyncAPY:
     # END OF RESPONSE HANDLERS SECTION #
 
     def add_handler(self, handler, name, filters=None, priority: int = 0):
-        self.handlers[hash(handler.__name__)] = Handler(handler, name, filters, priority)
+        if not self.handlers.get(name, None):
+            self.handlers[name] = {Handler(handler, name, filters, priority)}
+        else:
+            self.handlers[name].add(Handler(handler, name, filters, priority))
 
     def remove_handler(self, name):
         if self.handlers.get(name, None):
@@ -110,6 +114,7 @@ class AsyncAPY:
             return None
         else:
             logging.debug(f"({session_id}) {{Response Handler}} Response sent")
+            await stream.aclose()
             return True
 
     async def rebuild_incomplete_stream(self, session_id: uuid.uuid4, stream: trio.SocketStream, raw_data):
@@ -180,7 +185,7 @@ class AsyncAPY:
                     logging.error(f"({session_id}) {{API Parser}} Missing request_type field in JSON request")
                     await self.missing_field(session_id, stream, "request_type")
                 else:
-                    to_call = self.handlers.get(request_type, None)
+                    to_call = self.handlers.get(request_type , None) or self.handlers.get(request_type + "_grp", None)
         else:
             try:
                 data = ziproto.decode(request)
@@ -193,40 +198,45 @@ class AsyncAPY:
                     logging.error(f"({session_id}) Missing request_type field in ZiProto request!")
                     await self.missing_field(session_id, stream, "request_type")
                 else:
-                    to_call = self.handlers.get(request_type, None)
+                    logging.info(f"({session_id}) {{API Parser}} Request Type: {request_type}")
+                    to_call = self.handlers.get(request_type, None) or self.handlers.get(request_type + "_grp", None)
                 handle = []
                 if to_call:
+                    s = deepcopy(to_call)
+                    del to_call
                     client = Client(stream.socket.getsockname()[0], self, stream, session_id)
-                    if client.address not in self.banned:
-                        packet = Packet(data, client)
-                        if isinstance(to_call, Group):
-                            for handler in to_call:
-                                if handler.filters:
-                                    for fil in handler.filters:
+                    for c in s:
+                        to_call = c
+                        if client.address not in self.banned:
+                            packet = Packet(data, client)
+                            if isinstance(to_call, Group):
+                                for handler in to_call:
+                                    logging.debug(f"({session_id}) {{API Parser}} Checking for '{handler.function.__name__}'")
+                                    if handler.filters:
+                                        for fil in handler.filters:
+                                            handle.append(fil.check(client, packet))
+                                    if all(handle):
+                                        logging.debug(f"({session_id}) {{API Parser}} Done! Filters match, calling '{handler.function.__name__}'")
+                                        handle = []
+                                        await handler.call(client, packet)
+                                    else:
+                                        logging.debug(f"({session_id}) {{API Parser}} Filters check failed for '{handler.function.__name__}', request won't be hanled")
+                                        await packet.stop_propagation()
+                            else:
+                                if to_call.filters:
+                                    logging.debug(f"({session_id}) {{API Parser}} Checking for '{to_call.function.__name__}'")
+                                    for fil in to_call.filters:
                                         handle.append(fil.check(client, packet))
                                 if all(handle):
+                                    logging.debug(f"({session_id}) {{API Parser}} Done! Filters check succesful, calling '{to_call.function.__name__}'")
                                     handle = []
-                                    await handler.call(client, packet)
+                                    await to_call.call(client, packet)
                                 else:
-                                    logging.info(f"({session_id}) {{API Parser}} Filters check failed, request won't be handled")
-                                    await client.close()
-                                    await packet.stop_propagation()
-                        else:
-                            if to_call.filters:
-                                for fil in to_call.filters:
-                                    handle.append(fil.check(client, packet))
-                            if all(handle):
-                                handle = []
-                                await to_call.call(client, packet)
-                                await client.close()
-                            else:
-                                logging.info(f"({session_id}) {{API Parser}} Filters check failed, request won't be handled")
-                                await client.close()
-                                await packet.stop_propagation()
-                                handle = []
+                                    logging.debug(f"({session_id}) {{API Parser}} Filters check failed for '{to_call.function.__name__}', request won't be handled")
+                                    handle = []
                 else:
                     logging.warning(f"({session_id}) {{API Parser}} Unimplemented API method '{request_type}'")
-                    await self.invalid_json_request(session_id, stream)
+                    await self.invalid_request(session_id, stream)
 
     async def setup(self):
         """This function is called when the server is started"""
@@ -345,26 +355,32 @@ class AsyncAPY:
         except PermissionError as perms_error:
             logging.error(f"{{API main}} Could not bind to chosen port, full error: {perms_error}")
             sys.exit("PORT_UNAVAILABLE")
-        except OSError as os_error:
-            logging.error(f"{{API main}} An error occurred while preparing to serve: {os_error}")
-            sys.exit(os_error)
 
     def start(self):
-        for index, (iname, ihandler) in enumerate(self.handlers.copy().items()):
-            for name, handler in self.handlers.copy().items():
-                if name != iname:
-                    if ihandler == handler:
-                        del self.handlers[name]
-                        if not self.groups.get(ihandler.name, None):
-                            self.groups[ihandler.name] = [ihandler, handler]
-                        elif ihandler not in self.groups[ihandler.name]:
-                            self.groups[ihandler.name].append(handler)
+        for iname, ihandler in deepcopy(self.handlers).items():
+            if isinstance(ihandler, set):
+                sethandler = deepcopy(ihandler)
+                del ihandler
+                for multi in sethandler:
+                    ihandler = multi
+                    for name, handler in deepcopy(self.handlers).items():
+                        if isinstance(handler, set):
+                            s = deepcopy(handler)
+                            del handler
+                            for h in s:
+                                handler = h
+
+                                if name != iname:
+                                    if ihandler == handler:
+                                        del self.handlers[name]
+                                        if not self.groups.get(ihandler.name, None):
+                                            self.groups[ihandler.name] = [ihandler, handler]
+                                        elif ihandler not in self.groups[ihandler.name]:
+                                            self.groups[ihandler.name].append(handler)
         for name, handlers in self.groups.copy().items():
             self.groups[name] = Group(handlers=handlers, name=name)
         for group in self.groups.values():
-            self.handlers[group.name] = group
-        for key, value in self.handlers.copy().items():
-            if isinstance(key, int):
-                self.handlers[value.name] = value
-                del self.handlers[key]
+            self.handlers[f"{group.name}_grp"] = group
+#        print(self.handlers)
         trio.run(self.serve_forever)
+
