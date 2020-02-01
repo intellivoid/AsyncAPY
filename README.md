@@ -81,7 +81,8 @@ After all those nasty words, let's write some code!
 A simple Hello World with AsyncAPY looks like this
 
 
-`from AsyncAPY.base import AsyncAPY
+```
+from AsyncAPY.base import AsyncAPY
 
 server = AsyncAPY(port=1500, addr='0.0.0.0', proto='json')
 
@@ -91,7 +92,8 @@ async def hello_world(client, packet):
     print("Hello world from {client}!")
     await client.send(json.dumps({"status": "success", "response_code": "OK", "message": "Hello world!")"
 
-server.start()`
+server.start()
+```
 
 
 Ok, this is lots of code so let's break it into pieces:
