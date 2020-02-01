@@ -70,3 +70,8 @@ Please note, that if an invalid header is prepended to the payload, or no header
 __Note 3__: The AsyncAPY server is not meant for users staying connected a long time, as it's an API server framework, the recommended timeout is 60 seconds (default) 
 
 __Note 4__: Please also know that the byte order is important and __must be consistent__ between the client and the server! The number 24 encoded in big endian is decoded as 6144 if decoded with little endian, the same things happens with little endian byte sequences being decoded as big endian ones, so be careful! 
+
+__Note 5__: Just as the server must be able to manage any package fragmentation, the clients must also implement the same strategies discussed above
+
+
+## AsyncAPY - The framework 
