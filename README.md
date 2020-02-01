@@ -56,3 +56,17 @@ Both JSON and ZiProto formatted requests can have an arbitrary amount of fields,
 __Note 2__: The order of fields in a request isn't important
 
 
+### The protocol - Warnings
+
+Please note, that if an invalid header is prepended to the payload, or no header is provided at all, the request will be considered as corrupted and it'll be ignored. Specifically, the possible cases are:
+
+- If the header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the header, thus resulting in undesired behavior (See below) 
+
+- If the stream is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the stream is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
+
+- If the payload is longer than `AsyncAPY.header_size` bytes, the packet will be truncated to the specified size and the remaining bytes will be read along with the next request (Which is undesirable)
+
+
+__Note 3__: The AsyncAPY server is not meant for users staying connected a long time, as it's an API server framework, the recommended timeout is 60 seconds (default) 
+
+__Note 4__: Please also know that the byte order is important and __must be consistent__ between the client and the server! The number 24 encoded in big endian is decoded as 6144 if decoded with little endian, the same things happens with little endian byte sequences being decoded as big endian ones, so be careful! 
