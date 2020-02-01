@@ -109,3 +109,26 @@ What this handler does is just calling the client's method `send()` with a `Pack
 
 __Note 6__: The payload, which is the parameter to the `Packet` object, can be any valid JSON string or Python dict, but not a ZiProto encoded object! The conversion to ZiProto is handled internally to avoid human errors
 
+
+### The framework - Types and Objects
+
+__Note 7__: Please note that this list does not include objects used internally by AsyncAPY such as `Group`s and `Handler`s objects, to avoid confusion. Also, protected attributes of objects such as `Client._server` won't be listed here
+
+
+The AsyncAPY framework exposes some high level methods and objects to ease the deployment of the server.
+
+#### Types and Objects - Packet and Client API
+
+The API to handle packets and clients is extremely easy, here is the list of all methods and attributes
+
+
+    - Client(addr, server, stream=None, session)
+     
+      __Methods__:
+
+	- `ban()` -> Will ban the client IP from future connections to the server, but won't close the current session
+        - `send(Packet)` -> Parameters:
+				- `Packet`: A `Packet object` properly initialized
+			Sends the given `Packet` object to the connected socket
+
+
