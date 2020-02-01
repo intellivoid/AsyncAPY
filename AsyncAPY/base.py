@@ -6,6 +6,7 @@ import json
 from typing import Optional
 from .objects import Handler, Group, Client, Packet
 from .errors import StopPropagation
+import ziproto
 
 
 class AsyncAPY:
@@ -29,7 +30,7 @@ class AsyncAPY:
                  logging_level: int = logging.INFO,
                  console_format: Optional[str] = "[%(levelname)s] %(asctime)s %(message)s",
                  datefmt: Optional[str] = "%d/%m/%Y %H:%M:%S %p", timeout: Optional[int] = 60, header_size: int = 2,
-                 byteorder: str = "big"):
+                 byteorder: str = "big", proto: str = "json", workers: int = 4):
         """Initializes server"""
 
         self.addr = addr
@@ -41,6 +42,10 @@ class AsyncAPY:
         self.timeout = timeout
         self.header_size = header_size
         self.byteorder = byteorder
+        if proto not in ("json", "ziproto"):
+            raise ValueError("Protocol must either be 'json' or 'ziproto'!")
+        self.proto = proto
+        self.workers = trio.CapacityLimiter(workers)
 
     # API RESPONSE HANDLERS #
 
@@ -56,7 +61,7 @@ class AsyncAPY:
         response_data = response_header + json_response
         await self.send_response(stream, response_data, session_id)
 
-    async def missing_json_field(self, session_id: uuid.uuid4, stream: trio.SocketStream, missing_field: str):
+    async def missing_field(self, session_id: uuid.uuid4, stream: trio.SocketStream, missing_field: str):
         missing_field = missing_field.upper().strip("'")
         json_response = bytes(json.dumps({"status": "failure", "error": f"ERR_MISSING_{missing_field}_FIELD"}), "u8")
         response_header = len(json_response).to_bytes(self.header_size, self.byteorder)
@@ -85,6 +90,10 @@ class AsyncAPY:
         or None if the timeout (generally 60 seconds) expires
         """
 
+        if self.proto == "ziproto":
+            header = response_data[0:self.header_size]
+            payload = ziproto.encode(json.loads(response_data[self.header_size:]))
+            response_data = header + payload
         with trio.move_on_after(self.timeout) as cancel_scope:
             try:
                 logging.debug(f"({session_id}) {{Response handler}} Sending response to client")
@@ -155,21 +164,36 @@ class AsyncAPY:
             return None
         return stream_data
 
-    async def parse_call(self, session_id: uuid.uuid4, json_request: bytes, stream: trio.SocketStream):
-        """This function parses the JSON API request and acts accordingly"""
+    async def parse_call(self, session_id: uuid.uuid4, request: bytes, stream: trio.SocketStream):
 
-        try:
-            data = json.loads(json_request, encoding="utf-8")
-        except json.decoder.JSONDecodeError as json_error:
-            logging.error(f"({session_id}) {{API Parser}} Invalid JSON data, full exception -> {json_error}")
-            await self.malformed_request(session_id, stream)
-        else:
-            request_type = data.get("request_type", None)
-            if not request_type:
-                logging.error(f"({session_id}) {{API Parser}} Missing request_type field in JSON request")
-                await self.missing_json_field(session_id, stream, "request_type")
+        """This function parses the API request and acts accordingly"""
+
+        if self.proto == "json":
+            try:
+                data = json.loads(request, encoding="utf-8")
+            except json.decoder.JSONDecodeError as json_error:
+                logging.error(f"({session_id}) {{API Parser}} Invalid JSON data, full exception -> {json_error}")
+                await self.malformed_request(session_id, stream)
             else:
-                to_call = self.handlers.get(request_type, None)
+                request_type = data.get("request_type", None)
+                if not request_type:
+                    logging.error(f"({session_id}) {{API Parser}} Missing request_type field in JSON request")
+                    await self.missing_field(session_id, stream, "request_type")
+                else:
+                    to_call = self.handlers.get(request_type, None)
+        else:
+            try:
+                data = ziproto.decode(request)
+            except Exception as e:
+                logging.error(f"({session_id}) {{API Parser}} Something went wrong while deserializing ZiProto -> {e}")
+                await self.malformed_request(session_id, stream)
+            else:
+                request_type = data.get("request_type", None)
+                if not request_type:
+                    logging.error(f"({session_id}) Missing request_type field in ZiProto request!")
+                    await self.missing_field(session_id, stream, "request_type")
+                else:
+                    to_call = self.handlers.get(request_type, None)
                 handle = []
                 if to_call:
                     client = Client(stream.socket.getsockname()[0], self, stream, session_id)
@@ -184,7 +208,7 @@ class AsyncAPY:
                                     handle = []
                                     await handler.call(client, packet)
                                 else:
-                                    logging.info(f"({session_id}) {{API Parser}} The IP client's IP is unauthorized!")
+                                    logging.info(f"({session_id}) {{API Parser}} Filters check failed, request won't be handled")
                                     await client.close()
                                     await packet.stop_propagation()
                         else:
@@ -196,7 +220,7 @@ class AsyncAPY:
                                 await to_call.call(client, packet)
                                 await client.close()
                             else:
-                                logging.info(f"({session_id}) {{API Parser}} The IP client's IP is unauthorized!")
+                                logging.info(f"({session_id}) {{API Parser}} Filters check failed, request won't be handled")
                                 await client.close()
                                 await packet.stop_propagation()
                                 handle = []
@@ -309,7 +333,7 @@ class AsyncAPY:
         logging.info(" {API main} AsyncAPY server is starting up")
         logging.debug("{API main} Running setup function...")
         await self.setup()
-        logging.debug(f"{{API main}} The buffer is set to {self.buf} bytes, logging is set to {self.logging_level}")
+        logging.debug(f"{{API main}} The buffer is set to {self.buf} bytes, logging is set to {self.logging_level}, protocol is {self.proto}")
         try:
             logging.info(f" {{API main}} Now serving  at {self.addr}:{self.port}")
             await trio.serve_tcp(self.handle_client, host=self.addr, port=self.port)
