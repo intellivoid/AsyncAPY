@@ -5,9 +5,9 @@ This repo contains the source code of the AsyncAPY framework, which will be used
 
 AsyncAPY is divided into two things:
 
-      
-    * The AsyncAPY **protocol** which is the implementation of a TLV standard application protocol which handles incoming packets and stuff like that
-    * The AsyncApy **framework**, basically a wrapper around the AsyncAPY protocol and a customizable base class
+            
+    1. The AsyncAPY **protocol** which is the implementation of a TLV standard application protocol which handles incoming packets and stuff like that
+    2. The AsyncApy **framework**, basically a wrapper around the AsyncAPY protocol and a customizable base class
 
 
 This documentation will face both components of the AsyncAPY library
