@@ -9,7 +9,7 @@ class Filters(Filter):
 
     """This class implements all standard filters"""
 
-    class Ip:
+    class Ip(Filter):
 
         def __init__(self, ips: list or str):
             pat = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
@@ -25,10 +25,12 @@ class Filters(Filter):
         def __eq__(self, other):
             if other is None:
                 return False
-            if not isinstance(other, Filters.Ip):
-                raise ValueError("The equality comparison is meant for Filters.Ip objects only!")
+            if not isinstance(other, Filter):
+                raise ValueError("The equality comparison is meant for Filters objects only!")
             if isinstance(other, Filters.Ip):
                 return True if self.ips - other.ips == set() else False
+            else:
+                return False
 
         def check(self, c, _):
             return c.address in self.ips
@@ -37,8 +39,7 @@ class Filters(Filter):
             return self.check(c)
 
 
-    class Fields:
-
+    class Fields(Filter):
         def __init__(self, **kwargs):
             self.fields = {}
             for key, value in kwargs.items():

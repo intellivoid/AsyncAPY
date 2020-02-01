@@ -7,7 +7,7 @@ from typing import Optional
 from .objects import Handler, Group, Client, Packet
 from .errors import StopPropagation
 import ziproto
-from copy import deepcopy
+from copy import copy
 
 
 class AsyncAPY:
@@ -88,7 +88,7 @@ class AsyncAPY:
 
         return decorator
 
-    async def send_response(self, stream: trio.SocketStream, response_data: bytes, session_id):
+    async def send_response(self, stream: trio.SocketStream, response_data: bytes, session_id, close: bool = True):
         """
         This function sends the JSON response to the client after elaboration, returns False on failure
         or None if the timeout (generally 60 seconds) expires
@@ -114,7 +114,8 @@ class AsyncAPY:
             return None
         else:
             logging.debug(f"({session_id}) {{Response Handler}} Response sent")
-            await stream.aclose()
+            if close:
+                await stream.aclose()
             return True
 
     async def rebuild_incomplete_stream(self, session_id: uuid.uuid4, stream: trio.SocketStream, raw_data):
@@ -202,7 +203,7 @@ class AsyncAPY:
                     to_call = self.handlers.get(request_type, None) or self.handlers.get(request_type + "_grp", None)
                 handle = []
                 if to_call:
-                    s = deepcopy(to_call)
+                    s = copy(to_call)
                     del to_call
                     client = Client(stream.socket.getsockname()[0], self, stream, session_id)
                     for c in s:
@@ -294,6 +295,8 @@ class AsyncAPY:
                             try:
                                 await self.parse_call(session_id, raw_data, stream)
                             except StopPropagation:
+                                logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
+                                await stream.aclose()
                                 break
                         else:
                             logging.debug(
@@ -307,6 +310,8 @@ class AsyncAPY:
                             try:
                                 await self.parse_call(session_id, raw_data, stream)
                             except StopPropagation:
+                                await stream.aclose()
+                                logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
                                 break
                 else:
                     header = int.from_bytes(raw_data[0:self.header_size], self.byteorder)
@@ -316,6 +321,8 @@ class AsyncAPY:
                         try:
                             await self.parse_call(session_id, raw_data[self.header_size:], stream)
                         except StopPropagation:
+                            await stream.aclose()
+                            logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
                             break
                     else:
                         logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
@@ -330,6 +337,8 @@ class AsyncAPY:
                             try:
                                 await self.parse_call(session_id, raw_data[self.header_size:], stream)
                             except StopPropagation:
+                                await stream.aclose()
+                                logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
                                 break
         if cancel_scope.cancelled_caught:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
@@ -346,7 +355,7 @@ class AsyncAPY:
         logging.info(" {API main} AsyncAPY server is starting up")
         logging.debug("{API main} Running setup function...")
         await self.setup()
-        logging.debug(f"{{API main}} The buffer is set to {self.buf} bytes, logging is set to {self.logging_level}, protocol is {self.proto}")
+        logging.debug(f"{{API main}} The buffer is set to {self.buf} bytes, logging is set to {self.logging_level}, protocol is {self.proto}, header size is set to {self.header_size} bytes, byteorder is '{self.byteorder}'")
         try:
             logging.info(f" {{API main}} Now serving  at {self.addr}:{self.port}")
             await trio.serve_tcp(self.handle_client, host=self.addr, port=self.port)
@@ -360,30 +369,30 @@ class AsyncAPY:
             sys.exit("PORT_UNAVAILABLE")
 
     def start(self):
-        for iname, ihandler in deepcopy(self.handlers).items():
+        for iname, ihandler in copy(self.handlers).items():
             if isinstance(ihandler, set):
-                sethandler = deepcopy(ihandler)
+                sethandler = copy(ihandler)
                 del ihandler
                 for multi in sethandler:
                     ihandler = multi
-                    for name, handler in deepcopy(self.handlers).items():
+                    for name, handler in copy(self.handlers).items():
                         if isinstance(handler, set):
-                            s = deepcopy(handler)
+                            s = copy(handler)
                             del handler
                             for h in s:
                                 handler = h
-
-                                if name != iname:
+                                if ihandler is not handler:
                                     if ihandler == handler:
                                         del self.handlers[name]
                                         if not self.groups.get(ihandler.name, None):
                                             self.groups[ihandler.name] = [ihandler, handler]
                                         elif ihandler not in self.groups[ihandler.name]:
                                             self.groups[ihandler.name].append(handler)
-        for name, handlers in self.groups.copy().items():
-            self.groups[name] = Group(handlers=handlers, name=name)
-        for group in self.groups.values():
-            self.handlers[f"{group.name}_grp"] = group
-#        print(self.handlers)
+                                    else:
+                                        if ihandler.name == handler.name:
+                                            raise RuntimeError(f"It's currently forbidden to use a request_type already used in a group with other handlers! Check function {handler.function.__name__}")
+        for name, handlers in copy(self.groups).items():
+            self.handlers[name] = Group(handlers=list(handlers), name=name)
+        #print(self.handlers)
         trio.run(self.serve_forever)
 

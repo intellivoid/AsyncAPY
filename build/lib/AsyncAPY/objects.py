@@ -16,11 +16,11 @@ class Client:
     async def ban(self):
         self._server.add(self.address)
 
-    async def send(self, packet):
+    async def send(self, packet, close: bool = True):
         payload = packet.payload.encode("utf-8")
         header = packet.length.to_bytes(self._server.header_size, self._server.byteorder)
         data = header + payload
-        await self._server.send_response(self._stream, data, self.session)
+        return await self._server.send_response(self._stream, data, self.session, close)
 
     async def close(self):
         await self._stream.aclose()
@@ -44,7 +44,9 @@ class Packet:
 
 class Handler:
 
-    def __init__(self, function: FunctionType, name: str, filters: List[Filter] = None, priority: int = 0):
+    def __init__(self, function: FunctionType, name: str, filters: List[Filter] = [], priority: int = 0):
+        if filters is None:
+            filters = []
         self.filters = filters
         self.function = function
         self.name = name
@@ -57,7 +59,7 @@ class Handler:
         return other.name == self.name
 
     def compare_priority(self, other):
-        return self.priority != other.priority
+        return self.priority == other.priority
 
     def compare_filters(self, other):
         if len(self.filters) != len(other.filters):
@@ -72,11 +74,16 @@ class Handler:
     def __eq__(self, other):
         if not isinstance(other, Handler):
             raise TypeError(f"The __eq__ operator is meant to compare Handler objects only, not {other}!")
-        if self.compare_names(other) and self.compare_filters(other) and not self.compare_priority(other):
+        if other is self:
+            return True
+        names_equals = self.compare_names(other)
+        filters_equals = self.compare_filters(other)
+        priority_equals = self.compare_priority(other)
+        if names_equals & filters_equals & priority_equals:
             raise RuntimeError("Multiple handlers with identical filters and names cannot share priority level!")
-        elif self.compare_names(other):
-            if self.compare_priority(other):
-                if self.compare_filters(other):
+        elif names_equals:
+            if not priority_equals:
+                if filters_equals:
                     return True
                 else:
                     return False
