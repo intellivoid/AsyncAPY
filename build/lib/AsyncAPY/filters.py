@@ -45,7 +45,7 @@ class Filters(Filter):
                 if value is None:
                     self.fields[key] = value
                 else:
-                    self.fields[key] = re.compile(str(value))
+                    self.fields[key] = re.compile(value)
 
         def __eq__(self, other):
             return self.fields == other.fields
@@ -58,7 +58,7 @@ class Filters(Filter):
                 if field_name not in fields:
                     return False
                 elif regex is not None:
-                    if not regex.match(fields[field_name]):
+                    if not regex.match(str(ields[field_name])):
                         return False
                 del fields[field_name]
 
