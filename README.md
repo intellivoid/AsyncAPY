@@ -104,6 +104,7 @@ Ok, this is lots of code so let's break it into pieces:
 - Here comes the fun part, the line `@server.handler_add()`, which is a Python decorator, is just a shorthand for `server.add_handler()`: This function registers the handler
 inside our server so that it can handle incoming requests. As we registered our handler with the name 'ping', all requests which have `"ping"` as their `request_type` field will be forwarded to this handler
 - Then we defined our async handler, a handler in AsyncAPY is an asynchronous function which takes two parameters: A Client object and a Packet object which are high-level wrappers around the internal objects of AsyncAPY
+
 What this handler does is just calling the client's method `send()` with a `Packet` object, and that's done! The internals of AsyncAPY will handle all the nasty low-level socket operations such as errors and timeouts!
 
 __Note 6__: The payload, which is the parameter to the `Packet` object, can be any valid JSON string or Python dict, but not a ZiProto encoded object! The conversion to ZiProto is handled internally to avoid human errors
