@@ -122,13 +122,23 @@ The AsyncAPY framework exposes some high level methods and objects to ease the d
 The API to handle packets and clients is extremely easy, here is the list of all methods and attributes
 
 
-    - Client(addr, server, stream=None, session)
+  - `Client(addr, server, stream=None, session)`
      
       __Methods__:
+      - `ban()` : Will ban the client's IP from the server, preventing further connections, but won't close the current session
+      - `send(packet)`: Sends the given `Packet` object to the connected socket
+          - Parameters:
+	        - `packet`: A `Packet` object
+	
+	 
+	
 
-	- `ban()` -> Will ban the client IP from future connections to the server, but won't close the current session
-        - `send(Packet)` -> Parameters:
-				- `Packet`: A `Packet object` properly initialized
-			Sends the given `Packet` object to the connected socket
+
+	
+	
+
+				
+
+
 
 
