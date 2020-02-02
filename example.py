@@ -1,26 +1,28 @@
-import logging
 from AsyncAPY.base import AsyncAPY
 from AsyncAPY.filters import Filters
-from AsyncAPY.objects import Packet, Client
+from AsyncAPY.objects import Client, Packet
 
-srv = AsyncAPY(port=1500, logging_level=logging.DEBUG, addr="localhost", proto='ziproto')
+server = AsyncAPY(addr='0.0.0.0',
+                  port=1500,
+                  proto='ziproto',
+                  logging_level=10,
+                  header_size=4,
+                  byteorder="little")
 
 
-@srv.handler_add("ping", filters=[Filters.Ip("127.0.0.1"), Filters.Fields(name=None)])
-async def ping(client: Client, packet: Packet):
-    await client.send(Packet({"status": "PONG!"}, None))
-    await packet.stop_propagation()
-    print("heh")
+@server.handler_add("test", filters=[Filters.Fields(field=r'\d+')])
+async def test_function(client: Client, packet: Packet):
 
-@srv.handler_add("ping", filters=[Filters.Ip("127.0.0.1")], priority=1)
-async def another_ping(client: Client, packet: Packet):
-    print(f"Hey there! I'm worthless!\nLook at these:\n{client}\n{packet}")
-    await client.send(Packet({"status": "meh"}, None))
+    print("Hi, I am test function")
+    await client.send(Packet({"status": 200, "msg": "ur mom gay"}, None), False)
+#    await packet.stop_propagation()
 
-@srv.handler_add("banana", filters=[Filters.Fields(sob=None)])
-async def useless(_, __):
-    print("Ran!")
-    await _.send(Packet({"a": "b"}, None))
 
-if __name__ == "__main__":
-    srv.start()
+@server.handler_add("test", filters=[Filters.Fields(field=r'\d+')], priority=1)
+async def woah_func(c, p):
+    print("Hey, packet propagation works, well done master!")
+    await c.send(Packet({"status": 200, "msg": "heh"}, None))
+
+
+server.start()
+
