@@ -2,13 +2,7 @@ from AsyncAPY.base import AsyncAPY
 from AsyncAPY.filters import Filters
 from AsyncAPY.objects import Client, Packet
 
-server = AsyncAPY(addr='0.0.0.0',
-                  port=1500,
-                  proto='ziproto',
-                  logging_level=10,
-                  header_size=4,
-                  byteorder="little")
-
+server = AsyncAPY(config='server.conf')
 
 @server.handler_add("test", filters=[Filters.Fields(field=r'\d+')])
 async def test_function(client: Client, packet: Packet):

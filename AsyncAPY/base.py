@@ -8,6 +8,7 @@ from .objects import Handler, Group, Client, Packet
 from .errors import StopPropagation
 import ziproto
 from copy import copy
+import configparser
 
 
 class AsyncAPY:
@@ -31,7 +32,7 @@ class AsyncAPY:
                  logging_level: int = logging.INFO,
                  console_format: Optional[str] = "[%(levelname)s] %(asctime)s %(message)s",
                  datefmt: Optional[str] = "%d/%m/%Y %H:%M:%S %p", timeout: Optional[int] = 60, header_size: int = 2,
-                 byteorder: str = "big", proto: str = "json", workers: int = 4):
+                 byteorder: str = "big", proto: str = "json", config: str or None = None, cfg_parser = None):
         """Initializes server"""
 
         self.addr = addr
@@ -46,7 +47,24 @@ class AsyncAPY:
         if proto not in ("json", "ziproto"):
             raise ValueError("Protocol must either be 'json' or 'ziproto'!")
         self.proto = proto
-        self.workers = trio.CapacityLimiter(workers)
+        if config:
+            self.config, self.parser = config, cfg_parser
+            self.load_config()
+
+
+    def load_config(self):
+        parser = self.parser if self.parser else configparser.ConfigParser()
+        read = parser.readfp(open(self.config, "r"))
+        configs = {"port", "addr", "header_size", "byteorder", "timeout", "datefmt", "console_format", "proto", "buf", "logging_level"}
+        opts = {}
+        for config in configs:
+            opts[config] = parser.get("AsyncAPY", config, fallback=None)
+        for opt in opts:
+            if opts[opt]:
+                if opts[opt].isdigit():
+                    opts[opt] = int(opts[opt])
+                setattr(self, opt, opts[opt])
+
 
     # API RESPONSE HANDLERS #
 
