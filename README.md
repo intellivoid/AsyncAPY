@@ -188,6 +188,6 @@ To use the filters you first need to import the `AsyncAPY.filters.Filters` class
 Filters can be applied to handlers, by passing a list of `Filters` objects to the `filters` parameter of `AsyncAPY.add_handler()` or `@AsyncAPY.handler_add()`
 
 
-__Note 11__: For obvious reasons, fields inside a 'Filter.Fields` object can only be valid python identifiers, and their values must either be valid regular expressions or `None`
+__Note 11__: For obvious reasons, fields inside a `Filter.Fields` object can only be valid python identifiers, and their values must either be valid regular expressions or `None`
 
 
