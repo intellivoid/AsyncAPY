@@ -185,4 +185,9 @@ To use the filters you first need to import the `AsyncAPY.filters.Filters` class
 `ValueError` exception will be raised
 - `Fields(**kwargs)` : The `__init__()` constructor of this class accepts an unlimited number of keyword arguments. If the value of the argument is `None`, the filter will match if the field(s) name(s) are present in the incoming request and in the keyword arguments. Optionally, if a string is assigned to an argument, the server will check, with the passed parameter as a regex, the value of the request instead of the presence of the field only. 
 
+Filters can be applied to handlers, by passing a list of `Filters` objects to the `filters` parameter of `AsyncAPY.add_handler()` or `@AsyncAPY.handler_add()`
+
+
 __Note 11__: For obvious reasons, fields inside a 'Filter.Fields` object can only be valid python identifiers, and their values must either be valid regular expressions or `None`
+
+
