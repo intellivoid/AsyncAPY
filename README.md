@@ -126,6 +126,13 @@ The API to handle packets and clients is extremely easy, here is the list of all
      
       __Methods__:
       - `ban()` : Will ban the client's IP from the server, preventing further connections, but won't close the current session
-      - `send(packet)`: Sends the given `Packet` object to the connected socket
+      - `send(packet, close=True)` : Sends the given `Packet` object to the connected socket, if `close` is set to `True`, the server will automatically call `close()` on the client, it has to be set to `False` to take the advantages of `Packet`s propagation
           - Parameters:
 	        - `packet`: A `Packet` object
+                - `close`: A boolean value
+      - `close()` : Closes the client underlying connection
+
+      __Attributes__:
+      - `session`: A unique UUID identifying the current client session
+      - `address`: The client's remote IP address
+
