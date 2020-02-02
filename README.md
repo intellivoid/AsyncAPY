@@ -129,10 +129,24 @@ The API to handle packets and clients is extremely easy, here is the list of all
       - `send(packet, close=True)` : Sends the given `Packet` object to the connected socket, if `close` is set to `True`, the server will automatically call `close()` on the client, it has to be set to `False` to take the advantages of `Packet`s propagation
           - Parameters:
 	        - `packet`: A `Packet` object
-                - `close`: A boolean value
+            - `close`: A boolean value
       - `close()` : Closes the client underlying connection
 
       __Attributes__:
       - `session`: A unique UUID identifying the current client session
       - `address`: The client's remote IP address
 
+__Note 8__: Here it is not shown how to initialize a `Client` object because this operation is meant to be done internally. 
+
+
+   - `Packet(payload, sender)`
+      
+      __Methods__: 
+      - `stop_propagation()` : Raises `AsyncAPY.errors.StopPropagation`, thus preventing the packet from being forwarded to the next handler in the queue. It makes sense only if called in a handler within a group. 
+      
+          - Parameters to `__init__()`:
+	        - `sender`: If the packet comes from the server, this parameter points to the `Client` object that sent that packet, if it needs to be initialized externally from the server, this parameter can be `None`
+	        - `payload`: A python dictionary or a valid JSON string
+		
+		
+		
