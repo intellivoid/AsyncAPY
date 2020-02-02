@@ -174,3 +174,15 @@ logging_level = 10
 __Note 10__: Please note that a configuration file will overwrite all the instance attributes of the `AsyncAPY` objects!
 Also, the config showed above lists all the values that can be passed through the config file, other values will be ignored
 
+
+### The framework - Filter objects 
+
+
+AsyncAPY supports two kind of filters, but in the future some more may be added. 
+
+To use the filters you first need to import the `AsyncAPY.filters.Filters` class, which has two subclasses:
+- `Ip(ips)`: Matches an ip, or a list of ips. IP(s) must be properly formatted or a 
+`ValueError` exception will be raised
+- `Fields(**kwargs)` : The `__init__()` constructor of this class accepts an unlimited number of keyword arguments. If the value of the argument is `None`, the filter will match if the field(s) name(s) are present in the incoming request and in the keyword arguments. Optionally, if a string is assigned to an argument, the server will check, with the passed parameter as a regex, the value of the request instead of the presence of the field only. 
+
+__Note 11__: For obvious reasons, fields inside a 'Filter.Fields` object can only be valid python identifiers, and their values must either be valid regular expressions or `None`
