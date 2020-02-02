@@ -191,3 +191,7 @@ Filters can be applied to handlers, by passing a list of `Filters` objects to th
 __Note 11__: For obvious reasons, fields inside a `Filter.Fields` object can only be valid python identifiers, and their values must either be valid regular expressions or `None`
 
 
+### One last thing - Groups 
+
+The methods `AsyncAPY.add_handler()` and `@AsyncAPY.handler_add()` accept a `priority` parameter which has to be an integer. Defining handlers with identical filters makes no sense, but what If I wanted to handle the same request multiple times? That's where propagation enters the game! If you define handlers with identical names and filters and you want that both of them have a chance to handle that request, choose the one that has to be executed first and assign it a lower priority than the second one. Example, if two handlers have priorities set to -1 and 0, the handler with priority -1 will be executed first. Please note that defining handlers with same filters/names and also same priority, which is 0 by default, raises `RuntimeError`. Same thing happens if you define another handler which is not in the group, but has the same name as an already existing group. 
+
