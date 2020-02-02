@@ -150,3 +150,27 @@ __Note 8__: Here it is not shown how to initialize a `Client` object because thi
 		
 		
 		
+### The framework - Setup and Shutdown functions, configuration files
+
+AsyncAPY is highly customizable! If you need to perform some extra operation before starting to serve, or need to do some cleanups after the server exits, you can simply make a child class from `AsyncAPY.base.AsyncAPY` and override the `setup() ` and `shutdown()` methods respectively (Note that these methods are called internally with no parameters other than `self`) 
+
+__Note 9__: The `shutdown()` function is called only after a proper `KeyboardInterrupt`, e.g. `Ctrl+C`
+
+Also, AsyncAPY can be configured with an external config file, whose path needs to be passed to the `AsyncAPY` object as the `config` parameter. An example config looks like the one below, please know that the parser is whitespace-sensitive and that a space between the key and the equal sign, and between the equal sign itself and the following value is compulsory. 
+
+__Example config File__:
+
+```
+[AsyncAPY]
+addr = 127.0.0.1
+port = 1500
+proto = ziproto
+header_size = 4
+byteorder = little
+buf = 1024
+logging_level = 10
+```
+
+__Note 10__: Please note that a configuration file will overwrite all the instance attributes of the `AsyncAPY` objects!
+Also, the config showed above lists all the values that can be passed through the config file, other values will be ignored
+
