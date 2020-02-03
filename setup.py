@@ -5,9 +5,9 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="AsyncAPY",
-    version="0.1",
+    version="0.1.49",
     author="Mattia Giambirtone",
-    author_email="hackhab@gmail.com",
+    author_email="nocturn9x@intellivoid.info",
     description="A full-fledged library to build Asynchronous API Servers in Python",
     long_description=long_description,
     long_description_content_type="text/markdown",

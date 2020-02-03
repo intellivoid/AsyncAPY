@@ -1,10 +1,10 @@
 Metadata-Version: 2.1
 Name: AsyncAPY
-Version: 0.1
+Version: 0.1.49
 Summary: A full-fledged library to build Asynchronous API Servers in Python
 Home-page: https://github.com/intellivoid/Internal-API-Server
 Author: Mattia Giambirtone
-Author-email: hackhab@gmail.com
+Author-email: nocturn9x@intellivoid.info
 License: UNKNOWN
 Description: # Internal-API-Server
         This repo contains the source code of the AsyncAPY framework, which will be used to deploy an asynchronous TCP based API server with JSON requests meant for internal use at Intellivoid
@@ -134,9 +134,75 @@ Description: # Internal-API-Server
              
               __Methods__:
               - `ban()` : Will ban the client's IP from the server, preventing further connections, but won't close the current session
-              - `send(packet)`: Sends the given `Packet` object to the connected socket
+              - `send(packet, close=True)` : Sends the given `Packet` object to the connected socket, if `close` is set to `True`, the server will automatically call `close()` on the client, it has to be set to `False` to take the advantages of `Packet`s propagation
                   - Parameters:
         	        - `packet`: A `Packet` object
+                    - `close`: A boolean value
+              - `close()` : Closes the client underlying connection
+        
+              __Attributes__:
+              - `session`: A unique UUID identifying the current client session
+              - `address`: The client's remote IP address
+        
+        __Note 8__: Here it is not shown how to initialize a `Client` object because this operation is meant to be done internally. 
+        
+        
+           - `Packet(payload, sender)`
+              
+              __Methods__: 
+              - `stop_propagation()` : Raises `AsyncAPY.errors.StopPropagation`, thus preventing the packet from being forwarded to the next handler in the queue. It makes sense only if called in a handler within a group. 
+              
+                  - Parameters to `__init__()`:
+        	        - `sender`: If the packet comes from the server, this parameter points to the `Client` object that sent that packet, if it needs to be initialized externally from the server, this parameter can be `None`
+        	        - `payload`: A python dictionary or a valid JSON string
+        		
+        		
+        		
+        ### The framework - Setup and Shutdown functions, configuration files
+        
+        AsyncAPY is highly customizable! If you need to perform some extra operation before starting to serve, or need to do some cleanups after the server exits, you can simply make a child class from `AsyncAPY.base.AsyncAPY` and override the `setup() ` and `shutdown()` methods respectively (Note that these methods are called internally with no parameters other than `self`) 
+        
+        __Note 9__: The `shutdown()` function is called only after a proper `KeyboardInterrupt`, e.g. `Ctrl+C`
+        
+        Also, AsyncAPY can be configured with an external config file, whose path needs to be passed to the `AsyncAPY` object as the `config` parameter. An example config looks like the one below, please know that the parser is whitespace-sensitive and that a space between the key and the equal sign, and between the equal sign itself and the following value is compulsory. 
+        
+        __Example config File__:
+        
+        ```
+        [AsyncAPY]
+        addr = 127.0.0.1
+        port = 1500
+        proto = ziproto
+        header_size = 4
+        byteorder = little
+        buf = 1024
+        logging_level = 10
+        ```
+        
+        __Note 10__: Please note that a configuration file will overwrite all the instance attributes of the `AsyncAPY` objects!
+        Also, the config showed above lists all the values that can be passed through the config file, other values will be ignored
+        
+        
+        ### The framework - Filter objects 
+        
+        
+        AsyncAPY supports two kind of filters, but in the future some more may be added. 
+        
+        To use the filters you first need to import the `AsyncAPY.filters.Filters` class, which has two subclasses:
+        - `Ip(ips)`: Matches an ip, or a list of ips. IP(s) must be properly formatted or a 
+        `ValueError` exception will be raised
+        - `Fields(**kwargs)` : The `__init__()` constructor of this class accepts an unlimited number of keyword arguments. If the value of the argument is `None`, the filter will match if the field(s) name(s) are present in the incoming request and in the keyword arguments. Optionally, if a string is assigned to an argument, the server will check, with the passed parameter as a regex, the value of the request instead of the presence of the field only. 
+        
+        Filters can be applied to handlers, by passing a list of `Filters` objects to the `filters` parameter of `AsyncAPY.add_handler()` or `@AsyncAPY.handler_add()`
+        
+        
+        __Note 11__: For obvious reasons, fields inside a `Filter.Fields` object can only be valid python identifiers, and their values must either be valid regular expressions or `None`
+        
+        
+        ### One last thing - Groups 
+        
+        The methods `AsyncAPY.add_handler()` and `@AsyncAPY.handler_add()` accept a `priority` parameter which has to be an integer. Defining handlers with identical filters makes no sense, but what If I wanted to handle the same request multiple times? That's where propagation enters the game! If you define handlers with identical names and filters and you want that both of them have a chance to handle that request, choose the one that has to be executed first and assign it a lower priority than the second one. Example, if two handlers have priorities set to -1 and 0, the handler with priority -1 will be executed first. Please note that defining handlers with same filters/names and also same priority, which is 0 by default, raises `RuntimeError`. Same thing happens if you define another handler which is not in the group, but has the same name as an already existing group. 
+        
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
