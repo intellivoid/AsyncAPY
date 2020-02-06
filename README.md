@@ -55,6 +55,8 @@ being sent back to the client. In order to be valid, then, the request MUST have
 
 Both JSON and ZiProto formatted requests can have an arbitrary amount of fields, as long as the header size is big enough, but there's only one, compulsory, field which is `request_type` and is crucial for the server to identify the handler(s) that should handle that request. When you register a handler its name will be the associated `request_type`, read the section below for more information. 
 
+__P.S. 2__: This, stupid, limitation on the field name/content has been realized to be totally nonsense and will be removed in a future release of AsyncAPY--namely _from version 0.2 and above_.
+
 __Note 2__: The order of fields in a request isn't important
 
 
