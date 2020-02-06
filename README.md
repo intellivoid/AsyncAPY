@@ -31,7 +31,7 @@ AsyncAPY's protocol needs just one and only one header to work properly, which c
 
 And that's just how it is, it is as simple as that! Pretty neat, deh? 
 
-
+__P.S.__: In the future, a couple more headers could be added. An example could be a single byte, named `ProtocolVersion` to determine the version of the protocol implementation that the client runs, or a `Content-Type` header which could be used to guess dynamically the type of the payload, either ziproto or json, before falling back to the server default encoding
 
 ### The protocol - Supported formatting system
 
