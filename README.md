@@ -148,7 +148,7 @@ __Note 8__: Here it is not shown how to initialize a `Client` object because thi
       __Methods__: 
       - `stop_propagation()` : Raises `AsyncAPY.errors.StopPropagation`, thus preventing the packet from being forwarded to the next handler in the queue. It makes sense only if called in a handler within a group. 
       
-          - Parameters to `__init__()`:
+       - Parameters to `__init__()`:
 	        - `sender`: If the packet comes from the server, this parameter points to the `Client` object that sent that packet, if it needs to be initialized externally from the server, this parameter can be `None`
 	        - `payload`: A python dictionary or a valid JSON string
 		
