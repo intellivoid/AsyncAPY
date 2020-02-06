@@ -31,7 +31,7 @@ AsyncAPY's protocol needs just one and only one header to work properly, which c
 
 And that's just how it is, it is as simple as that! Pretty neat, deh? 
 
-__P.S.__: In the future, a couple more headers could be added. An example could be a single byte, named `ProtocolVersion` to determine the version of the protocol implementation that the client runs, or a `Content-Type` header which could be used to guess dynamically the type of the payload, either ziproto or json, before falling back to the server default encoding
+__P.S.__: In the future, a couple more headers could be added. An example could be a single byte, named `ProtocolVersion` to determine the version of the protocol implementation that the client runs, or a `Content-Encoding` header which could be used to guess dynamically the type of the payload, either ziproto or json, before falling back to the server default encoding
 
 ### The protocol - Supported formatting system
 
@@ -48,7 +48,7 @@ and the ZiProto equivalent:
 Both the byte order and the header size can be customized, by setting the `AsyncAPY.byteorder` and ` AsyncAPY.header_size` parameters
 
 __Note__: Internally, also ZiProto requests are converted into JSON-like structures and then into Python dictionaries, and then converted back to ZiProto before
-being sent back to the client. In order to be valid, then, the request MUST have a key-value structure, and then be encoded in ZiProto. 
+being sent back to the client. In order to be valid, then, the request MUST have a key-value structure, and then be encoded in ZiProto. Also, in a not-so-far future, the protocol will include a `Content-Encoding` header which will allow the server to dynamically change the encoding of incoming packets, before falling back to the server default encoding. Also, in AsyncAPY version 0.2 and above, the server will have the possibility to run in a "mixed" mode to accept both json and ziproto encoded request.
 
 
 ### The protocol - Fields
