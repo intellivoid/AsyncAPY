@@ -1,7 +1,7 @@
 # Internal-API-Server
 This repo contains the source code of the AsyncAPY framework, which will be used to deploy an asynchronous TCP based API server with JSON requests meant for internal use at Intellivoid
 
-As of today, the latest version of AsyncAPY is 0.1.49
+As of today, the latest version of AsyncAPY is 0.2.1
 
 # Documentation
 
@@ -32,8 +32,8 @@ AsyncAProto V1 does not **need** the `Content-Encoding` header and has been thou
 The three headers are:
 
 - `Content-Length`: A byte-encoded integer representing the length of the packet (excluding itself). The recommended size is 4 bytes
-- `Protocol-Version`: An integer that can either be 11, for V1, or 22, for V2, encoded as a 1-byte integer
-- `Content-Encoding`: An integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
+- `Protocol-Version`: An 1 byte-encoded integer that can either be 11, for V1 version, or 22, for V2 
+- `Content-Encoding`: An 1 byte-encoded integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
 
 __P.S.__: Note that V1 requests **CAN** contain the `Content-Encoding` header, even though it has no sense at all. This will just trigger a warning in the server's console.
 
@@ -41,9 +41,9 @@ Also consider that the headers order must follow the one exposed above
 
 ### The protocol - Supported encodings
 
-This server specifically deals with JSON and ZiProto encoded requests, depending on configuration (ZiProto is highly recommended for internal purposes as it has less overhead than JSON) 
+This server specifically deals with JSON and ZiProto encoded payloads, depending on configuration and/or client specifications (ZiProto is highly recommended for internal purposes as it has less overhead than JSON) 
 
-A JSON request with a 4 byte header encoded as a big-endian sequence of bytes (Which is the default), to an AsyncAPY server will look like this:
+A JSON packet with a 4 byte header encoded as a big-endian sequence of bytes (Which is the default), to an AsyncAPY server will look like this:
 
 ```\x00\x00\x00\x10\x16\x01{"foo": "bar"}```  
                          
@@ -59,13 +59,13 @@ being sent to the client. In order to be valid, then, the request MUST have a ke
 
 ### The protocol - Warnings
 
-Please note, that if an invalid header is prepended to the payload, or no header is provided at all, the request will be considered as corrupted and it'll be ignored. Specifically, the possible cases are:
+Please note, that if an invalid header is prepended to the payload, or no header is provided at all, the packet will be considered as corrupted and it'll be ignored. Specifically, the possible cases are:
 
-- If the `Content-Length` header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the header, thus resulting in undesired behavior (See below) 
+- If the `Content-Length` header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the `Content-Length` header, thus resulting in undesired behavior (See below) 
 
-- If the packet is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the stream is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
+- If the packet is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the packet is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
 
-- If the payload is longer than `Content-Length` bytes, the packet will be truncated to the specified size and the remaining bytes will be read along with the next request (Which is undesirable)
+- If the payload is longer than `Content-Length` bytes, the packet will be truncated to the specified size and the remaining bytes will be read along with the next request (Which is undesirable and likely to cause decoding errors)
       
 - If either the `Content-Encoding` or the `Protocol-Version` headers are not valid, the packet will be rejected
 
