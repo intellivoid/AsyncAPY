@@ -174,13 +174,13 @@ The following objects are subclasses of `AsyncAPY.filters.Filters`, they can be 
 
    - `Filters.Ip(ips)` : A filter for one or multiple IP addresses. Will match if the client IP is in the provided list of ips
 
-      - Parameters to `__init__()`:
-               - `ips`: A single IP, or a list of IP addresses. Please note that the IP(s) must be syntactically valid (They are checked upon initialization)
+     - Parameters to `__init__()`:
+        - `ips`: A single IP, or a list of IP addresses. Please note that the IP(s) must be syntactically valid (They are checked upon initialization)
 
    - `Filters.Fields(**kwargs)`
 
      - Parameters to `__init__()`:
-            - `**kwargs`: This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be `None`, or a valid regular expression. In the first case, the filter will match if the request contains the specified field name, while in the other case the field value will also be checked with `re.match()`, using the provided parameter as pattern.
+        - `**kwargs`: This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be `None`, or a valid regular expression. In the first case, the filter will match if the request contains the specified field name, while in the other case the field value will also be checked with `re.match()`, using the provided parameter as pattern.
 
             For example, `Filters.Fields(this=None, foo='bar')` will match `{"this": "anything", "foo": "bar"}`, because the field `this` is present in the request (Note how the content of `this` is ignored) and also the value to the key `foo` matches the regex `bar`
 
