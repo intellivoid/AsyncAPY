@@ -61,17 +61,19 @@ being sent to the client. In order to be valid, then, the request MUST have a ke
 
 Please note, that if an invalid header is prepended to the payload, or no header is provided at all, the request will be considered as corrupted and it'll be ignored. Specifically, the possible cases are:
 
-- If the header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the header, thus resulting in undesired behavior (See below) 
+- If the `Content-Length` header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the header, thus resulting in undesired behavior (See below) 
 
-- If the stream is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the stream is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
+- If the packet is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the stream is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
 
-- If the payload is longer than `AsyncAPY.header_size` bytes, the packet will be truncated to the specified size and the remaining bytes will be read along with the next request (Which is undesirable)
-
+- If the payload is longer than `Content-Length` bytes, the packet will be truncated to the specified size and the remaining bytes will be read along with the next request (Which is undesirable)
+      
 - If either the `Content-Encoding` or the `Protocol-Version` headers are not valid, the packet will be rejected
 
 - If both `Content-Encoding` and `Protocol-Version` are correct, but the actual encoding of the payload is different from the specified one, the packet will be rejected
 
 - In case of a V1 request, unless a `Content-Encoding` header is present (Remember: If you can determine the payload's encoding, just use V2!), the server will fall back to the default encoding and reject the request on decoding failure
+
+- If the complete stream is shorter than `AsyncAPY.header_size + 3` bytes, the packet will be rejected
 
 
 __Note 3__: The AsyncAPY server is not meant for users staying connected a long time, as it's an API server framework, the recommended timeout is 60 seconds (default) 
