@@ -35,35 +35,27 @@ The three headers are:
 - `Protocol-Version`: An integer that can either be 11, for V1, or 22, for V2, encoded as a 1-byte integer
 - `Content-Encoding`: An integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
 
-__P.S.__: Note that V1 requests **CAN** contain the `Content-Encoding` header, even though it has no sense at all. This will just trigger a warning
+__P.S.__: Note that V1 requests **CAN** contain the `Content-Encoding` header, even though it has no sense at all. This will just trigger a warning in the server's console.
+
 Also consider that the headers order must follow the one exposed above
 
 ### The protocol - Supported formatting system
 
 This server specifically deals with JSON and ZiProto encoded requests, depending on configuration (ZiProto is highly recommended for internal purposes as it has less overhead than JSON) 
 
-A JSON request with a 2 byte header encoded as a big-endian sequence of bytes (Which is the default), to an AsyncAPY server will look like this:
+A JSON request with a 4 byte header encoded as a big-endian sequence of bytes (Which is the default), to an AsyncAPY server will look like this:
 
-```\x00\x18{"request_type": "ping"}```
-
+```\x00\x00\x00\x10\x16\x01{"foo": "bar"}```  
+                         
 and the ZiProto equivalent:
 
-```\x00\x13\x81\xacrequest_type\xa4ping```
+```\x00\x00\x00\x0b\x16\x01\x81\xa3foo\xa3bar```  
 
 Both the byte order and the header size can be customized, by setting the `AsyncAPY.byteorder` and ` AsyncAPY.header_size` parameters
 
 __Note__: Internally, also ZiProto requests are converted into JSON-like structures and then into Python dictionaries, and then converted back to ZiProto before
-being sent back to the client. In order to be valid, then, the request MUST have a key-value structure, and then be encoded in ZiProto. Also, in a not-so-far future, the protocol will include a `Content-Encoding` header which will allow the server to dynamically change the encoding of incoming packets, before falling back to the server default encoding. Also, in AsyncAPY version 0.2 and above, the server will have the possibility to run in a "mixed" mode to accept both json and ziproto encoded request.
-
-
-### The protocol - Fields
-
-Both JSON and ZiProto formatted requests can have an arbitrary amount of fields, as long as the header size is big enough, but there's only one, compulsory, field which is `request_type` and is crucial for the server to identify the handler(s) that should handle that request. When you register a handler its name will be the associated `request_type`, read the section below for more information. 
-
-__P.S. 2__: This, stupid, limitation on the field name/content has been realized to be totally nonsense and will be removed in a future release of AsyncAPY--namely _from version 0.2 and above_.
-
-__Note 2__: The order of fields in a request isn't important
-
+being sent to the client. In order to be valid, then, the request MUST have a key-value structure, and then be encoded in ZiProto
+     
 
 ### The protocol - Warnings
 
@@ -94,9 +86,9 @@ A simple Hello World with AsyncAPY looks like this
 from AsyncAPY.base import AsyncAPY
 from AsyncAPY.objects import Packet
 
-server = AsyncAPY(port=1500, addr='0.0.0.0', proto='json')
+server = AsyncAPY(port=1500, addr='0.0.0.0', encoding='json')
 
-@server.handler_add("ping")
+@server.handler_add()
 async def hello_world(client, packet):
 
     print("Hello world from {client}!")
@@ -111,8 +103,8 @@ Ok, this is lots of code so let's break it into pieces:
 - First, we imported the `AsyncAPY` class from the `AsyncAPY.base` Python file. We also imported `AsyncAPY.objects.Packet`, which is AsyncAPY's standard API for packets
 - Then, we defined a server object that binds to our public IP address on port 1500, we chose JSON as the formatting stile as it's more human-readable, but you could have also used ziproto instead
 - Here comes the fun part, the line `@server.handler_add()`, which is a Python decorator, is just a shorthand for `server.add_handler()`: This function registers the handler
-inside our server so that it can handle incoming requests. As we registered our handler with the name 'ping', all requests which have `"ping"` as their `request_type` field will be forwarded to this handler
-- Then we defined our async handler, a handler in AsyncAPY is an asynchronous function which takes two parameters: A Client object and a Packet object which are high-level wrappers around the internal objects of AsyncAPY
+inside our server so that it can handle incoming requests
+- Then we defined our async handler: a handler in AsyncAPY is an asynchronous function which takes two parameters: A Client object and a Packet object which are high-level wrappers around the internal objects of AsyncAPY
 
 What this handler does is just calling the client's method `send()` with a `Packet` object, and that's done! The internals of AsyncAPY will handle all the nasty low-level socket operations such as errors and timeouts!
 
@@ -173,7 +165,7 @@ __Example config File__:
 [AsyncAPY]
 addr = 127.0.0.1
 port = 1500
-proto = ziproto
+encoding = ziproto
 header_size = 4
 byteorder = little
 buf = 1024
