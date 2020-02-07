@@ -1,7 +1,7 @@
 # Internal-API-Server
 This repo contains the source code of the AsyncAPY framework, which will be used to deploy an asynchronous TCP based API server with JSON requests meant for internal use at Intellivoid
 
-As of today, the latest version of AsyncAPY is 0.1.49
+As of today, the latest version of AsyncAPY is 0.2.1
 
 # Documentation
 
@@ -32,8 +32,8 @@ AsyncAProto V1 does not **need** the `Content-Encoding` header and has been thou
 The three headers are:
 
 - `Content-Length`: A byte-encoded integer representing the length of the packet (excluding itself). The recommended size is 4 bytes
-- `Protocol-Version`: An integer that can either be 11, for V1, or 22, for V2, encoded as a 1-byte integer
-- `Content-Encoding`: An integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
+- `Protocol-Version`: An 1 byte-encoded integer that can either be 11, for V1 version, or 22, for V2 
+- `Content-Encoding`: An 1 byte-encoded integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
 
 __P.S.__: Note that V1 requests **CAN** contain the `Content-Encoding` header, even though it has no sense at all. This will just trigger a warning in the server's console.
 
