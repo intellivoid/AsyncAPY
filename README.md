@@ -1,7 +1,14 @@
-# Internal-API-Server
-This repo contains the source code of the AsyncAPY framework, which will be used to deploy an asynchronous TCP based API server with JSON/ZiProto requests meant for internal use at Intellivoid
+# AsyncAPY - A fully fledged Python 3.6+ library to serve APIs asynchronously 
+
+This repo contains the source code of the AsyncAPY framework, which is provided to the end-user "as is" without any warranty of any kind. 
+
+The developer and/or Intellivoid Technologies will not take any responsibility for any sort of damage caused by this software, be it economical, a data loss or whatever. 
+
+This project is published under the `Lesser General Public License Version 3`, for more detailed information check the `LICENSE` file provided within the repository. 
 
 As of today, the latest version of AsyncAPY is 0.2.1
+
+__Temp. Note__: The documentation refers to AsyncAPY version 0.2.1, while the source code still has to be pushed and is currently updated to version 0.1.49. It will be updated ASAP! 
 
 # Documentation
 
