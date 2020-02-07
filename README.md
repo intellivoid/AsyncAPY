@@ -1,16 +1,22 @@
-# Internal-API-Server
-This repo contains the source code of the AsyncAPY framework, which will be used to deploy an asynchronous TCP based API server with JSON requests meant for internal use at Intellivoid
+# AsyncAPY - A fully fledged Python 3.6+ library to serve APIs asynchronously 
 
-As of today, the latest version of AsyncAPY is 0.1.49
+This repo contains the source code of the AsyncAPY framework, which is provided to the end-user "as is" without any warranty of any kind. 
+
+The developer and/or Intellivoid Technologies will not take any responsibility for any sort of damage caused by this software, be it economical, a data loss or whatever. 
+
+This project is published under the `Lesser General Public License Version 3`, for more detailed information check the `LICENSE` file provided within the repository. 
+
+As of today, the latest version of AsyncAPY is 0.2.1
+
+__Temp. Note__: The documentation refers to AsyncAPY version 0.2.1, while the source code still has to be pushed and is currently updated to version 0.1.49. It will be updated ASAP! 
 
 # Documentation
 
-AsyncAPY is divided into two things:
-
-- The AsyncAPY **protocol** which is the implementation of a TLV standard application protocol which handles incoming packets and stuff like that
-- The AsyncApy **framework**, basically a wrapper around the AsyncAPY protocol and a customizable base class
+AsyncAPY is divided into two key components:
+                            
+- The AsyncAPY **protocol**, a.k.a. `AsyncAProto`, which is AsyncAPY's application protocol, that handles incoming packets, fragmentation and stuff like that
+- The AsyncAPY **framework**, basically a wrapper around AsyncAProto and a customizable base class
             
-
 
 
 
@@ -19,56 +25,61 @@ This documentation will face both components of the AsyncAPY library
 
 ## AsyncAPY - The Protocol
 
-AsyncAPY's protocol is built on top of raw TCP, and now you might be wondering: "Why not HTTP?"
+AsyncAProto is built on top of raw TCP, and now you might be wondering: _"Why not HTTP?"_
 												                 
 I know this _looks kinda like a NIH sindrome_, but when I was building this framework I realized that HTTP was way too overkill for this purpose
-and thought that creating a, simpler, dedicated application protocol to handle simple requests, would have done the thing. And it actually did!
+and thought that creating a simpler and dedicated application protocol to handle simple packets, would have done the thing. And it actually did!
 (Moreover, HTTP is basically TCP with lots of headers so meh)
 
 ### The protocol - A simple header system
 
-AsyncAPY's protocol needs just one and only one header to work properly, which can be seen as the equivalent of the `Content-Length` header in an HTTP request. It is a byte-encoded integer which tells the server the length of the payload following the header itself. 
+AsyncAProto is divided into 2 versions, V1 and V2, which differ in the number of headers that are used.
+AsyncAProto V1 does not have the `Content-Encoding` header and has been thought for the cases when it's not possible to determine the payload's encoding.
 
-And that's just how it is, it is as simple as that! Pretty neat, deh? 
+The three headers are:
 
-__P.S.__: In the future, a couple more headers could be added. An example could be a single byte, named `ProtocolVersion` to determine the version of the protocol implementation that the client runs, or a `Content-Encoding` header which could be used to guess dynamically the type of the payload, either ziproto or json, before falling back to the server default encoding
+- `Content-Length`: A byte-encoded integer representing the length of the packet (excluding itself). The recommended size is 4 bytes
+- `Protocol-Version`: A 1 byte-encoded integer that can either be 11, for V1 version, or 22, for V2 
+- `Content-Encoding`: A 1 byte-encoded integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
 
-### The protocol - Supported formatting system
+__P.S.__: Note that V1 requests **CANNOT** contain the `Content-Encoding` header. Also consider that the headers order must follow the one exposed above
 
-This server specifically deals with JSON and ZiProto encoded requests, depending on configuration (ZiProto is highly recommended for internal purposes as it has less overhead than JSON) 
 
-A JSON request with a 2 byte header encoded as a big-endian sequence of bytes (Which is the default), to an AsyncAPY server will look like this:
+### The protocol - Supported encodings
 
-```\x00\x18{"request_type": "ping"}```
+This server specifically deals with JSON and ZiProto encoded payloads, depending on configuration and/or client specifications (ZiProto is highly recommended for internal purposes as it has less overhead than JSON) 
 
+A JSON packet with a 4 byte header encoded as a big-endian sequence of bytes (Which is the default), to an AsyncAPY server will look like this:
+
+```\x00\x00\x00\x10\x16\x01{"foo": "bar"}```  
+                         
 and the ZiProto equivalent:
 
-```\x00\x13\x81\xacrequest_type\xa4ping```
+```\x00\x00\x00\x0b\x16\x01\x81\xa3foo\xa3bar```  
 
 Both the byte order and the header size can be customized, by setting the `AsyncAPY.byteorder` and ` AsyncAPY.header_size` parameters
 
-__Note__: Internally, also ZiProto requests are converted into JSON-like structures and then into Python dictionaries, and then converted back to ZiProto before
-being sent back to the client. In order to be valid, then, the request MUST have a key-value structure, and then be encoded in ZiProto. Also, in a not-so-far future, the protocol will include a `Content-Encoding` header which will allow the server to dynamically change the encoding of incoming packets, before falling back to the server default encoding. Also, in AsyncAPY version 0.2 and above, the server will have the possibility to run in a "mixed" mode to accept both json and ziproto encoded request.
-
-
-### The protocol - Fields
-
-Both JSON and ZiProto formatted requests can have an arbitrary amount of fields, as long as the header size is big enough, but there's only one, compulsory, field which is `request_type` and is crucial for the server to identify the handler(s) that should handle that request. When you register a handler its name will be the associated `request_type`, read the section below for more information. 
-
-__P.S. 2__: This, stupid, limitation on the field name/content has been realized to be totally nonsense and will be removed in a future release of AsyncAPY--namely _from version 0.2 and above_.
-
-__Note 2__: The order of fields in a request isn't important
-
+__Note__: Internally, also ZiProto requests are converted into JSON-like data structures, and then converted back to ZiProto before
+being sent to the client. In order to be valid, then, the request MUST have a key-value structure, and then be encoded in ZiProto
+     
 
 ### The protocol - Warnings
 
-Please note, that if an invalid header is prepended to the payload, or no header is provided at all, the request will be considered as corrupted and it'll be ignored. Specifically, the possible cases are:
+Please note, that if an invalid header is prepended to the payload, or no header is provided at all, the packet will be considered as corrupted and it'll be ignored. Specifically, the possible cases are:
 
-- If the header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the header, thus resulting in undesired behavior (See below) 
+- If the `Content-Length` header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the `Content-Length` header, thus resulting in undesired behavior (most likely the server won't be able to read the socket correctly, thus resulting in the timeout to expire) 
 
-- If the stream is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the stream is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
+- If the packet is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the packet is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
 
-- If the payload is longer than `AsyncAPY.header_size` bytes, the packet will be truncated to the specified size and the remaining bytes will be read along with the next request (Which is undesirable)
+- If the payload is longer than `Content-Length` bytes, the packet will be truncated to the specified size and the remaining bytes will be read along with the next request (Which is undesirable and likely to cause decoding errors)
+      
+- If either the `Content-Encoding` or the `Protocol-Version` headers are not valid, the packet will be rejected
+
+- If both `Content-Encoding` and `Protocol-Version` are correct, but the actual encoding of the payload is different from the specified one, the packet will be rejected
+
+- In case of a V1 request, unless a `Content-Encoding` header is present (Remember: If you can determine the payload's encoding, just use V2!), the server will fall back to the default encoding and reject the request on decoding failure
+
+- If the complete stream is shorter than `AsyncAPY.header_size + 3` bytes, the packet will be rejected
 
 
 __Note 3__: The AsyncAPY server is not meant for users staying connected a long time, as it's an API server framework, the recommended timeout is 60 seconds (default) 
@@ -89,13 +100,13 @@ A simple Hello World with AsyncAPY looks like this
 from AsyncAPY.base import AsyncAPY
 from AsyncAPY.objects import Packet
 
-server = AsyncAPY(port=1500, addr='0.0.0.0', proto='json')
+server = AsyncAPY(port=1500, addr='0.0.0.0', encoding='json')
 
-@server.handler_add("ping")
+@server.handler_add()
 async def hello_world(client, packet):
 
     print("Hello world from {client}!")
-    await client.send(Packet({"status": "success", "response_code": "OK", "message": "Hello world!")
+    await client.send(Packet({"status": "success", "response_code": "OK", "message": "Hello world!"), encoding='json')
     
 server.start()
 ```
@@ -104,10 +115,10 @@ server.start()
 Ok, this is lots of code so let's break it into pieces:
 
 - First, we imported the `AsyncAPY` class from the `AsyncAPY.base` Python file. We also imported `AsyncAPY.objects.Packet`, which is AsyncAPY's standard API for packets
-- Then, we defined a server object that binds to our public IP address on port 1500, we chose JSON as the formatting stile as it's more human-readable, but you could have also used ziproto instead
+- Then, we defined a server object that binds to our public IP address on port 1500, we chose JSON as the encoding as it's more human-readable, but you could have also used ziproto instead
 - Here comes the fun part, the line `@server.handler_add()`, which is a Python decorator, is just a shorthand for `server.add_handler()`: This function registers the handler
-inside our server so that it can handle incoming requests. As we registered our handler with the name 'ping', all requests which have `"ping"` as their `request_type` field will be forwarded to this handler
-- Then we defined our async handler, a handler in AsyncAPY is an asynchronous function which takes two parameters: A Client object and a Packet object which are high-level wrappers around the internal objects of AsyncAPY
+inside our server so that it can handle incoming requests
+- Then we defined our async handler: a handler in AsyncAPY is an asynchronous function which takes two parameters: A Client object and a Packet object which are high-level wrappers around the internal objects of AsyncAPY
 
 What this handler does is just calling the client's method `send()` with a `Packet` object, and that's done! The internals of AsyncAPY will handle all the nasty low-level socket operations such as errors and timeouts!
 
@@ -151,7 +162,7 @@ __Note 8__: Here it is not shown how to initialize a `Client` object because thi
        - Parameters to `__init__()`:
 	        - `sender`: If the packet comes from the server, this parameter points to the `Client` object that sent that packet, if it needs to be initialized externally from the server, this parameter can be `None`
 	        - `payload`: A python dictionary or a valid JSON string
-		
+		- `encoding`: The packet encoding, it can either be "json" or "ziproto". If no encoding is specified, a `ValueError` exception will be raised
 		
 		
 ### The framework - Setup and Shutdown functions, configuration files
@@ -168,7 +179,7 @@ __Example config File__:
 [AsyncAPY]
 addr = 127.0.0.1
 port = 1500
-proto = ziproto
+encoding = ziproto
 header_size = 4
 byteorder = little
 buf = 1024
