@@ -1,5 +1,5 @@
 # Internal-API-Server
-This repo contains the source code of the AsyncAPY framework, which will be used to deploy an asynchronous TCP based API server with JSON requests meant for internal use at Intellivoid
+This repo contains the source code of the AsyncAPY framework, which will be used to deploy an asynchronous TCP based API server with JSON/ZiProto requests meant for internal use at Intellivoid
 
 As of today, the latest version of AsyncAPY is 0.2.1
 
@@ -8,7 +8,7 @@ As of today, the latest version of AsyncAPY is 0.2.1
 AsyncAPY is divided into two key components:
                             
 - The AsyncAPY **protocol**, a.k.a. `AsyncAProto`, which is the implementation of a TLV standard application protocol which handles incoming packets and stuff like that
-- The AsyncApy **framework**, basically a wrapper around the AsyncAPY protocol and a customizable base class
+- The AsyncAPY **framework**, basically a wrapper around AsyncAProto protocol and a customizable base class
             
 
 
@@ -18,16 +18,16 @@ This documentation will face both components of the AsyncAPY library
 
 ## AsyncAPY - The Protocol
 
-AsyncAPY's protocol is built on top of raw TCP, and now you might be wondering: "Why not HTTP?"
+AsyncAProto is built on top of raw TCP, and now you might be wondering: _"Why not HTTP?"_
 												                 
 I know this _looks kinda like a NIH sindrome_, but when I was building this framework I realized that HTTP was way too overkill for this purpose
-and thought that creating a, simpler, dedicated application protocol to handle simple requests, would have done the thing. And it actually did!
+and thought that creating a simpler and dedicated application protocol to handle simple packets, would have done the thing. And it actually did!
 (Moreover, HTTP is basically TCP with lots of headers so meh)
 
 ### The protocol - A simple header system
 
 AsyncAProto is divided into 2 versions, V1 and V2, which differ in the number of headers that are used.
-AsyncAProto V1 does not **need** the `Content-Encoding` header and has been thought for the cases when it's not possible to determine the payload's encoding.
+AsyncAProto V1 does not the `Content-Encoding` header and has been thought for the cases when it's not possible to determine the payload's encoding.
 
 The three headers are:
 
@@ -35,9 +35,8 @@ The three headers are:
 - `Protocol-Version`: An 1 byte-encoded integer that can either be 11, for V1 version, or 22, for V2 
 - `Content-Encoding`: An 1 byte-encoded integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
 
-__P.S.__: Note that V1 requests **CAN** contain the `Content-Encoding` header, even though it has no sense at all. This will just trigger a warning in the server's console.
+__P.S.__: Note that V1 requests **CANNOT** contain the `Content-Encoding` header. Also consider that the headers order must follow the one exposed above
 
-Also consider that the headers order must follow the one exposed above
 
 ### The protocol - Supported encodings
 
@@ -53,7 +52,7 @@ and the ZiProto equivalent:
 
 Both the byte order and the header size can be customized, by setting the `AsyncAPY.byteorder` and ` AsyncAPY.header_size` parameters
 
-__Note__: Internally, also ZiProto requests are converted into JSON-like structures and then into Python dictionaries, and then converted back to ZiProto before
+__Note__: Internally, also ZiProto requests are converted into JSON-like data structures, and then converted back to ZiProto before
 being sent to the client. In order to be valid, then, the request MUST have a key-value structure, and then be encoded in ZiProto
      
 
@@ -61,7 +60,7 @@ being sent to the client. In order to be valid, then, the request MUST have a ke
 
 Please note, that if an invalid header is prepended to the payload, or no header is provided at all, the packet will be considered as corrupted and it'll be ignored. Specifically, the possible cases are:
 
-- If the `Content-Length` header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the `Content-Length` header, thus resulting in undesired behavior (See below) 
+- If the `Content-Length` header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the `Content-Length` header, thus resulting in undesired behavior (most likely the server won't be able to read the socket correctly, thus resulting in the timeout to expire) 
 
 - If the packet is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the packet is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
 
