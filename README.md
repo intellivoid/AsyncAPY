@@ -39,7 +39,7 @@ __P.S.__: Note that V1 requests **CAN** contain the `Content-Encoding` header, e
 
 Also consider that the headers order must follow the one exposed above
 
-### The protocol - Supported formatting system
+### The protocol - Supported encodings
 
 This server specifically deals with JSON and ZiProto encoded requests, depending on configuration (ZiProto is highly recommended for internal purposes as it has less overhead than JSON) 
 
@@ -66,6 +66,12 @@ Please note, that if an invalid header is prepended to the payload, or no header
 - If the stream is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the stream is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
 
 - If the payload is longer than `AsyncAPY.header_size` bytes, the packet will be truncated to the specified size and the remaining bytes will be read along with the next request (Which is undesirable)
+
+- If either the `Content-Encoding` or the `Protocol-Version` headers are not valid, the packet will be rejected
+
+- If both `Content-Encoding` and `Protocol-Version` are correct, but the actual encoding of the payload is different from the specified one, the packet will be rejected
+
+- In case of a V1 request, unless a `Content-Encoding` header is present (Remember: If you can determine the payload's encoding, just use V2!), the server will fall back to the default encoding and reject the request on decoding failure
 
 
 __Note 3__: The AsyncAPY server is not meant for users staying connected a long time, as it's an API server framework, the recommended timeout is 60 seconds (default) 
@@ -101,7 +107,7 @@ server.start()
 Ok, this is lots of code so let's break it into pieces:
 
 - First, we imported the `AsyncAPY` class from the `AsyncAPY.base` Python file. We also imported `AsyncAPY.objects.Packet`, which is AsyncAPY's standard API for packets
-- Then, we defined a server object that binds to our public IP address on port 1500, we chose JSON as the formatting stile as it's more human-readable, but you could have also used ziproto instead
+- Then, we defined a server object that binds to our public IP address on port 1500, we chose JSON as the encoding as it's more human-readable, but you could have also used ziproto instead
 - Here comes the fun part, the line `@server.handler_add()`, which is a Python decorator, is just a shorthand for `server.add_handler()`: This function registers the handler
 inside our server so that it can handle incoming requests
 - Then we defined our async handler: a handler in AsyncAPY is an asynchronous function which takes two parameters: A Client object and a Packet object which are high-level wrappers around the internal objects of AsyncAPY
