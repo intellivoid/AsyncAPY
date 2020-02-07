@@ -132,6 +132,7 @@ __Note 7__: Please note that this list does not include objects used internally 
 
 The AsyncAPY framework exposes some high level methods and objects to ease the deployment of the server.
 
+
 #### Types and Objects - Packet and Client API
 
 The API to handle packets and clients is extremely easy, here is the list of all methods and attributes
@@ -165,9 +166,11 @@ __Note 8__: Here it is not shown how to initialize a `Client` object because thi
        - Parameters to `__init__()`:
 	        - `sender`: If the packet comes from the server, this parameter points to the `Client` object that sent that packet, if it needs to be initialized externally from the server, this parameter can be `None`
 	        - `payload`: A python dictionary or a valid JSON string
-		- `encoding`: The packet encoding, it can either be "json" or "ziproto". If no encoding is specified, a `ValueError` exception will be raised
+	        - `encoding`: The packet encoding, it can either be "json" or "ziproto". If no encoding is specified, a `ValueError` exception will be raised
 
-The following objects are subclasses of `AsyncAPY.filters.Filters`
+#### Types and Objects - Filters
+
+The following objects are subclasses of `AsyncAPY.filters.Filters`, they can be used to filter the packets arriving to each handler
 
    - `Filters.Ip(ips)` : A filter for one or multiple IP addresses. Will match if the client IP is in the provided list of ips
 
@@ -178,9 +181,8 @@ The following objects are subclasses of `AsyncAPY.filters.Filters`
 
      - Parameters to `__init__()`:
             - `**kwargs`: This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be `None`, or a valid regular expression. In the first case, the filter will match if the request contains the specified field name, while in the other case the field value will also be checked with `re.match()`, using the provided parameter as pattern.
-              Example:
 
-              ```Filters.Fields(this=None, foo='bar')``` will match `{"this": "anything", "foo": "bar"}`, because the field `this` is present in the request (Note how the content of `this` is ignored) and also the value to the key `foo` matches the regex `bar`
+            For example, `Filters.Fields(this=None, foo='bar')` will match `{"this": "anything", "foo": "bar"}`, because the field `this` is present in the request (Note how the content of `this` is ignored) and also the value to the key `foo` matches the regex `bar`
 
 
 ### The framework - Setup and Shutdown functions, configuration files
