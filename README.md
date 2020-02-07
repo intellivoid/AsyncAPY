@@ -63,7 +63,7 @@ Please note, that if an invalid header is prepended to the payload, or no header
 
 - If the `Content-Length` header is bigger than `AsyncAPY.header_size` bytes, the server will read only `AsyncAPY.header_size` bytes as the `Content-Length` header, thus resulting in undesired behavior (See below) 
 
-- If the packet is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the packey is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
+- If the packet is shorter than `AsyncAPY.header_size`, the server will attempt to request more bytes from the client until the packet is at least `AsyncAPY.header_size` bytes long and then proceed normally, or close the connection if the process takes longer than `AsyncAPY.timeout` seconds, whichever occurs first
 
 - If the payload is longer than `Content-Length` bytes, the packet will be truncated to the specified size and the remaining bytes will be read along with the next request (Which is undesirable and likely to cause decoding errors)
       
