@@ -5,12 +5,11 @@ As of today, the latest version of AsyncAPY is 0.1.49
 
 # Documentation
 
-AsyncAPY is divided into two things:
+AsyncAPY is divided into two key components:
                             
 - The AsyncAPY **protocol**, a.k.a. `AsyncAProto`, which is the implementation of a TLV standard application protocol which handles incoming packets and stuff like that
 - The AsyncApy **framework**, basically a wrapper around the AsyncAPY protocol and a customizable base class
             
-
 
 
 
@@ -27,11 +26,17 @@ and thought that creating a, simpler, dedicated application protocol to handle s
 
 ### The protocol - A simple header system
 
-AsyncAPY's protocol needs just one and only one header to work properly, which can be seen as the equivalent of the `Content-Length` header in an HTTP request. It is a byte-encoded integer which tells the server the length of the payload following the header itself. 
+AsyncAProto is divided into 2 versions, V1 and V2, which differ in the number of headers that are used.
+AsyncAProto V1 does not **need** the `Content-Encoding` header and has been thought for the cases when it's not possible to determine the payload's encoding.
 
-And that's just how it is, it is as simple as that! Pretty neat, deh? 
+The three headers are:
 
-__P.S.__: In the future, a couple more headers could be added. An example could be a single byte, named `ProtocolVersion` to determine the version of the protocol implementation that the client runs, or a `Content-Encoding` header which could be used to guess dynamically the type of the payload, either ziproto or json, before falling back to the server default encoding
+- `Content-Length`: A byte-encoded integer representing the length of the packet (excluding itself). The recommended size is 4 bytes
+- `Protocol-Version`: An integer that can either be 11, for V1, or 22, for V2, encoded as a 1-byte integer
+- `Content-Encoding`: An integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
+
+__P.S.__: Note that V1 requests **CAN** contain the `Content-Encoding` header, even though it has no sense at all. This will just trigger a warning
+Also consider that the headers order must follow the one exposed above
 
 ### The protocol - Supported formatting system
 
