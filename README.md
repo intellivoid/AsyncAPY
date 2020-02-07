@@ -27,7 +27,7 @@ and thought that creating a simpler and dedicated application protocol to handle
 ### The protocol - A simple header system
 
 AsyncAProto is divided into 2 versions, V1 and V2, which differ in the number of headers that are used.
-AsyncAProto V1 does not the `Content-Encoding` header and has been thought for the cases when it's not possible to determine the payload's encoding.
+AsyncAProto V1 does not have the `Content-Encoding` header and has been thought for the cases when it's not possible to determine the payload's encoding.
 
 The three headers are:
 
