@@ -100,7 +100,7 @@ server = AsyncAPY(port=1500, addr='0.0.0.0', encoding='json')
 async def hello_world(client, packet):
 
     print("Hello world from {client}!")
-    await client.send(Packet({"status": "success", "response_code": "OK", "message": "Hello world!")
+    await client.send(Packet({"status": "success", "response_code": "OK", "message": "Hello world!"), encoding='json')
     
 server.start()
 ```
@@ -156,7 +156,7 @@ __Note 8__: Here it is not shown how to initialize a `Client` object because thi
        - Parameters to `__init__()`:
 	        - `sender`: If the packet comes from the server, this parameter points to the `Client` object that sent that packet, if it needs to be initialized externally from the server, this parameter can be `None`
 	        - `payload`: A python dictionary or a valid JSON string
-		
+		- `encoding`: The packet encoding, it can either be "json" or "ziproto". If no encoding is specified, a `ValueError` exception will be raised
 		
 		
 ### The framework - Setup and Shutdown functions, configuration files
