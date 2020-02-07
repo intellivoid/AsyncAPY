@@ -32,8 +32,8 @@ AsyncAProto V1 does not have the `Content-Encoding` header and has been thought 
 The three headers are:
 
 - `Content-Length`: A byte-encoded integer representing the length of the packet (excluding itself). The recommended size is 4 bytes
-- `Protocol-Version`: An 1 byte-encoded integer that can either be 11, for V1 version, or 22, for V2 
-- `Content-Encoding`: An 1 byte-encoded integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
+- `Protocol-Version`: A 1 byte-encoded integer that can either be 11, for V1 version, or 22, for V2 
+- `Content-Encoding`: A 1 byte-encoded integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
 
 __P.S.__: Note that V1 requests **CANNOT** contain the `Content-Encoding` header. Also consider that the headers order must follow the one exposed above
 
