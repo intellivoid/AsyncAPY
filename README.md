@@ -7,8 +7,8 @@ As of today, the latest version of AsyncAPY is 0.2.1
 
 AsyncAPY is divided into two key components:
                             
-- The AsyncAPY **protocol**, a.k.a. `AsyncAProto`, which is the implementation of a TLV standard application protocol which handles incoming packets and stuff like that
-- The AsyncAPY **framework**, basically a wrapper around AsyncAProto protocol and a customizable base class
+- The AsyncAPY **protocol**, a.k.a. `AsyncAProto`, which is AsyncAPY's application protocol, that handles incoming packets, fragmentation and stuff like that
+- The AsyncAPY **framework**, basically a wrapper around AsyncAProto and a customizable base class
             
 
 
