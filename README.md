@@ -217,9 +217,9 @@ Here is the list of all the methods that are needed to deploy an AsyncAPY server
    - `AsyncAPY.add_handler(handler, filters, priority)`
 
       - Parameters:
-             - `handler`: An asynchronous function that has to accept two parameters, a `Client` and a `Packet` instance, in this order
-             - `filters`: A list of one or more `Filter` objects
-             - `priority`: If the handler shares filters with other handlers, this parameter tells the server which handler within that group has to be executed first. The lower this number, the higher execution priority
+         - `handler`: An asynchronous function that has to accept two parameters, a `Client` and a `Packet` instance, in this order
+         - `filters`: A list of one or more `Filter` objects
+         - `priority`: An integer: if the handler shares filters with other handlers, this parameter tells the server which handler within that group has to be executed first. The lower this number, the higher execution priority
 
    - `AsyncAPY.handler_add(filters, priority)`: Decorator version of `AsyncAPY.add_handler()`
 
