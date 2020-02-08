@@ -1,10 +1,10 @@
-AsyncAPY package
-================
+AsyncAPY - Documentation
+========================
 
 Submodules
 ----------
 
-AsyncAPY.base module
+AsyncAPY.base
 --------------------
 
 .. automodule:: AsyncAPY.base
@@ -12,7 +12,7 @@ AsyncAPY.base module
    :undoc-members:
    :show-inheritance:
 
-AsyncAPY.errors module
+AsyncAPY.errors
 ----------------------
 
 .. automodule:: AsyncAPY.errors
@@ -20,7 +20,7 @@ AsyncAPY.errors module
    :undoc-members:
    :show-inheritance:
 
-AsyncAPY.filters module
+AsyncAPY.filters
 -----------------------
 
 .. automodule:: AsyncAPY.filters
@@ -28,7 +28,7 @@ AsyncAPY.filters module
    :undoc-members:
    :show-inheritance:
 
-AsyncAPY.objects module
+AsyncAPY.objects
 -----------------------
 
 .. automodule:: AsyncAPY.objects
