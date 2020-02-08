@@ -320,6 +320,7 @@ class AsyncAPY:
            :type session_id: class: `uuid.uuid4`
         """
 
+        req_valid = False
         if len(request) < self.header_size + 3:  # Content-Length + Protocol-Version + Content-Encoding + 1 byte-payload
             logging.error(f"({session_id}) {{API Parser}} Request is too short! Ignoring")
             await stream.aclose()
@@ -346,6 +347,7 @@ class AsyncAPY:
                 for handler in self.handlers:
                     if isinstance(handler, Group):
                         if handler.check(client, packet):
+                            req_valid = True
                             logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, running group of functions")
                             for group_handler in handler:
                                 logging.debug(f"({session_id}) {{API Parser}} Calling '{group_handler.function.__name__}'")
@@ -353,12 +355,16 @@ class AsyncAPY:
                                 logging.debug(f"({session_id}) {{API Parser}} Execution of '{group_handler.function.__name__}' terminated")
                     else:
                         if handler.check(client, packet):
+                            req_valid = True
                             logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, calling '{handler.function.__name__}'")
                             await handler.call(client, packet)
                             logging.debug(
                                 f"({session_id}) {{API Parser}} Execution of '{handler.function.__name__}' terminated")
             else:
                 logging.debug(f"({session_id}) {{API Parser}} Whoops, that user is banned! Ignoring")
+                await stream.aclose()
+            if not req_valid:
+                logging.warning(f"({session_id}) {{API Parser}} No such handler for this request, closing the connection to spare memory!")
                 await stream.aclose()
 
     async def setup(self):

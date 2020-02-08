@@ -47,7 +47,7 @@ class Client:
 
 class Packet:
 
-    def __init__(self, fields: Union[Dict[str, str], str, bytes], encoding: str,sender: Client or None = None):
+    def __init__(self, fields: Union[Dict[str, str], str, bytes], encoding: str, sender: Client or None = None):
         self.sender = sender
         if not isinstance(encoding, str):
             raise ValueError("The encoding must be string!")
