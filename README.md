@@ -127,18 +127,22 @@ __Note 6__: The payload, which is the parameter to the `Packet` object, can be a
 
 ### The framework - Types and Objects
 
-__Note 7__: Please note that this list does not include objects used internally by AsyncAPY such as `Group`s and `Handler`s objects, to avoid confusion. Also, protected attributes of objects such as `Client._server` won't be listed here
+__Note 7__: Please note that this list does not include objects used internally by AsyncAPY such as `Group`s and `Handler`s objects, to avoid confusion. Also, protected attributes of objects such as `Client._server` or methods meant for internal use won't be listed here
 
 
 The AsyncAPY framework exposes some high level methods and objects to ease the deployment of the server.
+
 
 #### Types and Objects - Packet and Client API
 
 The API to handle packets and clients is extremely easy, here is the list of all methods and attributes
 
 
-  - `Client(addr, server, stream=None, session)`
-     
+The following objects can be imported from `AsyncAPY.objects`
+
+
+  - `Client(addr, server, stream=None, session)` : The high-level API wrapped around internal AsyncAPY objects
+
       __Methods__:
       - `ban()` : Will ban the client's IP from the server, preventing further connections, but won't close the current session
       - `send(packet, close=True)` : Sends the given `Packet` object to the connected socket, if `close` is set to `True`, the server will automatically call `close()` on the client, it has to be set to `False` to take the advantages of `Packet`s propagation
@@ -153,18 +157,34 @@ The API to handle packets and clients is extremely easy, here is the list of all
 
 __Note 8__: Here it is not shown how to initialize a `Client` object because this operation is meant to be done internally. 
 
-
-   - `Packet(payload, sender)`
-      
+                            
+   - `Packet(payload, sender, encoding)` : A wrapper representing an AsyncAProto packet
+     
       __Methods__: 
       - `stop_propagation()` : Raises `AsyncAPY.errors.StopPropagation`, thus preventing the packet from being forwarded to the next handler in the queue. It makes sense only if called in a handler within a group. 
       
        - Parameters to `__init__()`:
 	        - `sender`: If the packet comes from the server, this parameter points to the `Client` object that sent that packet, if it needs to be initialized externally from the server, this parameter can be `None`
 	        - `payload`: A python dictionary or a valid JSON string
-		- `encoding`: The packet encoding, it can either be "json" or "ziproto". If no encoding is specified, a `ValueError` exception will be raised
-		
-		
+	        - `encoding`: The packet encoding, it can either be "json" or "ziproto". If no encoding is specified, a `ValueError` exception will be raised
+
+#### Types and Objects - Filters
+
+The following objects are subclasses of `AsyncAPY.filters.Filters`, they can be used to filter the packets arriving to each handler
+
+   - `Filters.Ip(ips)` : A filter for one or multiple IP addresses. Will match if the client IP is in the provided list of ips
+
+     - Parameters to `__init__()`:
+        - `ips`: A single IP, or a list of IP addresses. Please note that the IP(s) must be syntactically valid (They are checked upon initialization)
+
+   - `Filters.Fields(**kwargs)`
+
+     - Parameters to `__init__()`:
+        - `**kwargs`: This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be `None`, or a valid regular expression. In the first case, the filter will match if the request contains the specified field name, while in the other case the field value will also be checked with `re.match()`, using the provided parameter as pattern.
+
+            For example, `Filters.Fields(this=None, foo='bar')` will match `{"this": "anything", "foo": "bar"}`, because the field `this` is present in the request (Note how the content of `this` is ignored) and also the value to the key `foo` matches the regex `bar`
+
+
 ### The framework - Setup and Shutdown functions, configuration files
 
 AsyncAPY is highly customizable! If you need to perform some extra operation before starting to serve, or need to do some cleanups after the server exits, you can simply make a child class from `AsyncAPY.base.AsyncAPY` and override the `setup() ` and `shutdown()` methods respectively (Note that these methods are called internally with no parameters other than `self`) 
@@ -186,24 +206,22 @@ buf = 1024
 logging_level = 10
 ```
 
-__Note 10__: Please note that a configuration file will overwrite all the instance attributes of the `AsyncAPY` objects!
+__Note 10__: Please note that a configuration file will overwrite all the instance attributes of the `AsyncAPY` object!
 Also, the config showed above lists all the values that can be passed through the config file, other values will be ignored
 
 
-### The framework - Filter objects 
+### The framework - Exposed Methods
 
+Here is the list of all the methods that are needed to deploy an AsyncAPY server
 
-AsyncAPY supports two kind of filters, but in the future some more may be added. 
+   - `AsyncAPY.add_handler(handler, filters, priority)`
 
-To use the filters you first need to import the `AsyncAPY.filters.Filters` class, which has two subclasses:
-- `Ip(ips)`: Matches an ip, or a list of ips. IP(s) must be properly formatted or a 
-`ValueError` exception will be raised
-- `Fields(**kwargs)` : The `__init__()` constructor of this class accepts an unlimited number of keyword arguments. If the value of the argument is `None`, the filter will match if the field(s) name(s) are present in the incoming request and in the keyword arguments. Optionally, if a string is assigned to an argument, the server will check, with the passed parameter as a regex, the value of the request instead of the presence of the field only. 
+      - Parameters:
+         - `handler`: An asynchronous function that has to accept two parameters, a `Client` and a `Packet` instance, in this order
+         - `filters`: A list of one or more `Filter` objects
+         - `priority`: An integer: if the handler shares filters with other handlers, this parameter tells the server which handler within that group has to be executed first. The lower this number, the higher execution priority
 
-Filters can be applied to handlers, by passing a list of `Filters` objects to the `filters` parameter of `AsyncAPY.add_handler()` or `@AsyncAPY.handler_add()`
-
-
-__Note 11__: For obvious reasons, fields inside a `Filter.Fields` object can only be valid python identifiers, and their values must either be valid regular expressions or `None`
+   - `AsyncAPY.handler_add(filters, priority)`: Decorator version of `AsyncAPY.add_handler()`
 
 
 ### One last thing - Groups 
