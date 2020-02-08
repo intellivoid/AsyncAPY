@@ -10,15 +10,16 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-sys.path.insert(0, os.path.abspath('../AsyncAPY'))
+# import os
+# import sys
+# sys.path.insert(0, os.path.abspath('.'))
+
 
 # -- Project information -----------------------------------------------------
 
 project = 'AsyncAPY'
-copyright = '2020, Mattia Giambirtone aka Nocturn9x'
-author = 'Mattia Giambirtone aka Nocturn9x'
+copyright = '2020, Mattia Giambirtone'
+author = 'Mattia Giambirtone'
 
 # The full version, including alpha/beta/rc tags
 release = '0.2.1'
@@ -51,5 +52,6 @@ html_theme = 'sphinx_rtd_theme'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_build/_static']
+html_static_path = []
 master_doc = 'index'
+
