@@ -383,11 +383,10 @@ class AsyncAPY:
     async def handle_client(self, stream: trio.SocketStream):
         """
         This function handles a single client connection:
+           - It assigns a unique ID to each client session
+           - It listens on the asynchronous socket and acts accordingly
+           - It handles timeouts if the client hangs for some reason
 
-        - It assigns a unique ID to each client session
-        - It listens on the asynchronous socket and acts accordingly
-        e.g. incomplete streams or abrupt disconnection
-        - It handles timeouts if the client hangs for some reason
 
         :param stream: The trio asynchronous socket associated with the client
         :type stream: class : `trio.SocketStream`

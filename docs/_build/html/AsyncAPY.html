@@ -86,21 +86,21 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">AsyncAPY package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#asyncapy-base-module">AsyncAPY.base module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#asyncapy-errors-module">AsyncAPY.errors module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#asyncapy-filters-module">AsyncAPY.filters module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#asyncapy-objects-module">AsyncAPY.objects module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-AsyncAPY.base">AsyncAPY.base module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-AsyncAPY.errors">AsyncAPY.errors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-AsyncAPY.filters">AsyncAPY.filters module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-AsyncAPY.objects">AsyncAPY.objects module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-AsyncAPY">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">AsyncAPY</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">AsyncAPY package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#asyncapy-base-module">AsyncAPY.base module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#asyncapy-errors-module">AsyncAPY.errors module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#asyncapy-filters-module">AsyncAPY.filters module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#asyncapy-objects-module">AsyncAPY.objects module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.base">AsyncAPY.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.errors">AsyncAPY.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.filters">AsyncAPY.filters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.objects">AsyncAPY.objects module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -174,20 +174,255 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="asyncapy-base-module">
-<h2>AsyncAPY.base module<a class="headerlink" href="#asyncapy-base-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-AsyncAPY.base">
+<span id="asyncapy-base-module"></span><h2>AsyncAPY.base module<a class="headerlink" href="#module-AsyncAPY.base" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="AsyncAPY.base.AsyncAPY">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.base.</code><code class="sig-name descname">AsyncAPY</code><span class="sig-paren">(</span><em class="sig-param">addr: Optional[str] = '127.0.0.1'</em>, <em class="sig-param">port: Optional[int] = 8081</em>, <em class="sig-param">buf: Optional[int] = 1024</em>, <em class="sig-param">logging_level: int = 20</em>, <em class="sig-param">console_format: Optional[str] = '[%(levelname)s] %(asctime)s %(message)s'</em>, <em class="sig-param">datefmt: Optional[str] = '%d/%m/%Y %H:%M:%S %p'</em>, <em class="sig-param">timeout: Optional[int] = 60</em>, <em class="sig-param">header_size: int = 2</em>, <em class="sig-param">byteorder: str = 'big'</em>, <em class="sig-param">proto: str = 'json'</em>, <em class="sig-param">config: str = None</em>, <em class="sig-param">cfg_parser=None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is the base class for the AsyncAPython framework.</p>
+<p>It implements a simple but reliable protocol over TCP with JSON requests,
+handling the hassle of sockets and other protocol-related operations
+at a low level and asynchronously, exposing a high level and easy
+to use API only.</p>
+<p>Also, things such as TCP slow start and stream fragmentation are also
+handled by the AsyncAPython protocol, which grants that every request
+is separated from another one thanks to a simple header system</p>
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.add_handler">
+<code class="sig-name descname">add_handler</code><span class="sig-paren">(</span><em class="sig-param">handler</em>, <em class="sig-param">name</em>, <em class="sig-param">filters=None</em>, <em class="sig-param">priority: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.add_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="AsyncAPY.base.AsyncAPY.banned">
+<code class="sig-name descname">banned</code><em class="property"> = {}</em><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.banned" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.complete_stream">
+<em class="property">async </em><code class="sig-name descname">complete_stream</code><span class="sig-paren">(</span><em class="sig-param">header</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">session_id: uuid.uuid4</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.complete_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions completes the stream until the specified length is reached</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="AsyncAPY.base.AsyncAPY.groups">
+<code class="sig-name descname">groups</code><em class="property"> = {}</em><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.groups" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.handle_client">
+<em class="property">async </em><code class="sig-name descname">handle_client</code><span class="sig-paren">(</span><em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.handle_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function handles a single client connection:</p>
+<ul class="simple">
+<li><p>It assigns a unique ID to each client session</p></li>
+<li><p>It listens on the asynchronous socket and acts accordingly</p></li>
+</ul>
+<p>e.g. incomplete streams or abrupt disconnection
+- It handles timeouts if the client hangs for some reason</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.handler_add">
+<code class="sig-name descname">handler_add</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">filters=None</em>, <em class="sig-param">priority: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.handler_add" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="AsyncAPY.base.AsyncAPY.handlers">
+<code class="sig-name descname">handlers</code><em class="property"> = {}</em><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.handlers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.invalid_json_request">
+<em class="property">async </em><code class="sig-name descname">invalid_json_request</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.invalid_json_request" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.load_config">
+<code class="sig-name descname">load_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.load_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.malformed_request">
+<em class="property">async </em><code class="sig-name descname">malformed_request</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.malformed_request" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.missing_field">
+<em class="property">async </em><code class="sig-name descname">missing_field</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">missing_field: str</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.missing_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.parse_call">
+<em class="property">async </em><code class="sig-name descname">parse_call</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">request: bytes</em>, <em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.parse_call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function parses the API request and acts accordingly</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.rebuild_incomplete_stream">
+<em class="property">async </em><code class="sig-name descname">rebuild_incomplete_stream</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">raw_data</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.rebuild_incomplete_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function gets called when a stream’s length is smaller than self.header_size bytes, which
+is the minimum amount of data needed to parse an API call (The length header)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.remove_handler">
+<code class="sig-name descname">remove_handler</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.remove_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.send_response">
+<em class="property">async </em><code class="sig-name descname">send_response</code><span class="sig-paren">(</span><em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">response_data: bytes</em>, <em class="sig-param">session_id</em>, <em class="sig-param">close: bool = True</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.send_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function sends the JSON response to the client after elaboration, returns False on failure
+or None if the timeout (generally 60 seconds) expires</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.serve_forever">
+<em class="property">async </em><code class="sig-name descname">serve_forever</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.serve_forever" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is the server’s main loop, what it does is:
+- Starts to serve the asynchronous TCP socket
+- Waits forever for clients to connect and redirect them to
+the handle_client() function defined above</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.setup">
+<em class="property">async </em><code class="sig-name descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called when the server is started</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.shutdown">
+<em class="property">async </em><code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is called when the server shuts down</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="asyncapy-errors-module">
-<h2>AsyncAPY.errors module<a class="headerlink" href="#asyncapy-errors-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-AsyncAPY.errors">
+<span id="asyncapy-errors-module"></span><h2>AsyncAPY.errors module<a class="headerlink" href="#module-AsyncAPY.errors" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="AsyncAPY.errors.StopPropagation">
+<em class="property">exception </em><code class="sig-prename descclassname">AsyncAPY.errors.</code><code class="sig-name descname">StopPropagation</code><a class="headerlink" href="#AsyncAPY.errors.StopPropagation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>This exception is called when Packet.stop_propagation() is called
+to prevent the runner function from going further and forwarding the request to the next handler in the queue</p>
+</dd></dl>
+
 </div>
-<div class="section" id="asyncapy-filters-module">
-<h2>AsyncAPY.filters module<a class="headerlink" href="#asyncapy-filters-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-AsyncAPY.filters">
+<span id="asyncapy-filters-module"></span><h2>AsyncAPY.filters module<a class="headerlink" href="#module-AsyncAPY.filters" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="AsyncAPY.filters.Filter">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.filters.</code><code class="sig-name descname">Filter</code><a class="headerlink" href="#AsyncAPY.filters.Filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="AsyncAPY.filters.Filters">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.filters.</code><code class="sig-name descname">Filters</code><a class="headerlink" href="#AsyncAPY.filters.Filters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
+<p>This class implements all standard filters</p>
+<dl class="class">
+<dt id="AsyncAPY.filters.Filters.Fields">
+<em class="property">class </em><code class="sig-name descname">Fields</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
+<dl class="method">
+<dt id="AsyncAPY.filters.Filters.Fields.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">_</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Fields.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="AsyncAPY.filters.Filters.Ip">
+<em class="property">class </em><code class="sig-name descname">Ip</code><span class="sig-paren">(</span><em class="sig-param">ips: list</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Ip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
+<dl class="method">
+<dt id="AsyncAPY.filters.Filters.Ip.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">_</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Ip.check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="asyncapy-objects-module">
-<h2>AsyncAPY.objects module<a class="headerlink" href="#asyncapy-objects-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-AsyncAPY.objects">
+<span id="asyncapy-objects-module"></span><h2>AsyncAPY.objects module<a class="headerlink" href="#module-AsyncAPY.objects" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="AsyncAPY.objects.Client">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">addr: str</em>, <em class="sig-param">server</em>, <em class="sig-param">stream=None</em>, <em class="sig-param">session: str = None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="AsyncAPY.objects.Client.ban">
+<em class="property">async </em><code class="sig-name descname">ban</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.ban" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.objects.Client.close">
+<em class="property">async </em><code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.objects.Client.send">
+<em class="property">async </em><code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param">packet</em>, <em class="sig-param">close: bool = True</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.send" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="AsyncAPY.objects.Group">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Group</code><span class="sig-paren">(</span><em class="sig-param">handlers: List[AsyncAPY.objects.Handler], name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="AsyncAPY.objects.Handler">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Handler</code><span class="sig-paren">(</span><em class="sig-param">function: function</em>, <em class="sig-param">name: str</em>, <em class="sig-param">filters: List[AsyncAPY.filters.Filter] = []</em>, <em class="sig-param">priority: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="AsyncAPY.objects.Handler.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.call" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.objects.Handler.compare_filters">
+<code class="sig-name descname">compare_filters</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.compare_filters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.objects.Handler.compare_names">
+<code class="sig-name descname">compare_names</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.compare_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.objects.Handler.compare_priority">
+<code class="sig-name descname">compare_priority</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.compare_priority" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="AsyncAPY.objects.Packet">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Packet</code><span class="sig-paren">(</span><em class="sig-param">fields: Union[Dict[str, str], str, bytes], sender: AsyncAPY.objects.Client</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Packet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="AsyncAPY.objects.Packet.stop_propagation">
+<em class="property">async </em><code class="sig-name descname">stop_propagation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Packet.stop_propagation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-AsyncAPY">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-AsyncAPY" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
