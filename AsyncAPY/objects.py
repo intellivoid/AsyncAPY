@@ -24,6 +24,7 @@ import json
 
 
 class Client:
+    """This class represents a client"""
 
     def __init__(self, addr: str, server, stream=None, session: str = None):
         self.address = addr
