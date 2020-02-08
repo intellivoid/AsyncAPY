@@ -1,3 +1,21 @@
+# AsyncAPY - A fully fledged Python 3.6+ library to serve APIs asynchronously
+# Copyright (C) 2019-2020 Intellivoid <https://github.com/intellivoid>
+#
+# This file is part of AsyncAPY.
+#
+# AsyncAPY is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# AsyncAPY is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with AsyncAPY.  If not, see <http://www.gnu.org/licenses/>.
+
 import re, json
 
 
@@ -32,12 +50,14 @@ class Filters(Filter):
             else:
                 return False
 
+        def __repr__(self):
+            return f"Filters.Ip({self.ips})"
+
         def check(self, c, _):
             return c.address in self.ips
 
         def __call__(self, c):
             return self.check(c)
-
 
     class Fields(Filter):
         def __init__(self, **kwargs):
@@ -51,9 +71,8 @@ class Filters(Filter):
         def __eq__(self, other):
             return self.fields == other.fields
 
-        def check(self, _ , p):
+        def check(self, _, p):
             fields = json.loads(p.payload)
-            del fields["request_type"]
             for field_name in self.fields:
                 regex = self.fields[field_name]
                 if field_name not in fields:
@@ -66,4 +85,7 @@ class Filters(Filter):
             if fields:    # There are still some extra fields which aren't in filter, fail the check
                 return False
             return True    # If we are here, all filters match, good!
+
+        def __repr__(self):
+            return f"Filter.Fields({self.fields})"
 
