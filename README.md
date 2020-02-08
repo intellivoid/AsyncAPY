@@ -8,8 +8,6 @@ This project is published under the `Lesser General Public License Version 3`, f
 
 As of today, the latest version of AsyncAPY is 0.2.1
 
-__Temp. Note__: The documentation refers to AsyncAPY version 0.2.1, while the source code still has to be pushed and is currently updated to version 0.1.49. It will be updated ASAP! 
-
 # Documentation
 
 AsyncAPY is divided into two key components:
