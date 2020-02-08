@@ -33,7 +33,7 @@ class AsyncAPY:
     """This class is the base class for the AsyncAPython framework.
 
         It implements AsyncAProto, the dedicated application protocol
-        developed specifically for AsyncAPY.
+        developed specifically for AsyncAPY. It also implements all the functionalities of the AsyncAPY framework
 
         :param addr: The address to which the server will bind to, defaults to `'127.0.0.1'`
         :type addr: str, optional
@@ -106,6 +106,8 @@ class AsyncAPY:
             self.load_config()
 
     def load_config(self):
+        """Loads the configuration file and applies changes, this method is meant for internal use"""
+
         parser = self.parser if self.parser else configparser.ConfigParser()
         parser.read_file(open(self.config, "r"))
         configs = {"port", "addr", "header_size", "byteorder", "timeout", "datefmt", "console_format", "encoding", "buf", "logging_level"}
@@ -121,20 +123,15 @@ class AsyncAPY:
     # API RESPONSE HANDLERS #
 
     async def malformed_request(self, session_id: uuid.uuid4, stream: trio.SocketStream):
+        """This is an internal method used to reply to a malformed packet/payload. Please note, that this function deals with raw objects, not with the high-level API objects used inside handlers
+
+        :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the logging output
+        :type session_id: class: `uuid.uuid4`
+        :param stream: The trio asynchronous socket associated to a client, can be found in `Client._stream`
+        :type stream: class: `trio.SocketStream`
+        """
+
         json_response = bytes(json.dumps({"status": "failure", "error": "ERR_REQUEST_MALFORMED"}), "u8")
-        response_header = len(json_response).to_bytes(self.header_size, self.byteorder)
-        response_data = response_header + json_response
-        await self.send_response(stream, response_data, session_id)
-
-    async def invalid_json_request(self, session_id: uuid.uuid4, stream: trio.SocketStream):
-        json_response = bytes(json.dumps({"status": "failure", "error": "ERR_REQUEST_INVALID"}), "u8")
-        response_header = len(json_response).to_bytes(self.header_size, self.byteorder)
-        response_data = response_header + json_response
-        await self.send_response(stream, response_data, session_id)
-
-    async def missing_field(self, session_id: uuid.uuid4, stream: trio.SocketStream, missing_field: str):
-        missing_field = missing_field.upper().strip("'")
-        json_response = bytes(json.dumps({"status": "failure", "error": f"ERR_MISSING_{missing_field}_FIELD"}), "u8")
         response_header = len(json_response).to_bytes(self.header_size, self.byteorder)
         response_data = response_header + json_response
         await self.send_response(stream, response_data, session_id)
@@ -142,17 +139,40 @@ class AsyncAPY:
     # END OF RESPONSE HANDLERS SECTION #
 
     def add_handler(self, handler, filters=None, priority: int = 0):
+        """Registers an handler, creating a `Handler` object and appending it to the `self.handlers` attribute
+
+           :param handler: A function object, it can either be synchronous or asynchronous, but the former is not recommended
+           :type handler: function
+           :param filters: A list of filters object, to filter incoming packets, defaults to `None`
+           :type filters: Union[List[Filter], None]
+           :param priority: Defines the execution priority inside a group of handlers, defaults to 0
+        """
+
         self.handlers.append(Handler(handler, filters, priority))
 
     def handler_add(self, filters=None, priority: int = 0):
+        """Decorator version of `AsyncAPY.add_handler()`"""
+
         def decorator(func):
             self.add_handler(func, filters, priority)
         return decorator
 
     async def send_response(self, stream: trio.SocketStream, response_data: bytes, session_id, close: bool = True, encoding=None):
         """
-        This function sends the JSON response to the client after elaboration, returns False on failure
-        or None if the timeout (generally 60 seconds) expires
+        This function sends the passed response to the client after elaboration
+
+        :param stream: The trio asynchronous socket associated with the client, can be found at `Client._stream`
+        :type stream: class: `trio.SocketStream`
+        :param response_data: The payload, in JSON format (encoding into ZiProto is processed internally) already prepended with the `Content-Length` header
+        :type response_data: bytes
+        :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
+        :type session_id: class: `uuid.uuid4`
+        :param close: If `True`, the client connection will be closed right after the payload has been sent, it must be set to `False` to take full advantage of packets propagation, defaults to `True`
+        :type close: bool, optional
+        :param encoding: The encoding with which the packet should be encoded in, if `None`, the server will fall back to `self.encoding`. Other possible values are `'json'` or `'ziproto'`, defaults to `None`
+        :type encoding: Union[None, str], optional
+        :returns Union[bool, None]: Returns `True` on success, `False` on failure (e.g. the client disconnects abruptly) or `None` if the operation takes longer than `self.timeout` seconds
+        :rtype Union[True, False, None]
         """
 
         if encoding is None:
@@ -186,10 +206,19 @@ class AsyncAPY:
                 await stream.aclose()
             return True
 
-    async def rebuild_incomplete_stream(self, session_id: uuid.uuid4, stream: trio.SocketStream, raw_data):
+    async def rebuild_incomplete_stream(self, session_id: uuid.uuid4, stream: trio.SocketStream, raw_data: bytes):
         """
         This function gets called when a stream's length is smaller than self.header_size bytes, which
         is the minimum amount of data needed to parse an API call (The length header)
+
+        :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
+        :type session_id: class: `uuid.uuid4`
+        :param stream: The trio asynchronous socket associated with the client
+        :type stream: class : `trio.SocketStream`
+        :param raw_data: If some data was received already, it has to be passed here as paramater
+        :type raw_data: bytes
+        :returns: At least `self.header_size` bytes, and at most the whole packet, or None if the timeout expires or the connection gets closed
+        :rtype: Union[bytes, None]
         """
 
         with trio.move_on_after(self.timeout) as cancel_scope:
@@ -213,6 +242,15 @@ class AsyncAPY:
     async def complete_stream(self, header, stream: trio.SocketStream, session_id: uuid.uuid4):
         """
         This functions completes the stream until the specified length is reached
+
+        :param header: The `Content-Length` header, already decoded as an integer
+        :type header: int
+        :param stream: The trio asynchronous socket associated with the client
+        :type stream: class : `trio.SocketStream`
+        :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
+        :type session_id: class: `uuid.uuid4`
+        :returns: The complete packet, or None if the timeout expires or the connection gets closed
+        :rtype: Union[bytes, None]
         """
 
         stream_data = b""
@@ -239,6 +277,20 @@ class AsyncAPY:
         return stream_data
 
     async def decode_content(self, content, session_id: str, stream: trio.SocketStream, encoding=None):
+        """Decodes the payload with the specified encoding, if any, or falls back to the `self.encoding`
+
+           :param content: The byte-encoded payload
+           :type content: bytes
+           :param stream: The trio asynchronous socket associated with the client
+           :type stream: class : `trio.SocketStream`
+           :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
+           :type session_id: class: `uuid.uuid4`
+           :param encoding: The encoding with which the packet should be encoded in, if `None`, the server will fall back to `self.encoding`, it can either be 1 for ziproto, 0 for json or `None` if the encoding is unknown, defaults to `None`
+           :type encoding: Union[None, int], optional
+           :returns: The decoded payload
+           :rtype: dict
+        """
+
         if encoding is None:
             encoding = 0 if self.encoding == "json" else 1
         if encoding == 0:
@@ -257,7 +309,15 @@ class AsyncAPY:
 
     async def parse_call(self, session_id: uuid.uuid4, request: bytes, stream: trio.SocketStream):
 
-        """This function parses the API request and acts accordingly"""
+        """This function parses the API request and acts accordingly
+
+           :param request: The byte-encoded payload
+           :type request: bytes
+           :param stream: The trio asynchronous socket associated with the client
+           :type stream: class : `trio.SocketStream`
+           :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
+           :type session_id: class: `uuid.uuid4`
+        """
 
         if len(request) < self.header_size + 3:  # Content-Length + Protocol-Version + Content-Encoding + 1 byte-payload
             logging.error(f"({session_id}) {{API Parser}} Request is too short! Ignoring")
@@ -309,7 +369,13 @@ class AsyncAPY:
         """This function is called when the server shuts down"""
         return
 
-    async def unban(self, ip):
+    async def unban(self, ip: str):
+        """Unbans an IP address from the server
+
+           :param ip: The IP address to unban
+           :type ip: str
+        """
+
         if ip in self.banned:
             logging.debug(f"{{BanHammer}} '{ip}' unbanned!")
             self.banned.remove(ip)
@@ -322,6 +388,10 @@ class AsyncAPY:
         - It listens on the asynchronous socket and acts accordingly
         e.g. incomplete streams or abrupt disconnection
         - It handles timeouts if the client hangs for some reason
+
+        :param stream: The trio asynchronous socket associated with the client
+        :type stream: class : `trio.SocketStream`
+
         """
 
         session_id = uuid.uuid4()
@@ -434,6 +504,8 @@ settings were loaded from '{self.config}'")
             sys.exit("PORT_UNAVAILABLE")
 
     def start(self):
+        """Starts the server, doing some magic to group handlers before calling `self.serve_forever()`"""
+
         new = []
         for handler in self.handlers:
             comparison, self.handlers = handler.compare(self.handlers, self.handlers)
