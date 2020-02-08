@@ -10,9 +10,10 @@ AsyncAPY - A fully fledged library to build asynchronous APIs
    :maxdepth: 2
    :caption: Contents:
 
-intro
-examples
-AsyncAPY
+   intro
+   examples
+   AsyncAPY
+   modules
 
 Indices and tables
 ==================
