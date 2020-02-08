@@ -23,17 +23,18 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="AsyncAPY",
-    version="0.2.1",
+    version="0.2.3",
     author="Mattia Giambirtone aka Nocturn9x",
     author_email="nocturn9x@intellivoid.info",
     description="A fully fledged Python 3.6+ library to serve APIs asynchronously",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/intellivoid/AsyncAPY",
+    url="https://github.com/nocturn9x/AsyncAPY",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
+        "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)"
     ],
     python_requires='>=3.6',
 )
