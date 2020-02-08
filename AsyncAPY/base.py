@@ -172,7 +172,8 @@ class AsyncAPY:
         :param encoding: The encoding with which the packet should be encoded in, if `None`, the server will fall back to `self.encoding`. Other possible values are `'json'` or `'ziproto'`, defaults to `None`
         :type encoding: Union[None, str], optional
         :returns Union[bool, None]: Returns `True` on success, `False` on failure (e.g. the client disconnects abruptly) or `None` if the operation takes longer than `self.timeout` seconds
-        :rtype Union[True, False, None]
+        :rtype: Union[bool, None]
+
         """
 
         if encoding is None:
@@ -380,19 +381,13 @@ class AsyncAPY:
             logging.debug(f"{{BanHammer}} '{ip}' unbanned!")
             self.banned.remove(ip)
 
+
     async def handle_client(self, stream: trio.SocketStream):
+        """This function handles a single client connection, assigning it a unique UUID, and acts accordingly
+
+           :param stream: The trio asynchronous socket associated with the client
+           :type stream: class: `trio.SocketStream`
         """
-        This function handles a single client connection:
-           - It assigns a unique ID to each client session
-           - It listens on the asynchronous socket and acts accordingly
-           - It handles timeouts if the client hangs for some reason
-
-
-        :param stream: The trio asynchronous socket associated with the client
-        :type stream: class : `trio.SocketStream`
-
-        """
-
         session_id = uuid.uuid4()
         logging.info(f" {{Client handler}} New session started, UUID is {session_id}")
         with trio.move_on_after(self.timeout) as cancel_scope:
