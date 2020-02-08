@@ -6,6 +6,7 @@ Installation:
 
 The package will soon be published on PyPi, in the meantime you can clone the `official GitHub repository <https://github.com/intellivoid/AsyncAPY>_`, cd into the newly created directory
 and then run the following commands (assuming ``git`` is already installed):
+
 - ``python3 -m pip install wheel, setuptools``
 - ``python3 setup.py sdist, bdist_wheel``
 - ``python3 setup.py install``
