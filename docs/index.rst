@@ -10,7 +10,9 @@ AsyncAPY - A fully fledged library to build asynchronous APIs
    :maxdepth: 2
    :caption: Contents:
 
-
+intro
+examples
+AsyncAPY
 
 Indices and tables
 ==================
@@ -18,4 +20,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-* :ref: `modules`
+         
