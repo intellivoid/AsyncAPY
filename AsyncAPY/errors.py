@@ -18,7 +18,7 @@
 
 
 class StopPropagation(Exception):
-    """This exception is meant to be raised when Packet.stop_propagation() is called
-    to prevent the runner function from going further and forwarding the request to the next handler in the queue"""
+    """This exception is meant to be raised when ``Packet.stop_propagation()`` gets called
+    to prevent the runner function from going further and forwarding the packet to the next handler in the queue"""
     pass
 

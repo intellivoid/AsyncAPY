@@ -16,20 +16,35 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with AsyncAPY.  If not, see <http://www.gnu.org/licenses/>.
 
-import re, json
+import re
+import json
+from typing import Union, List
 
 
 class Filter(object):
-    pass
+    """The standard base for all filters"""
+
+    def check(self, c, p):
+        """Dummy check method"""
+        return
 
 
 class Filters(Filter):
 
-    """This class implements all standard filters"""
+    """This class implements all the filters in AsyncAPY
+    """
 
     class Ip(Filter):
+        """Filters one or more IP addresses
 
-        def __init__(self, ips: list or str):
+           :param ips: An ip or a list of ip addresses
+           :type ips: Union[List[str], str]
+           :raises ValueError: If the provided ip, or ips, isn't a valid IP address
+        """
+
+        def __init__(self, ips: Union[List[str], str]):
+            """Object constructor"""
+
             pat = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
             if isinstance(ips, list):
                 for ip in ips:
@@ -38,9 +53,18 @@ class Filters(Filter):
             elif isinstance(ips, str):
                 if not pat.match(ips):
                     raise ValueError("Invalid IP address in filter!")
+            else:
+                raise ValueError("ips parameter must be string or list of strings!")
             self.ips = {ips}
 
         def __eq__(self, other):
+            """Implements ``self == other``
+               :param other: A ``Filters.Ip`` object
+               :type other: class: ``Filters.Ip``
+               :returns ips_equals: ``True`` if the ``(self.ips - other.ips) == set()``, ``False`` otherwise
+               :rtype: bool
+            """
+
             if other is None:
                 return False
             if not isinstance(other, Filter):
@@ -51,15 +75,35 @@ class Filters(Filter):
                 return False
 
         def __repr__(self):
+            """Returns ``repr(self)``
+
+            :returns repr: A string representation of ``self``
+            :rtype: str
+            """
+
             return f"Filters.Ip({self.ips})"
 
         def check(self, c, _):
+            """Implements the method to check if a filter matches a given packet/client couple or not
+            :param c: A client object
+            :type c: class: ``Client``
+            :param _: A packet object, unused in this specific case
+            :type _: class: ``Packet``
+            :returns shall_pass: ``True`` if the filter was passed, ``False`` otherwise
+            :rtype: bool
+            """
+
             return c.address in self.ips
 
-        def __call__(self, c):
-            return self.check(c)
-
     class Fields(Filter):
+        """Filters fields inside packets.
+        This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be ``None``, or a valid regular expression.
+        In the first case, the filter will match if the request contains the specified field name, while in the other case
+        the field value will also be checked with ``re.match()``, using the provided parameter as pattern.
+
+        :param **kwargs: A list of key-word arguments, which reflects the desired key-value structure of a payload
+        :param **kwargs: Union[None, str]"""
+
         def __init__(self, **kwargs):
             self.fields = {}
             for key, value in kwargs.items():
@@ -69,9 +113,25 @@ class Filters(Filter):
                     self.fields[key] = re.compile(value)
 
         def __eq__(self, other):
+            """Implements ``self == other``
+            :param other: A ``Filters.Fields`` object
+            :type other: class: ``Filters.Fields``
+            :returns fields_equal: ``True`` if the ``self.fields`` are equal to ``other.fields``, ``False`` otherwise
+            :rtype: bool
+            """
+
             return self.fields == other.fields
 
         def check(self, _, p):
+            """Implements the method to check if a filter matches a given packet/client couple or not
+               :param _: A client object
+               :type _: class: ``Client``, unused in this specific case
+               :param p: A packet object
+               :type p: class: ``Packet``
+               :returns shall_pass: ``True`` if the filter was passed, ``False`` otherwise
+               :rtype: bool
+            """
+
             fields = json.loads(p.payload)
             for field_name in self.fields:
                 regex = self.fields[field_name]
@@ -87,5 +147,11 @@ class Filters(Filter):
             return True    # If we are here, all filters match, good!
 
         def __repr__(self):
+            """Returns ``repr(self)``
+
+               :returns repr: A string representation of ``self``
+               :rtype: str
+            """
+
             return f"Filter.Fields({self.fields})"
 

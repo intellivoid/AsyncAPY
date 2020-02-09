@@ -84,7 +84,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">AsyncAPY</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">AsyncAPY package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.base">AsyncAPY.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asyncapy-base-module">AsyncAPY.base module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.errors">AsyncAPY.errors module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.filters">AsyncAPY.filters module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.objects">AsyncAPY.objects module</a></li>
@@ -164,243 +164,8 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-AsyncAPY.base">
-<span id="asyncapy-base-module"></span><h2>AsyncAPY.base module<a class="headerlink" href="#module-AsyncAPY.base" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="AsyncAPY.base.AsyncAPY">
-<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.base.</code><code class="sig-name descname">AsyncAPY</code><span class="sig-paren">(</span><em class="sig-param">addr: Optional[str] = '127.0.0.1'</em>, <em class="sig-param">port: Optional[int] = 8081</em>, <em class="sig-param">buf: Optional[int] = 1024</em>, <em class="sig-param">logging_level: int = 20</em>, <em class="sig-param">console_format: Optional[str] = '[%(levelname)s] %(asctime)s %(message)s'</em>, <em class="sig-param">datefmt: Optional[str] = '%d/%m/%Y %H:%M:%S %p'</em>, <em class="sig-param">timeout: Optional[int] = 60</em>, <em class="sig-param">header_size: int = 4</em>, <em class="sig-param">byteorder: str = 'big'</em>, <em class="sig-param">encoding: str = 'json'</em>, <em class="sig-param">config: str = None</em>, <em class="sig-param">cfg_parser=None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is the base class for the AsyncAPython framework.</p>
-<p>It implements AsyncAProto, the dedicated application protocol
-developed specifically for AsyncAPY. It also implements all the functionalities of the AsyncAPY framework</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>addr</strong> (<em>str</em><em>, </em><em>optional</em>) – The address to which the server will bind to, defaults to <cite>‘127.0.0.1’</cite></p></li>
-<li><p><strong>port</strong> (<em>int</em><em>, </em><em>optional</em>) – The port to which the server will bind to, defaults to 8081</p></li>
-<li><p><strong>buf</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the TCP buffer, defaults to 1024</p></li>
-<li><p><strong>logging_level</strong> (<em>int</em><em>, </em><em>optional</em>) – The logging level for the <cite>logging</cite> module, defaults to 10 (<cite>DEBUG</cite>)</p></li>
-<li><p><strong>console_format</strong> (<em>str</em><em>, </em><em>optional</em>) – The output formatting string for the <cite>logging</cite> module, defaults to <cite>‘[%(levelname)s] %(asctime)s %(message)s’</cite></p></li>
-<li><p><strong>datefmt</strong> (<em>str</em><em>, </em><em>optional</em>) – A string for the logging module to format date and time, see the <cite>logging</cite> module for more info, defaults to <cite>‘%d/%m/%Y %H:%M:%S %p’</cite></p></li>
-<li><p><strong>timeout</strong> (<em>int</em><em>, </em><em>optional</em>) – The timeout (in seconds) that the server will wait before considering a connection as dead and close it, defaults to 60</p></li>
-<li><p><strong>header_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the <cite>Content-Length</cite> header can be customized. In an environment with small payloads a 2-byte header may be used to reduce overhead, defaults to 4</p></li>
-<li><p><strong>byteorder</strong> (<em>str</em><em>, </em><em>optional</em>) – The order that the server will follow to read packets. It can either be <cite>‘little’</cite> or <cite>‘big’</cite>, defaults to <cite>‘big’</cite></p></li>
-<li><p><strong>encoding</strong> (<em>str</em><em>, </em><em>optional</em>) – The server’s default encoding for payloads. It is used for V1 packets and it can either be <cite>‘json’</cite> or <cite>‘ziproto’</cite>, defaults to <cite>‘json’</cite></p></li>
-<li><p><strong>config</strong> (<em>str</em><em>, </em><em>None</em><em>, </em><em>optional</em>) – The path to the configuration file</p></li>
-<li><p><strong>cfg_parser</strong> (class: <cite>configparser.ConfigParser()</cite>) – If you want to use a custom configparser object, you can specify it here</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.add_handler">
-<code class="sig-name descname">add_handler</code><span class="sig-paren">(</span><em class="sig-param">handler</em>, <em class="sig-param">filters=None</em>, <em class="sig-param">priority: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.add_handler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Registers an handler, creating a <cite>Handler</cite> object and appending it to the <cite>self.handlers</cite> attribute</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>handler</strong> (<em>function</em>) – A function object, it can either be synchronous or asynchronous, but the former is not recommended</p></li>
-<li><p><strong>filters</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><em>Filter</em></a><em>]</em><em>, </em><em>None</em><em>]</em>) – A list of filters object, to filter incoming packets, defaults to <cite>None</cite></p></li>
-<li><p><strong>priority</strong> – Defines the execution priority inside a group of handlers, defaults to 0</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="AsyncAPY.base.AsyncAPY.banned">
-<code class="sig-name descname">banned</code><em class="property"> = {}</em><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.banned" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.complete_stream">
-<em class="property">async </em><code class="sig-name descname">complete_stream</code><span class="sig-paren">(</span><em class="sig-param">header</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">session_id: uuid.uuid4</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.complete_stream" title="Permalink to this definition">¶</a></dt>
-<dd><p>This functions completes the stream until the specified length is reached</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>header</strong> (<em>int</em>) – The <cite>Content-Length</cite> header, already decoded as an integer</p></li>
-<li><p><strong>stream</strong> (class : <cite>trio.SocketStream</cite>) – The trio asynchronous socket associated with the client</p></li>
-<li><p><strong>session_id</strong> (class: <cite>uuid.uuid4</cite>) – A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The complete packet, or None if the timeout expires or the connection gets closed</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[bytes, None]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.decode_content">
-<em class="property">async </em><code class="sig-name descname">decode_content</code><span class="sig-paren">(</span><em class="sig-param">content</em>, <em class="sig-param">session_id: str</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">encoding=None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.decode_content" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decodes the payload with the specified encoding, if any, or falls back to the <cite>self.encoding</cite></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>content</strong> (<em>bytes</em>) – The byte-encoded payload</p></li>
-<li><p><strong>stream</strong> (class : <cite>trio.SocketStream</cite>) – The trio asynchronous socket associated with the client</p></li>
-<li><p><strong>session_id</strong> (class: <cite>uuid.uuid4</cite>) – A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output</p></li>
-<li><p><strong>encoding</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>int</em><em>]</em><em>, </em><em>optional</em>) – The encoding with which the packet should be encoded in, if <cite>None</cite>, the server will fall back to <cite>self.encoding</cite>, it can either be 1 for ziproto, 0 for json or <cite>None</cite> if the encoding is unknown, defaults to <cite>None</cite></p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The decoded payload</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.handle_client">
-<em class="property">async </em><code class="sig-name descname">handle_client</code><span class="sig-paren">(</span><em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.handle_client" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function handles a single client connection, assigning it a unique UUID, and acts accordingly</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>stream</strong> (class: <cite>trio.SocketStream</cite>) – The trio asynchronous socket associated with the client</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.handler_add">
-<code class="sig-name descname">handler_add</code><span class="sig-paren">(</span><em class="sig-param">filters=None</em>, <em class="sig-param">priority: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.handler_add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decorator version of <cite>AsyncAPY.add_handler()</cite></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="AsyncAPY.base.AsyncAPY.handlers">
-<code class="sig-name descname">handlers</code><em class="property"> = []</em><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.handlers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="AsyncAPY.base.AsyncAPY.levels">
-<code class="sig-name descname">levels</code><em class="property"> = {0: 'NOTSET', 10: 'DEBUG', 20: 'INFO', 30: 'WARNING', 40: 'ERROR', 50: 'Critical'}</em><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.levels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.load_config">
-<code class="sig-name descname">load_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.load_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the configuration file and applies changes, this method is meant for internal use</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.malformed_request">
-<em class="property">async </em><code class="sig-name descname">malformed_request</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.malformed_request" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is an internal method used to reply to a malformed packet/payload. Please note, that this function deals with raw objects, not with the high-level API objects used inside handlers</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>session_id</strong> (class: <cite>uuid.uuid4</cite>) – A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the logging output</p></li>
-<li><p><strong>stream</strong> (class: <cite>trio.SocketStream</cite>) – The trio asynchronous socket associated to a client, can be found in <cite>Client._stream</cite></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.parse_call">
-<em class="property">async </em><code class="sig-name descname">parse_call</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">request: bytes</em>, <em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.parse_call" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function parses the API request and acts accordingly</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> (<em>bytes</em>) – The byte-encoded payload</p></li>
-<li><p><strong>stream</strong> (class : <cite>trio.SocketStream</cite>) – The trio asynchronous socket associated with the client</p></li>
-<li><p><strong>session_id</strong> (class: <cite>uuid.uuid4</cite>) – A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.rebuild_incomplete_stream">
-<em class="property">async </em><code class="sig-name descname">rebuild_incomplete_stream</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">raw_data: bytes</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.rebuild_incomplete_stream" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function gets called when a stream’s length is smaller than self.header_size bytes, which
-is the minimum amount of data needed to parse an API call (The length header)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>session_id</strong> (class: <cite>uuid.uuid4</cite>) – A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output</p></li>
-<li><p><strong>stream</strong> (class : <cite>trio.SocketStream</cite>) – The trio asynchronous socket associated with the client</p></li>
-<li><p><strong>raw_data</strong> (<em>bytes</em>) – If some data was received already, it has to be passed here as paramater</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>At least <cite>self.header_size</cite> bytes, and at most the whole packet, or None if the timeout expires or the connection gets closed</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[bytes, None]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.send_response">
-<em class="property">async </em><code class="sig-name descname">send_response</code><span class="sig-paren">(</span><em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">response_data: bytes</em>, <em class="sig-param">session_id</em>, <em class="sig-param">close: bool = True</em>, <em class="sig-param">encoding=None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.send_response" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function sends the passed response to the client after elaboration</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>stream</strong> (class: <cite>trio.SocketStream</cite>) – The trio asynchronous socket associated with the client, can be found at <cite>Client._stream</cite></p></li>
-<li><p><strong>response_data</strong> (<em>bytes</em>) – The payload, in JSON format (encoding into ZiProto is processed internally) already prepended with the <cite>Content-Length</cite> header</p></li>
-<li><p><strong>session_id</strong> (class: <cite>uuid.uuid4</cite>) – A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output</p></li>
-<li><p><strong>close</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <cite>True</cite>, the client connection will be closed right after the payload has been sent, it must be set to <cite>False</cite> to take full advantage of packets propagation, defaults to <cite>True</cite></p></li>
-<li><p><strong>encoding</strong> (<em>Union</em><em>[</em><em>None</em><em>, </em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The encoding with which the packet should be encoded in, if <cite>None</cite>, the server will fall back to <cite>self.encoding</cite>. Other possible values are <cite>‘json’</cite> or <cite>‘ziproto’</cite>, defaults to <cite>None</cite></p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns Union[bool, None]</dt>
-<dd class="field-even"><p>Returns <cite>True</cite> on success, <cite>False</cite> on failure (e.g. the client disconnects abruptly) or <cite>None</cite> if the operation takes longer than <cite>self.timeout</cite> seconds</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Union[bool, None]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.serve_forever">
-<em class="property">async </em><code class="sig-name descname">serve_forever</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.serve_forever" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is the server’s main loop, what it does is:
-- Starts to serve the asynchronous TCP socket
-- Waits forever for clients to connect and redirect them to
-the handle_client() function defined above</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.setup">
-<em class="property">async </em><code class="sig-name descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is called when the server is started</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.shutdown">
-<em class="property">async </em><code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.shutdown" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is called when the server shuts down</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.start">
-<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Starts the server, doing some magic to group handlers before calling <cite>self.serve_forever()</cite></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="AsyncAPY.base.AsyncAPY.unban">
-<em class="property">async </em><code class="sig-name descname">unban</code><span class="sig-paren">(</span><em class="sig-param">ip: str</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.unban" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unbans an IP address from the server</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ip</strong> (<em>str</em>) – The IP address to unban</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="asyncapy-base-module">
+<h2>AsyncAPY.base module<a class="headerlink" href="#asyncapy-base-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-AsyncAPY.errors">
 <span id="asyncapy-errors-module"></span><h2>AsyncAPY.errors module<a class="headerlink" href="#module-AsyncAPY.errors" title="Permalink to this headline">¶</a></h2>
@@ -408,8 +173,8 @@ the handle_client() function defined above</p>
 <dt id="AsyncAPY.errors.StopPropagation">
 <em class="property">exception </em><code class="sig-prename descclassname">AsyncAPY.errors.</code><code class="sig-name descname">StopPropagation</code><a class="headerlink" href="#AsyncAPY.errors.StopPropagation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
-<p>This exception is called when Packet.stop_propagation() is called
-to prevent the runner function from going further and forwarding the request to the next handler in the queue</p>
+<p>This exception is meant to be raised when <code class="docutils literal notranslate"><span class="pre">Packet.stop_propagation()</span></code> gets called
+to prevent the runner function from going further and forwarding the packet to the next handler in the queue</p>
 </dd></dl>
 
 </div>
@@ -419,32 +184,76 @@ to prevent the runner function from going further and forwarding the request to 
 <dt id="AsyncAPY.filters.Filter">
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.filters.</code><code class="sig-name descname">Filter</code><a class="headerlink" href="#AsyncAPY.filters.Filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The standard base for all filters</p>
+<dl class="method">
+<dt id="AsyncAPY.filters.Filter.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filter.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dummy check method</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="AsyncAPY.filters.Filters">
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.filters.</code><code class="sig-name descname">Filters</code><a class="headerlink" href="#AsyncAPY.filters.Filters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
-<p>This class implements all standard filters</p>
+<p>This class implements all the filters in AsyncAPY</p>
 <dl class="class">
 <dt id="AsyncAPY.filters.Filters.Fields">
 <em class="property">class </em><code class="sig-name descname">Fields</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
+<p>Filters fields inside packets.
+This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be <code class="docutils literal notranslate"><span class="pre">None</span></code>, or a valid regular expression.
+In the first case, the filter will match if the request contains the specified field name, while in the other case
+the field value will also be checked with <code class="docutils literal notranslate"><span class="pre">re.match()</span></code>, using the provided parameter as pattern.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>**kwargs</strong> – <p>A list of key-word arguments, which reflects the desired key-value structure of a payload</p>
+</p></li>
+<li><p><strong>**kwargs</strong> – <p>Union[None, str]</p>
+</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="AsyncAPY.filters.Filters.Fields.check">
 <code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">_</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Fields.check" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Implements the method to check if a filter matches a given packet/client couple or not
+:param _: A client object
+:type _: class: <code class="docutils literal notranslate"><span class="pre">Client</span></code>, unused in this specific case
+:param p: A packet object
+:type p: class: <code class="docutils literal notranslate"><span class="pre">Packet</span></code>
+:returns shall_pass: <code class="docutils literal notranslate"><span class="pre">True</span></code> if the filter was passed, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise
+:rtype: bool</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="AsyncAPY.filters.Filters.Ip">
-<em class="property">class </em><code class="sig-name descname">Ip</code><span class="sig-paren">(</span><em class="sig-param">ips: list</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Ip" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Ip</code><span class="sig-paren">(</span><em class="sig-param">ips: Union[List[str], str]</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Ip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
+<p>Filters one or more IP addresses</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ips</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – An ip or a list of ip addresses</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the provided ip, or ips, isn’t a valid IP address</p>
+</dd>
+</dl>
 <dl class="method">
 <dt id="AsyncAPY.filters.Filters.Ip.check">
 <code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">_</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Ip.check" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Implements the method to check if a filter matches a given packet/client couple or not
+:param c: A client object
+:type c: class: <code class="docutils literal notranslate"><span class="pre">Client</span></code>
+:param _: A packet object, unused in this specific case
+:type _: class: <code class="docutils literal notranslate"><span class="pre">Packet</span></code>
+:returns shall_pass: <code class="docutils literal notranslate"><span class="pre">True</span></code> if the filter was passed, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise
+:rtype: bool</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -457,21 +266,43 @@ to prevent the runner function from going further and forwarding the request to 
 <dt id="AsyncAPY.objects.Client">
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">addr: str</em>, <em class="sig-param">server</em>, <em class="sig-param">stream=None</em>, <em class="sig-param">session: str = None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class represents a client</p>
+<p>This class represents a client, it is a high-level wrapper around the methods and objects of AsyncAPY</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>addr</strong> – The client’s IP address</p></li>
+<li><p><strong>server</strong> (class: <code class="docutils literal notranslate"><span class="pre">AsyncAPY.base.AsyncAPY</span></code>) – The server object, needed to send back packets</p></li>
+<li><p><strong>stream</strong> (class: <code class="docutils literal notranslate"><span class="pre">trio.SocketStream</span></code>) – The trio socket object associated with the client</p></li>
+<li><p><strong>session</strong> (<em>str</em>) – The session_id of the client, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="AsyncAPY.objects.Client.ban">
 <em class="property">async </em><code class="sig-name descname">ban</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.ban" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Bans the client’s IP address from the server, without closing the currently
+open connection</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="AsyncAPY.objects.Client.close">
 <em class="property">async </em><code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.close" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Closes the client connection</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="AsyncAPY.objects.Client.send">
 <em class="property">async </em><code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param">packet</em>, <em class="sig-param">close: bool = True</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.send" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>High-level wrapper function around <cite>AsyncAPY.send_response()</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>packet</strong> (class: <code class="docutils literal notranslate"><span class="pre">Packet</span></code>) – A <code class="docutils literal notranslate"><span class="pre">Packet</span></code> object</p></li>
+<li><p><strong>close</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the connection will be closed right after the packet is sent, it has to be set to <code class="docutils literal notranslate"><span class="pre">False</span></code> to take full advantages of packet propagation, defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -479,10 +310,32 @@ to prevent the runner function from going further and forwarding the request to 
 <dt id="AsyncAPY.objects.Group">
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Group</code><span class="sig-paren">(</span><em class="sig-param">handlers: List[AsyncAPY.objects.Handler]</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implements a <code class="docutils literal notranslate"><span class="pre">Group</span></code> object, used to group multiple handlers with identical filters
+and different priorities, this object is meant to be initialized internally</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>handlers</strong> – The list of handlers that has to be grouped, they will be sorted by their</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">priority</span></code> attribute
+:type handlers: List[Handler]</p>
 <dl class="method">
 <dt id="AsyncAPY.objects.Group.check">
 <code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">client: AsyncAPY.objects.Client</em>, <em class="sig-param">packet: AsyncAPY.objects.Packet</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Group.check" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Checks the filters of the group</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (class: <code class="docutils literal notranslate"><span class="pre">Client</span></code>) – The client to check for</p></li>
+<li><p><strong>packet</strong> (class: <code class="docutils literal notranslate"><span class="pre">Packet</span></code>) – The packet object to check for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns shall_pass</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the group matches all filters, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise</p>
+</dd>
+</dl>
+<p>:rtype bool</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -490,41 +343,100 @@ to prevent the runner function from going further and forwarding the request to 
 <dt id="AsyncAPY.objects.Handler">
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Handler</code><span class="sig-paren">(</span><em class="sig-param">function: function</em>, <em class="sig-param">filters: List[AsyncAPY.filters.Filter] = None</em>, <em class="sig-param">priority: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An object meant for internal use. Every function is wrapped inside a <code class="docutils literal notranslate"><span class="pre">Handler</span></code> object together
+with its priority and filters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>function</strong> (<em>function</em>) – The asynchronous function, accepting two positional parameters (a <code class="docutils literal notranslate"><span class="pre">Client</span></code> object and a <code class="docutils literal notranslate"><span class="pre">Packet</span></code> object)</p></li>
+<li><p><strong>filters</strong> (<em>List</em><em>[</em><a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><em>Filter</em></a><em>]</em>) – A list of <code class="docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code> objects, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>priority</strong> (<em>int</em>) – An integer representing the priority of the handler within a group, the lower this number, the higher execution precedence, defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="AsyncAPY.objects.Handler.call">
 <em class="property">async </em><code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.call" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Calls <code class="docutils literal notranslate"><span class="pre">self.function</span></code> asynchronously, passing <code class="docutils literal notranslate"><span class="pre">*args</span></code> as parameters</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="AsyncAPY.objects.Handler.check">
 <code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">client: AsyncAPY.objects.Client</em>, <em class="sig-param">packet: AsyncAPY.objects.Packet</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.check" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Iteratively calls the <code class="docutils literal notranslate"><span class="pre">check()</span></code> method on <code class="docutils literal notranslate"><span class="pre">self.filters</span></code>, returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if all filters return <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (class: <code class="docutils literal notranslate"><span class="pre">Client</span></code>) – The client to check for</p></li>
+<li><p><strong>packet</strong> (class: <code class="docutils literal notranslate"><span class="pre">Packet</span></code>) – The packet object to check for</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns shall_pass</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the handler matches all filters, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise</p>
+</dd>
+</dl>
+<p>:rtype bool</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="AsyncAPY.objects.Handler.compare">
 <code class="sig-name descname">compare</code><span class="sig-paren">(</span><em class="sig-param">others: List</em>, <em class="sig-param">handlers</em>, <em class="sig-param">start=0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.compare" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Compares one or more handlers to self, returns the list of the matching handlers and the original list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>others</strong> (<em>List</em><em>[</em><a class="reference internal" href="#AsyncAPY.objects.Handler" title="AsyncAPY.objects.Handler"><em>Handler</em></a><em>]</em>) – A list of one or more handlers</p></li>
+<li><p><strong>handlers</strong> (<em>List</em><em>[</em><a class="reference internal" href="#AsyncAPY.objects.Handler" title="AsyncAPY.objects.Handler"><em>Handler</em></a><em>]</em>) – The current value of <code class="docutils literal notranslate"><span class="pre">AsyncAPY.base.AsyncAPY.handlers</span></code></p></li>
+<li><p><strong>start</strong> (<em>int</em><em>, </em><em>optional</em>) – The index to start from inside <code class="docutils literal notranslate"><span class="pre">others</span></code>, defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="AsyncAPY.objects.Handler.compare_filters">
 <code class="sig-name descname">compare_filters</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.compare_filters" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Another method meant for internal use, used inside <code class="docutils literal notranslate"><span class="pre">self.__eq__()</span></code>, compares filters instead of priorities
+:param other: Another instance of <code class="docutils literal notranslate"><span class="pre">Handler</span></code>
+:type other: class: <code class="docutils literal notranslate"><span class="pre">Handler</span></code></p>
+</dd></dl>
 
 <dl class="method">
 <dt id="AsyncAPY.objects.Handler.compare_priority">
 <code class="sig-name descname">compare_priority</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.compare_priority" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method meant for internal use to compare 2 handlers priorities, used for grouping
+:param other: Another instance of <code class="docutils literal notranslate"><span class="pre">Handler</span></code>
+:type other: class: <code class="docutils literal notranslate"><span class="pre">Handler</span></code>
+:returns comparison: <code class="docutils literal notranslate"><span class="pre">True</span></code> if the priorities are equal, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwhise
+:rtype: bool</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="AsyncAPY.objects.Packet">
-<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Packet</code><span class="sig-paren">(</span><em class="sig-param">fields: Union[Dict[str, str], str, bytes], encoding: str, sender: AsyncAPY.objects.Client = None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Packet" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Packet</code><span class="sig-paren">(</span><em class="sig-param">fields: Union[dict, str, bytes], encoding: str, sender: Optional[AsyncAPY.objects.Client] = None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Packet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class implements a high-level wrapper around AsyncAProto packets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fields</strong> (<em>Union</em><em>[</em><em>dict</em><em>, </em><em>str</em><em>, </em><em>bytes</em><em>]</em>) – The payload, it can either be a Python dictionary or valid JSON string (it can also be encoded as bytes)</p></li>
+<li><p><strong>encoding</strong> (<em>str</em>) – The payload desired encoding, it can either be <code class="docutils literal notranslate"><span class="pre">&quot;json&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ziproto&quot;</span></code></p></li>
+<li><p><strong>sender</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#AsyncAPY.objects.Client" title="AsyncAPY.objects.Client"><em>Client</em></a><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – This parameter is meant to be initialized internally, and points to the <code class="docutils literal notranslate"><span class="pre">Client</span></code> object that sent the associated payload, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="AsyncAPY.objects.Packet.stop_propagation">
 <em class="property">async </em><code class="sig-name descname">stop_propagation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Packet.stop_propagation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Stops a packet within a group, see <code class="docutils literal notranslate"><span class="pre">AsyncAPY.errors.StopPropagation</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p>StopPropagation</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

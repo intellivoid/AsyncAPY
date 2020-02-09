@@ -35,30 +35,30 @@ class AsyncAPY:
         It implements AsyncAProto, the dedicated application protocol
         developed specifically for AsyncAPY. It also implements all the functionalities of the AsyncAPY framework
 
-        :param addr: The address to which the server will bind to, defaults to `'127.0.0.1'`
+        :param addr: The address to which the server will bind to, defaults to ``'127.0.0.1'``
         :type addr: str, optional
         :param port: The port to which the server will bind to, defaults to 8081
         :type port: int, optional
         :param buf: The size of the TCP buffer, defaults to 1024
         :type buf: int, optional
-        :param logging_level: The logging level for the `logging` module, defaults to 10 (`DEBUG`)
+        :param logging_level: The logging level for the ``logging`` module, defaults to 10 (`DEBUG`)
         :type logging_level: int, optional
-        :param console_format: The output formatting string for the `logging` module, defaults to `'[%(levelname)s] %(asctime)s %(message)s'`
+        :param console_format: The output formatting string for the ``logging`` module, defaults to ``'[%(levelname)s] %(asctime)s %(message)s'``
         :type console_format: str, optional
-        :param datefmt: A string for the logging module to format date and time, see the `logging` module for more info, defaults to `'%d/%m/%Y %H:%M:%S %p'`
+        :param datefmt: A string for the logging module to format date and time, see the `logging` module for more info, defaults to ``'%d/%m/%Y %H:%M:%S %p'``
         :type datefmt: str, optional
         :param timeout: The timeout (in seconds) that the server will wait before considering a connection as dead and close it, defaults to 60
         :type timeout: int, optional
         :param header_size: The size of the `Content-Length` header can be customized. In an environment with small payloads a 2-byte header may be used to reduce overhead, defaults to 4
         :type header_size: int, optional
-        :param byteorder: The order that the server will follow to read packets. It can either be `'little'` or `'big'`, defaults to `'big'`
+        :param byteorder: The order that the server will follow to read packets. It can either be ``'little'`` or ``'big'``, defaults to ``'big'``
         :type byteorder: str, optional
-        :param encoding: The server's default encoding for payloads. It is used for V1 packets and it can either be `'json'` or `'ziproto'`, defaults to `'json'`
+        :param encoding: The server's default encoding for payloads. It is used for V1 packets and it can either be ``'json'`` or ``'ziproto'``, defaults to ``'json'``
         :type encoding: str, optional
         :param config: The path to the configuration file
         :type config: str, None, optional
         :param cfg_parser:  If you want to use a custom configparser object, you can specify it here
-        :type cfg_parser: class: `configparser.ConfigParser()`
+        :type cfg_parser: class: ``configparser.ConfigParser()``
     """
 
     banned = set()
@@ -126,9 +126,9 @@ class AsyncAPY:
         """This is an internal method used to reply to a malformed packet/payload. Please note, that this function deals with raw objects, not with the high-level API objects used inside handlers
 
         :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the logging output
-        :type session_id: class: `uuid.uuid4`
-        :param stream: The trio asynchronous socket associated to a client, can be found in `Client._stream`
-        :type stream: class: `trio.SocketStream`
+        :type session_id: class: ``uuid.uuid4``
+        :param stream: The trio asynchronous socket associated to a client, can be found in ``Client._stream``
+        :type stream: class: ``trio.SocketStream``
         """
 
         json_response = bytes(json.dumps({"status": "failure", "error": "ERR_REQUEST_MALFORMED"}), "u8")
@@ -136,16 +136,15 @@ class AsyncAPY:
         response_data = response_header + json_response
         await self.send_response(stream, response_data, session_id)
 
-
     # END OF RESPONSE HANDLERS SECTION #
 
     def add_handler(self, handler, filters=None, priority: int = 0):
-        """Registers an handler, creating a `Handler` object and appending it to the `self.handlers` attribute
+        """Registers an handler, creating a ``Handler`` object and appending it to the ``self.handlers`` attribute
 
            :param handler: A function object, it can either be synchronous or asynchronous, but the former is not recommended
            :type handler: function
-           :param filters: A list of filters object, to filter incoming packets, defaults to `None`
-           :type filters: Union[List[Filter], None]
+           :param filters: A list of filters object, to filter incoming packets, defaults to ``None``
+           :type filters: ``Union[List[Filter], None]``
            :param priority: Defines the execution priority inside a group of handlers, defaults to 0
         """
 
@@ -390,7 +389,6 @@ class AsyncAPY:
         if ip in self.banned:
             logging.debug(f"{{BanHammer}} '{ip}' unbanned!")
             self.banned.remove(ip)
-
 
     async def handle_client(self, stream: trio.SocketStream):
         """This function handles a single client connection, assigning it a unique UUID, and acts accordingly
