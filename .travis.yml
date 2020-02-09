@@ -5,7 +5,7 @@ python:
    - "3.8"
 
 install:			 
-  - sudo python3 setup.py install
+  - echo "Done"
                                                    
 before_install:
   - pip install -U pip

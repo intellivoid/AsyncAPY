@@ -1,11 +1,11 @@
 from AsyncAPY.base import AsyncAPY
 
 
-server = AsyncAPY(addr='0.0.0.0',
+server = AsyncAPY(addr='127.0.0.1',
                   port=1500,
                   encoding="json",
                   logging_level=10,
-                  byteorder='little'
+                  byteorder='big'
                  )
 
 @server.handler_add()
