@@ -23,7 +23,7 @@ class Client:
     """
 
 
-    def __init__(addr: str, port: int, byteorder: str = "big", header_size: int = 4):
+    def __init__(self, addr: str, port: int, byteorder: str = "big", header_size: int = 4):
         """Object constructor"""
 
         if not isinstance(addr, str):
@@ -51,7 +51,7 @@ class Client:
 
         self.sock.close()
 
-    def send(payload: dict or str, encoding: str = "json"):
+    def send(self, payload: dict or str, encoding: str = "json"):
         """Encodes the passed payload and sends it across the socket"""
 
         if isinstance(payload, dict):
@@ -118,3 +118,4 @@ class Client:
                 print("The 60 seconds timeout for reading the socket has expired, exiting...")
                 break
 
+        return data
