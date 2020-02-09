@@ -8,8 +8,6 @@ install:
   - sudo python3 setup.py install
                                                    
 before_install:
-  - python --version
-  - pip --version
   - pip install -U pip
   - pip install -U pytest
   - pip install trio setuptools wheel
