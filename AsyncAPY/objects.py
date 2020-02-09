@@ -66,7 +66,7 @@ class Client:
         else:
             content_encoding = (1).to_bytes(1, self._server.byteorder)
         protocol_version = (22).to_bytes(1, self._server.byteorder)
-        headers = length_header + content_encoding + protocol_version
+        headers = length_header + protocol_version + content_encoding
         data = headers + payload
         return await self._server.send_response(self._stream, data, self.session, close, packet.encoding, from_client=True)
 
@@ -75,6 +75,9 @@ class Client:
         """
 
         await self._stream.aclose()
+
+    def __repr__(self):
+        return f"Client({self.address})"
 
 
 class Packet:
@@ -114,6 +117,9 @@ class Packet:
 
         :raises: StopPropagation"""
         raise StopPropagation
+
+    def __repr__(self):
+        return f"Packet({self.payload})"
 
 
 class Handler:
