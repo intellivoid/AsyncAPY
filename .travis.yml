@@ -11,5 +11,4 @@ install:
 
 script:
 
-   - pytest
-
+   - pytest tests/
