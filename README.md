@@ -12,6 +12,9 @@ As of today, the latest version of AsyncAPY is 0.2.3
 
 # Documentation
 
+__Warning__: This documentation is not always up to date and it's not as complete as the official one available ![here](https://asyncapy.readthedocs.io)
+
+
 AsyncAPY is divided into two key components:
                             
 - The AsyncAPY **protocol**, a.k.a. `AsyncAProto`, which is AsyncAPY's application protocol, that handles incoming packets, fragmentation and stuff like that
