@@ -11,8 +11,8 @@ before_install:
   - pip install -U pip
   - pip install -U pytest
   - pip install trio setuptools wheel
-  - sudo python3 setup.py install 
-
+  - python setup.py install 
+      
 script:
    - nohup python example.py
    - pytest tests/tests_asyncapy.py
