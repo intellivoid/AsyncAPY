@@ -18,11 +18,11 @@
 
 import setuptools
 import os
-import subprocess
-import sys
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
+
+os.system("python3 -m pip install git+https://github.com/netkas/ZiProto-Python")
 
 setuptools.setup(
     name="AsyncAPY",
@@ -38,9 +38,6 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
         "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)"
-    ],
-    install_requires=[
-        "ziproto @ git+https://github.com/Netkas/ZiProto-Python"
     ],
     python_requires='>=3.6',
 )
