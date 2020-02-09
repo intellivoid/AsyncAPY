@@ -11,7 +11,7 @@ before_install:
   - python --version
   - pip install -U pip
   - pip install -U pytest
-  - pip install trio
+  - pip install trio setuptools wheel
   - sudo python setup.py install 
 
 script:
