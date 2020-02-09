@@ -11,7 +11,6 @@ In the meanwhile, you can run the following command in your terminal/shell (assu
 
 This will install AsyncAPY and its dependencies in your system
 
-Please note that this requires admin permissions, if you don't have such permissions try changing the installation directory with the ``--install-dir`` option
 
 **Note**: On Windows systems, unless you are using PowerShell, you may need to replace ``python3`` with ``py`` or ``py3`` for the commands to work, assuming you added it to ``PYTHONPATH`` when installed Python
 
