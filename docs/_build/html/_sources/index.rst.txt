@@ -11,7 +11,7 @@ Welcome to AsyncAPY's documentation!
    :caption: Contents:
 
    modules
-
+   AsyncAPY
 
 Indices and tables
 ==================

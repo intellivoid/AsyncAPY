@@ -101,8 +101,8 @@ class Filters(Filter):
         In the first case, the filter will match if the request contains the specified field name, while in the other case
         the field value will also be checked with ``re.match()``, using the provided parameter as pattern.
 
-        :param **kwargs: A list of key-word arguments, which reflects the desired key-value structure of a payload
-        :param **kwargs: Union[None, str]"""
+        :param kwargs: A list of key-word arguments, which reflects the desired key-value structure of a payload
+        :type kwargs: Union[None, str]"""
 
         def __init__(self, **kwargs):
             self.fields = {}

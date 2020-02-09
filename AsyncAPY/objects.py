@@ -217,12 +217,13 @@ class Handler:
     def check(self, client: Client, packet: Packet):
         """Iteratively calls the ``check()`` method on ``self.filters``, returns ``True`` if all filters return ``True``, ``False`` otherwise
 
-        :param client: The client to check for
-        :type client: class: ``Client``
-        :param packet: The packet object to check for
-        :type packet: class: ``Packet``
-        :returns shall_pass: ``True`` if the handler matches all filters, ``False`` otherwise
-        :rtype bool
+           :param client: The client to check for
+           :type client: class: ``Client``
+           :param packet: The packet object to check for
+           :type packet: class: ``Packet``
+           :returns shall_pass: ``True`` if the handler matches all filters, ``False`` otherwise
+           :rtype: bool
+
         """
 
         for obj in self.filters:
@@ -239,11 +240,10 @@ class Handler:
 class Group:
 
     """Implements a ``Group`` object, used to group multiple handlers with identical filters
-    and different priorities, this object is meant to be initialized internally
+       and different priorities, this object is meant to be initialized internally
 
-    :param handlers: The list of handlers that has to be grouped, they will be sorted by their
-    ``priority`` attribute
-    :type handlers: List[Handler]
+       :param handlers: The list of handlers that has to be grouped, they will be sorted by their ``priority`` attribute
+       :type handlers: List[Handler]
     """
 
     def __init__(self, handlers: List[Handler]):
@@ -252,14 +252,15 @@ class Group:
         self.handlers = sorted(handlers, key=lambda x: x.priority)
 
     def check(self, client: Client, packet: Packet):
-        """Checks the filters of the group
+        """Checks the filters of the group, one time only on the first filter
 
-        :param client: The client to check for
-        :type client: class: ``Client``
-        :param packet: The packet object to check for
-        :type packet: class: ``Packet``
-        :returns shall_pass: ``True`` if the group matches all filters, ``False`` otherwise
-        :rtype bool
+           :param client: The client to check for
+           :type client: class: ``Client``
+           :param packet: The packet object to check for
+           :type packet: class: ``Packet``
+           :returns shall_pass: ``True`` if the group matches all filters, ``False`` otherwise
+           :rtype: bool
+
         """
 
         return self.handlers[0].check(client, packet)

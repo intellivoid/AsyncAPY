@@ -18,6 +18,8 @@
 
 import setuptools
 import os
+import subprocess
+import sys
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -41,4 +43,5 @@ setuptools.setup(
 )
 
 os.chdir(os.path.join(os.getcwd(), "ZiProto-Python"))
-os.system("python3.7 setup.py install")
+subprocess.check_call([sys.executable, "setup.py", "install"])
+
