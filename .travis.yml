@@ -9,10 +9,11 @@ install:
                                                    
 before_install:
   - python --version
+  - pip --version
   - pip install -U pip
   - pip install -U pytest
   - pip install trio setuptools wheel
-  - sudo python setup.py install 
+  - sudo python3 setup.py install 
 
 script:
    - nohup python example.py
