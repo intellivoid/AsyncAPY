@@ -9,10 +9,10 @@ sudo: required
 os: linux
 
 install:
-
-   - sudo python3 -m pip install -r requirements.txt
-   - sudo python3 setup.py install
-
+			
+   - sudo pip install -r requirements.txt
+   - sudo python setup.py install
+                 
 before_install:
 
   - python --version
@@ -20,7 +20,7 @@ before_install:
   - pip install -U pytest
 
 script:
-
-   - nohup python3 example.py
+ 
+   - nohup python example.py
    - pytest tests/tests_asyncapy.py
 
