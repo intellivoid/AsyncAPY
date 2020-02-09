@@ -148,6 +148,7 @@ class Handler:
 
     def compare_priority(self, other):
         """Method meant for internal use to compare 2 handlers priorities, used for grouping
+
         :param other: Another instance of ``Handler``
         :type other: class: ``Handler``
         :returns comparison: ``True`` if the priorities are equal, ``False`` otherwhise
@@ -158,6 +159,7 @@ class Handler:
 
     def compare_filters(self, other):
         """Another method meant for internal use, used inside ``self.__eq__()``, compares filters instead of priorities
+
         :param other: Another instance of ``Handler``
         :type other: class: ``Handler``
         """

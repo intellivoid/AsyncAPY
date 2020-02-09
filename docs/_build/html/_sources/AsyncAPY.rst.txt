@@ -1,35 +1,36 @@
-AsyncAPY package
-================
+AsyncAPY - API Documentation
+============================
 
-Submodules
+Modules
 ----------
 
-AsyncAPY.base module
---------------------
+BaseClass - AsyncAPY.base
+-------------------------
 
 .. automodule:: AsyncAPY.base
    :members:
    :undoc-members:
    :show-inheritance:
 
-AsyncAPY.errors module
-----------------------
+Exceptions - AsyncAPY.errors
+----------------------------
 
 .. automodule:: AsyncAPY.errors
    :members:
    :undoc-members:
    :show-inheritance:
 
-AsyncAPY.filters module
------------------------
+Filters - AsyncAPY.filters
+--------------------------
 
 .. automodule:: AsyncAPY.filters
    :members:
    :undoc-members:
    :show-inheritance:
 
-AsyncAPY.objects module
------------------------
+
+Objects - AsyncAPY.objects
+--------------------------
 
 .. automodule:: AsyncAPY.objects
    :members:

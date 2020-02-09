@@ -49,7 +49,7 @@ class AsyncAPY:
         :type datefmt: str, optional
         :param timeout: The timeout (in seconds) that the server will wait before considering a connection as dead and close it, defaults to 60
         :type timeout: int, optional
-        :param header_size: The size of the `Content-Length` header can be customized. In an environment with small payloads a 2-byte header may be used to reduce overhead, defaults to 4
+        :param header_size: The size of the ``Content-Length`` header can be customized. In an environment with small payloads a 2-byte header may be used to reduce overhead, defaults to 4
         :type header_size: int, optional
         :param byteorder: The order that the server will follow to read packets. It can either be ``'little'`` or ``'big'``, defaults to ``'big'``
         :type byteorder: str, optional
@@ -151,7 +151,7 @@ class AsyncAPY:
         self.handlers.append(Handler(handler, filters, priority))
 
     def handler_add(self, filters=None, priority: int = 0):
-        """Decorator version of `AsyncAPY.add_handler()`"""
+        """Decorator version of ``AsyncAPY.add_handler()``"""
 
         def decorator(func):
             self.add_handler(func, filters, priority)
@@ -161,19 +161,19 @@ class AsyncAPY:
         """
         This function sends the passed response to the client after elaboration
 
-        :param stream: The trio asynchronous socket associated with the client, can be found at `Client._stream`
-        :type stream: class: `trio.SocketStream`
-        :param response_data: The payload, in JSON format (encoding into ZiProto is processed internally) already prepended with the `Content-Length` header
+        :param stream: The trio asynchronous socket associated with the client, can be found at ``Client._stream``
+        :type stream: class: ``trio.SocketStream``
+        :param response_data: The payload, in JSON format (encoding into ZiProto is processed internally) already prepended with the ``Content-Length`` header
         :type response_data: bytes
         :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
-        :type session_id: class: `uuid.uuid4`
-        :param close: If `True`, the client connection will be closed right after the payload has been sent, it must be set to `False` to take full advantage of packets propagation, defaults to `True`
+        :type session_id: class: ``uuid.uuid4``
+        :param close: If ``True``, the client connection will be closed right after the payload has been sent, it must be set to ``False`` to take full advantage of packets propagation, defaults to ``True``
         :type close: bool, optional
-        :param encoding: The encoding with which the packet should be encoded in, if `None`, the server will fall back to `self.encoding`. Other possible values are `'json'` or `'ziproto'`, defaults to `None`
+        :param encoding: The encoding with which the packet should be encoded in, if ``None``, the server will fall back to ``self.encoding``. Other possible values are `'json'` or `'ziproto'`, defaults to ``None``
         :type encoding: Union[None, str], optional
-        :param from_client: If `True`, the payload will undergo no modifications and will be sent straight away: This parameter is needed to distinguish internal calls to the method from the Client API calls which behave differently, defaults to `False`
+        :param from_client: If ``True``, the payload will undergo no modifications and will be sent straight away: This parameter is needed to distinguish internal calls to the method from the Client API calls which behave differently, defaults to ``False``
         :type from_client: bool, optional
-        :returns Union[bool, None]: Returns `True` on success, `False` on failure (e.g. the client disconnects abruptly) or `None` if the operation takes longer than `self.timeout` seconds
+        :returns Union[bool, None]: Returns ``True`` on success, ``False`` on failure (e.g. the client disconnects abruptly) or ``None`` if the operation takes longer than ``self.timeout`` seconds
         :rtype: Union[bool, None]
 
         """
@@ -216,12 +216,12 @@ class AsyncAPY:
         is the minimum amount of data needed to parse an API call (The length header)
 
         :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
-        :type session_id: class: `uuid.uuid4`
+        :type session_id: class: ``uuid.uuid4``
         :param stream: The trio asynchronous socket associated with the client
-        :type stream: class : `trio.SocketStream`
+        :type stream: class : ``trio.SocketStream``
         :param raw_data: If some data was received already, it has to be passed here as paramater
         :type raw_data: bytes
-        :returns: At least `self.header_size` bytes, and at most the whole packet, or None if the timeout expires or the connection gets closed
+        :returns: At least ``self.header_size`` bytes, and at most the whole packet, or None if the timeout expires or the connection gets closed
         :rtype: Union[bytes, None]
         """
 
@@ -247,13 +247,13 @@ class AsyncAPY:
         """
         This functions completes the stream until the specified length is reached
 
-        :param header: The `Content-Length` header, already decoded as an integer
+        :param header: The ``Content-Length`` header, already decoded as an integer
         :type header: int
         :param stream: The trio asynchronous socket associated with the client
-        :type stream: class : `trio.SocketStream`
+        :type stream: class : ``trio.SocketStream``
         :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
-        :type session_id: class: `uuid.uuid4`
-        :returns: The complete packet, or None if the timeout expires or the connection gets closed
+        :type session_id: class: ``uuid.uuid4``
+        :returns: The complete packet, or ``None`` if the timeout expires or the connection gets closed
         :rtype: Union[bytes, None]
         """
 
@@ -281,15 +281,15 @@ class AsyncAPY:
         return stream_data
 
     async def decode_content(self, content, session_id: str, stream: trio.SocketStream, encoding=None):
-        """Decodes the payload with the specified encoding, if any, or falls back to the `self.encoding`
+        """Decodes the payload with the specified encoding, if any, or falls back to the ``self.encoding``
 
            :param content: The byte-encoded payload
            :type content: bytes
            :param stream: The trio asynchronous socket associated with the client
-           :type stream: class : `trio.SocketStream`
+           :type stream: class : ``trio.SocketStream``
            :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
-           :type session_id: class: `uuid.uuid4`
-           :param encoding: The encoding with which the packet should be encoded in, if `None`, the server will fall back to `self.encoding`, it can either be 1 for ziproto, 0 for json or `None` if the encoding is unknown, defaults to `None`
+           :type session_id: class: ``uuid.uuid4``
+           :param encoding: The encoding with which the packet should be encoded in, if ``None``, the server will fall back to ``self.encoding``, it can either be 1 for ziproto, 0 for json or ``None`` if the encoding is unknown, defaults to ``None``
            :type encoding: Union[None, int], optional
            :returns: The decoded payload
            :rtype: dict
@@ -318,9 +318,9 @@ class AsyncAPY:
            :param request: The byte-encoded payload
            :type request: bytes
            :param stream: The trio asynchronous socket associated with the client
-           :type stream: class : `trio.SocketStream`
+           :type stream: class : ``trio.SocketStream``
            :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
-           :type session_id: class: `uuid.uuid4`
+           :type session_id: class: ``uuid.uuid4``
         """
 
         req_valid = False
@@ -394,7 +394,7 @@ class AsyncAPY:
         """This function handles a single client connection, assigning it a unique UUID, and acts accordingly
 
            :param stream: The trio asynchronous socket associated with the client
-           :type stream: class: `trio.SocketStream`
+           :type stream: class: ``trio.SocketStream``
         """
         session_id = uuid.uuid4()
         logging.info(f" {{Client handler}} New session started, UUID is {session_id}")
@@ -479,11 +479,7 @@ class AsyncAPY:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
 
     async def serve_forever(self):
-        """
-        This function is the server's main loop, what it does is:
-        - Starts to serve the asynchronous TCP socket
-        - Waits forever for clients to connect and redirect them to
-        the handle_client() function defined above
+        """This function is the server's main loop
         """
 
         logging.basicConfig(datefmt=self.datefmt, format=self.console_format, level=self.logging_level)
@@ -506,7 +502,7 @@ settings were loaded from '{self.config}'")
             sys.exit("PORT_UNAVAILABLE")
 
     def start(self):
-        """Starts the server, doing some magic to group handlers before calling `self.serve_forever()`"""
+        """Starts the server, doing some magic to group handlers before calling ``self.serve_forever()``"""
 
         new = []
         for handler in self.handlers:

@@ -85,6 +85,7 @@ class Filters(Filter):
 
         def check(self, c, _):
             """Implements the method to check if a filter matches a given packet/client couple or not
+
             :param c: A client object
             :type c: class: ``Client``
             :param _: A packet object, unused in this specific case
@@ -114,6 +115,7 @@ class Filters(Filter):
 
         def __eq__(self, other):
             """Implements ``self == other``
+
             :param other: A ``Filters.Fields`` object
             :type other: class: ``Filters.Fields``
             :returns fields_equal: ``True`` if the ``self.fields`` are equal to ``other.fields``, ``False`` otherwise
@@ -124,6 +126,7 @@ class Filters(Filter):
 
         def check(self, _, p):
             """Implements the method to check if a filter matches a given packet/client couple or not
+
                :param _: A client object
                :type _: class: ``Client``, unused in this specific case
                :param p: A packet object
