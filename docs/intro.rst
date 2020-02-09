@@ -9,10 +9,11 @@ In the meanwhile, you can clone the official `GitHub <https://github.com/nocturn
 
 - ``python3 -m pip install setuptools wheel``
 - ``cd AsyncAPY-master``
-- ``python3 setup.py install --prefix ~/.local``
+- ``python3 setup.py install``
 
 This will install AsyncAPY and its dependencies in your system
 
+Please note that this requires admin permissions, if you don't have such permissions try changing the installation directory with the ``--install-dir`` option
 
 **Note**: On Windows systems, unless you are using PowerShell, you may need to replace ``python3`` with ``py`` or ``py3`` for the commands to work, assuming you added it to ``PYTHONPATH`` when installed Python
 
