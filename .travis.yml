@@ -17,4 +17,5 @@ before_install:
 
 script:
 
-   - pytest tests/
+   - nohup python3 example.py
+   - pytest tests/tests_asyncapy.py
