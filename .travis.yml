@@ -21,5 +21,4 @@ script:
    - pytest tests/tests_asyncapy.py
 
 virtualenv:
-
-   system_site_packages = true
+  system_site_packages = true
