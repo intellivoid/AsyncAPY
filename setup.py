@@ -39,8 +39,8 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)"
     ],
+    install_requires=[
+        "ziproto @ git+https://github.com/Netkas/ZiProto-Python"
+    ],
     python_requires='>=3.6',
 )
-
-os.chdir(os.path.join(os.getcwd(), "ZiProto-Python"))
-subprocess.check_call([sys.executable, "setup.py", "install"])
