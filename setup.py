@@ -43,5 +43,4 @@ setuptools.setup(
 )
 
 os.chdir(os.path.join(os.getcwd(), "ZiProto-Python"))
-subprocess.check_call([sys.executable, "setup.py", "install --prefix ~/.local"])
-
+subprocess.check_call([sys.executable, "setup.py", "install"])
