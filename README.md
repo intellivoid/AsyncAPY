@@ -2,8 +2,7 @@
 
 ![Intellivoid](https://i.imgur.com/me1E7z9.jpg)
 
-[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=latest)](https://asyncapy.readthedocs.io/en/latest/?badge=latest)
-
+[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=latest)](https://asyncapy.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.com/nocturn9x/AsyncAPY.svg?branch=dev)](https://travis-ci.com/nocturn9x/AsyncAPY)
 
 This repo contains the source code of the AsyncAPY framework, which is provided to the end-user "as is" without any warranty of any kind. 
 
