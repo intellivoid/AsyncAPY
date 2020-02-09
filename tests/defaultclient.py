@@ -1,6 +1,12 @@
 import socket
 import ziproto
 import json
+import time
+
+ADDR = '127.0.0.1'
+PORT = 1500
+ENCODING = 'json'
+BYTEORDER = 'big'
 
 
 class Client:
@@ -45,8 +51,70 @@ class Client:
 
         self.sock.close()
 
+    def send(payload: dict or str, encoding: str = "json"):
+        """Encodes the passed payload and sends it across the socket"""
+
+        if isinstance(payload, dict):
+            payload = json.dumps(payload).encode()
+        else:
+            payload = json.loads(payload).encode()
+        if encoding == "ziproto":
+            payload = ziproto.encode(json.loads(payload))
+        content_length = len(payload).to_bytes(self.header_size, self.byteorder)
+        content_encoding = (0).to_bytes(1, "big") if encoding == "json" else (1).to_bytes(1, "big")
+        protocol_version = (22).to_bytes(1, "big")
+        headers = content_length + protocol_version + content_encoding
+        packet = headers + payload
+        self.sock.sendall(packet)
+
+    def rebuild_stream(size: int):
+        """Rebuilds a stream if too short"""
+
+        data = b""
+        times = 0
+        while len(data) < size:
+            try:
+                data += self.sock.recv(size)
+            except Exception as error:
+                print(f"An error occurred while reading from socket -> {error}")
+            if not len(data) >= size:
+                time.sleep(0.1)
+                times += 1
+            if times == 600:
+                print("The 60 seconds timeout for reading the socket has expired, exiting...")
+                break
+
+        return data
+
     def receive_all(self):
         """Reads from ``self.sock`` until the packet is complete"""
 
-        pass
+        data = b""
+        times = 0
+        while len(data) < self.header_size:
+            try:
+                data += self.sock.recv(1024)
+            except Exception as error:
+                print(f"An error occurred while reading from socket -> {error}")
+            if not len(data) >= self.header_size:
+                time.sleep(0.1)
+                times += 1
+            else:
+                content_length = int.from_bytes(data[0:self.header_size], self.byteorder)
+                if len(data) - self.header_size < content_length:
+                    print(f"Stream is fragmented, attempting to rebuild")
+                    missing = self.rebuild_stream(content_length)
+                    if missing:
+                        data += missing
+                    else:
+                        print("Could not rebuild stream, bye")
+                        break
+                elif len(data) - self.header_size > content_length:
+                    print("Invalid Content-Length header, discarding packet")
+                    del data
+                    del times
+                    break
+            if times == 600:
+                print("The 60 seconds timeout for reading the socket has expired, exiting...")
+                break
 
