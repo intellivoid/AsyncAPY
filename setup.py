@@ -22,7 +22,7 @@ import os
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-os.system("python3 -m pip install git+https://github.com/netkas/ZiProto-Python")
+os.system("python3 -m pip install git+https://github.com/netkas/ZiProto-Python --user")
 
 setuptools.setup(
     name="AsyncAPY",
