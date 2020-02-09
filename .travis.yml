@@ -4,21 +4,16 @@ python:
    - "3.7"
    - "3.8"
 
-os: linux
-
-install:
-			
+install:			
    - sudo pip install -r requirements.txt
    - sudo python setup.py install
                  
 before_install:
-
   - python --version
   - pip install -U pip
   - pip install -U pytest
 
 script:
- 
    - nohup python example.py
    - pytest tests/tests_asyncapy.py
 
