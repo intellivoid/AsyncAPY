@@ -8,7 +8,7 @@ The developer and/or Intellivoid Technologies will not take any responsibility f
 
 This project is published under the `Lesser General Public License Version 3`, for more detailed information check the `LICENSE` file provided within the repository. 
 
-As of today, the latest version of AsyncAPY is 0.2.1
+As of today, the latest version of AsyncAPY is 0.2.3
 
 # Documentation
 
