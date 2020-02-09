@@ -489,7 +489,7 @@ class AsyncAPY:
         await self.setup()
         logging.debug(f"{{API main}} The buffer is set to {self.buf} bytes, logging is set to {self.levels[self.logging_level]}, \
 encoding is {self.encoding}, header size is set to {self.header_size} bytes, byteorder is '{self.byteorder}', \
-settings were loaded from '{self.config if self.config else attributes}'")
+settings were loaded from '{self.config if self.config else 'attributes'}'")
         try:
             logging.info(f" {{API main}} Now serving  at {self.addr}:{self.port}")
             await trio.serve_tcp(self.handle_client, host=self.addr, port=self.port)
