@@ -24,7 +24,17 @@ import json
 
 
 class Client:
-    """This class represents a client"""
+    """This class represents a client, it is a high-level wrapper around the methods and objects of AsyncAPY
+
+       :param address: The client's IP address
+       :type address: str
+       :param _server: The server object, needed to send back packets
+       :type _server: class: `AsyncAPY.base.AsyncAPY`
+       :param _stream: The trio socket object associated with the client
+       :type stream: class: `trio.SocketStream`
+       :param session: The session_id of the client
+       :type session: str
+    """
 
     def __init__(self, addr: str, server, stream=None, session: str = None):
         self.address = addr
@@ -33,21 +43,48 @@ class Client:
         self.session = session
 
     async def ban(self):
+        """
+        Bans the client's IP address from the server
+        """
+
         self._server.banned.add(self.address[0])
 
     async def send(self, packet, close: bool = True):
+        """High-level wrapper function around `AsyncAPY.send_response()`
+
+           :param packet: A `Packet` object
+           :type packet: class: `Packet`
+           :param close: If `True`, the connection will be closed right after the packet is sent, it has to be set to `False` to take full advantages of packet propagation, defaults to `True`
+           :type close: bool, optional
+        """
+
         payload = packet.payload.encode("utf-8")
-        header = packet.length.to_bytes(self._server.header_size, self._server.byteorder)
-        data = header + payload
-        return await self._server.send_response(self._stream, data, self.session, close, packet.encoding)
+        length_header = packet.length.to_bytes(self._server.header_size, self._server.byteorder)
+        if packet.encoding == "json":
+            content_encoding = (0).to_bytes(1, self._server.byteorder)
+        else:
+            content_encoding = (1).to_bytes(1, self._server.byteorder)
+        protocol_version = (22).to_bytes(1, self._server.byteorder)
+        headers = length_header + content_encoding + orotocol_version
+        data = headers + payload
+        return await self._server.send_response(self._stream, data, self.session, close, packet.encoding, from_client=True)
 
     async def close(self):
+        """Closes the client connection
+        """
+
         await self._stream.aclose()
 
 
 class Packet:
+    """
+    This class implements a high-level wrapper around AsyncAProto packets
 
-    def __init__(self, fields: Union[Dict[str, str], str, bytes], encoding: str, sender: Client or None = None):
+    """
+
+    def __init__(self, fields: Union[Dict[Union[str, int], Union[int, str], str, bytes], encoding: str, sender: Union[Client, None] = None):
+        """Object constructor"""
+
         self.sender = sender
         if not isinstance(encoding, str):
             raise ValueError("The encoding must be string!")
@@ -63,7 +100,7 @@ class Packet:
             self.payload = json.dumps(json.loads(fields.decode("utf-8")))
         else:
             self.payload = json.dumps(json.loads(fields))
-        self.length = len(self.payload)
+        self.length = len(self.payload) + 2
 
     async def stop_propagation(self):
         raise StopPropagation
@@ -148,7 +185,4 @@ class Group:
 
     def __iter__(self):
         return self.handlers.__iter__()
-
-
-
 

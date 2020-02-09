@@ -136,6 +136,7 @@ class AsyncAPY:
         response_data = response_header + json_response
         await self.send_response(stream, response_data, session_id)
 
+
     # END OF RESPONSE HANDLERS SECTION #
 
     def add_handler(self, handler, filters=None, priority: int = 0):
@@ -157,7 +158,7 @@ class AsyncAPY:
             self.add_handler(func, filters, priority)
         return decorator
 
-    async def send_response(self, stream: trio.SocketStream, response_data: bytes, session_id, close: bool = True, encoding=None):
+    async def send_response(self, stream: trio.SocketStream, response_data: bytes, session_id, close: bool = True, encoding=None, from_client: bool = True):
         """
         This function sends the passed response to the client after elaboration
 
@@ -171,21 +172,24 @@ class AsyncAPY:
         :type close: bool, optional
         :param encoding: The encoding with which the packet should be encoded in, if `None`, the server will fall back to `self.encoding`. Other possible values are `'json'` or `'ziproto'`, defaults to `None`
         :type encoding: Union[None, str], optional
+        :param from_client: If `True`, the payload will undergo no modifications and will be sent straight away: This parameter is needed to distinguish internal calls to the method from the Client API calls which behave differently, defaults to `False`
+        :type from_client: bool, optional
         :returns Union[bool, None]: Returns `True` on success, `False` on failure (e.g. the client disconnects abruptly) or `None` if the operation takes longer than `self.timeout` seconds
         :rtype: Union[bool, None]
 
         """
 
-        if encoding is None:
-            encoding = self.encoding
-        if encoding == 1:
-            header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (1).to_bytes(1, self.byteorder)
-            payload = ziproto.encode(json.loads(response_data[self.header_size:]))
-            response_data = header + payload
-        else:
-            header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (0).to_bytes(1, self.byteorder)
-            payload = json.loads(response_data[self.header_size:])
-            response_data = header + json.dumps(payload).encode()
+        if not from_client:
+            if encoding is None:
+                encoding = self.encoding
+            if encoding == 1:
+                header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (1).to_bytes(1, self.byteorder)
+               payload = ziproto.encode(json.loads(response_data[self.header_size:]))
+               response_data = header + payload
+            else:
+               header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (0).to_bytes(1, self.byteorder)
+               payload = json.loads(response_data[self.header_size:])
+               response_data = header + json.dumps(payload).encode()
 
         with trio.move_on_after(self.timeout) as cancel_scope:
             try:
