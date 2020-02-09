@@ -184,12 +184,12 @@ class AsyncAPY:
                 encoding = self.encoding
             if encoding == 1:
                 header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (1).to_bytes(1, self.byteorder)
-               payload = ziproto.encode(json.loads(response_data[self.header_size:]))
-               response_data = header + payload
+                payload = ziproto.encode(json.loads(response_data[self.header_size:]))
+                response_data = header + payload
             else:
-               header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (0).to_bytes(1, self.byteorder)
-               payload = json.loads(response_data[self.header_size:])
-               response_data = header + json.dumps(payload).encode()
+                header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (0).to_bytes(1, self.byteorder)
+                payload = json.loads(response_data[self.header_size:])
+                response_data = header + json.dumps(payload).encode()
 
         with trio.move_on_after(self.timeout) as cancel_scope:
             try:

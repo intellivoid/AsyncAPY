@@ -80,9 +80,15 @@ class Packet:
     """
     This class implements a high-level wrapper around AsyncAProto packets
 
+    :param fields: The payload, it can either be a Python dictionary or valid JSON string (it can also be encoded as bytes)
+    :type fields: Union[dict, str, bytes]
+    :param encoding: The payload desired encoding, it can either be `"json"` or `"ziproto"`
+    :type encoding: str
+    :param sender: This parameter is meant to be initialized internally, and points to the `Client` object that sent the associated payload, defaults to `None`
+    :type sender: Union[Client, None], optional
     """
 
-    def __init__(self, fields: Union[Dict[Union[str, int], Union[int, str], str, bytes], encoding: str, sender: Union[Client, None] = None):
+    def __init__(self, fields: Union[dict, str, bytes], encoding: str, sender: Union[Client, None] = None):
         """Object constructor"""
 
         self.sender = sender
