@@ -145,7 +145,7 @@ class AsyncAPY:
            :param handler: A function object, it can either be synchronous or asynchronous, but the former is not recommended
            :type handler: function
            :param filters: A list of filters object, to filter incoming packets, defaults to ``None``
-           :type filters: ``Union[List[Filter], None]``
+           :type filters: Union[List[Filter], None]
            :param priority: Defines the execution priority inside a group of handlers, defaults to 0
         """
 
@@ -510,8 +510,8 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
             comparison, self.handlers = handler.compare(self.handlers, self.handlers)
             if len(comparison) > 1:
                 new.append(Group(comparison))
-        for handler in self.handlers:
-            new.append(handler)
+            else:
+                new.append(handler)
         self.handlers = new
         del new
         trio.run(self.serve_forever)

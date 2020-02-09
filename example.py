@@ -1,21 +1,19 @@
 from AsyncAPY.base import AsyncAPY
-from AsyncAPY.filters import Filters
-from AsyncAPY.objects import Client, Packet
-
-server = AsyncAPY(config='server.conf')
-
-@server.handler_add(filters=[Filters.Fields(field=r'\d+')])
-async def test_function(client: Client, packet: Packet):
-
-    print("Hi, I am test function")
-    await client.send(Packet({"status": 200, "msg": "ur mom gay"}, "ziproto"), False)
-#    await packet.stop_propagation()
 
 
-@server.handler_add( filters=[Filters.Fields(field=r'\d+')], priority=1)
-async def woah_func(c, p):
-    print("Hey, packet propagation works, well done master!")
-    await c.send(Packet({"status": 200, "msg": "heh"}, "json"))
+server = AsyncAPY(addr='0.0.0.0',
+                  port=1500,
+                  encoding="json",
+                  logging_level=10,
+                  byteorder='little'
+                 )
+
+@server.handler_add()
+async def echo_server(client, packet):
+   print(f"Hello world from {client}!")
+   print(f"Echoing back {packet}...")
+   await client.send(packet)
+
 
 server.start()
 
