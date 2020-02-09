@@ -17,6 +17,7 @@
 # along with AsyncAPY.  If not, see <http://www.gnu.org/licenses/>.
 
 import setuptools
+import os
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -38,3 +39,6 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
 )
+
+os.chdir(os.path.join(os.getcwd(), "ZiProto-Python"))
+os.system("python3.7 setup.py install")
