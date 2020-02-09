@@ -12,6 +12,7 @@ Welcome to AsyncAPY's documentation!
 
    modules
    AsyncAPY
+   intro
 
 Indices and tables
 ==================
