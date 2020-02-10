@@ -14,6 +14,7 @@ class TestAsyncAPY:
        client.connect()
        client.send({"test": 1}, encoding=enc)
        response = client.receive_all()
+       print(response)
        content_length = int.from_bytes(response[0:client.header_size], client.byteorder)
        protocol_version = int.from_bytes(response[client.header_size:client.header_size + 1], "big")
        content_encoding = int.from_bytes(response[client.header_size + 1:client.header_size + 2], "big")
@@ -26,7 +27,6 @@ class TestAsyncAPY:
            payload = ziproto.decode(response[client.header_size + 2:])
        assert payload == {"test": 1}
        client.disconnect()
-       del client
 
     def test_encodings(self):
         client = defaultclient.Client("127.0.0.1", 1500)
@@ -46,4 +46,4 @@ class TestAsyncAPY:
         assert ziproto.decode(response_payload) == payload, response_payload
         client.disconnect()
 
-TestAsyncAPY().test_encodings()
+TestAsyncAPY().test_headers()
