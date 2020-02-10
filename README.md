@@ -2,7 +2,7 @@
 
 ![Intellivoid](https://i.imgur.com/LKjpZMX.png)
 
-[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=latest)](https://asyncapy.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=dev)](https://travis-ci.com/nocturn9x/AsyncAPY) ![Open Issues](https://img.shields.io/github/issues/nocturn9x/AsyncAPY) ![License](https://img.shields.io/github/license/nocturn9x/AsyncAPY)
+[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=dev)](https://asyncapy.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=dev)](https://travis-ci.com/nocturn9x/AsyncAPY) ![Open Issues](https://img.shields.io/github/issues/nocturn9x/AsyncAPY) ![License](https://img.shields.io/github/license/nocturn9x/AsyncAPY)
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/nocturn9x/AsyncAPY)
 
@@ -18,7 +18,7 @@ As of today, the latest version of AsyncAPY is 0.2.3
 
 # Documentation
 
-__Warning__: This documentation is not always up to date and it's not as complete as the official one available [here](https://asyncapy.readthedocs.io)
+__Warning__: This documentation is not always up to date and it's not as complete as the official one available [here](https://asyncapy.readthedocs.io/en/dev)
 
 AsyncAPY is divided into two key components:
                             
