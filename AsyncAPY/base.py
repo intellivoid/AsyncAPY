@@ -345,8 +345,12 @@ class AsyncAPY:
             logging.warning(f"({session_id}) {{API Parser}} V1 packets shouldn't include a Content-Encoding header!")
             await stream.aclose()
         else:
-            client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream)
-            packet = Packet(payload, sender=client, encoding="json" if not content_encoding else "ziproto")
+            if content_encoding:
+               enc = "ziproto"
+            else:
+               enc = "json"
+            client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=content_encoding)
+            packet = Packet(payload, sender=client, encoding=enc)
             if client.address not in self.banned:
                 for handler in self.handlers:
                     if isinstance(handler, Group):

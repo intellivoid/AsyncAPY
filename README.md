@@ -6,6 +6,8 @@
 
 This repo contains the source code of the AsyncAPY framework, which is provided to the end-user "as is" without any warranty of any kind. 
 
+This software has been developed for Intellivoid Technologies, it wouldn't be there without those amazing guys of which I'm now proud to be part of.
+
 The developer and/or Intellivoid Technologies will not take any responsibility for any sort of damage caused by this software, be it economical, a data loss or whatever. 
 
 This project is published under the `Lesser General Public License Version 3`, for more detailed information check the `LICENSE` file provided within the repository. 
