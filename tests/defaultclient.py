@@ -67,7 +67,7 @@ class Client:
         packet = headers + payload
         self.sock.sendall(packet)
 
-    def rebuild_stream(size: int):
+    def rebuild_stream(self, size: int):
         """Rebuilds a stream if too short"""
 
         data = b""
@@ -101,7 +101,7 @@ class Client:
                 times += 1
             else:
                 content_length = int.from_bytes(data[0:self.header_size], self.byteorder)
-                if len(data) - self.header_size < content_length:
+                if len(data[self.header_size:]) < content_length:
                     print(f"Stream is fragmented, attempting to rebuild")
                     missing = self.rebuild_stream(content_length)
                     if missing:

@@ -21,6 +21,7 @@ from .filters import Filter
 from types import FunctionType
 from .errors import StopPropagation
 import json
+import ziproto
 
 
 class Client:
@@ -36,7 +37,7 @@ class Client:
        :type session: str
     """
 
-    def __init__(self, addr: str, server, stream=None, session: str = None, encoding: int):
+    def __init__(self, addr: str, server, stream=None, session: str = None, encoding: int = None):
         self.address = addr
         self._server = server
         self._stream = stream
@@ -62,14 +63,17 @@ class Client:
 
         payload = packet.payload.encode("utf-8")
         length_header = packet.length.to_bytes(self._server.header_size, self._server.byteorder)
-        if packet.encoding == "json":
+        if packet.encoding == 0:
             content_encoding = (0).to_bytes(1, self._server.byteorder)
         else:
+            payload = ziproto.encode(json.loads(payload))
             content_encoding = (1).to_bytes(1, self._server.byteorder)
+            length_header = (len(payload) + 2).to_bytes(self._server.header_size, self._server.byteorder)
         protocol_version = (22).to_bytes(1, self._server.byteorder)
         headers = length_header + protocol_version + content_encoding
         data = headers + payload
-        return await self._server.send_response(self._stream, data, self.session, close, packet.encoding, from_client=True)
+
+        return await self._server.send_response(self._stream, data, self.session, close, from_client=True)
 
     async def close(self):
         """Closes the client connection
@@ -103,7 +107,7 @@ class Packet:
             raise ValueError("The encoding must either be 'ziproto' or 'json'!")
         if encoding == "json":
             self.encoding = 0
-        else:
+        elif encoding == "ziproto":
             self.encoding = 1
         if isinstance(fields, dict):
             self.payload = json.dumps(fields)
