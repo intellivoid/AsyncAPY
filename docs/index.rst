@@ -5,6 +5,7 @@
 
 AsyncAPY - Official Documentation
 ====================================
+.. image:: logo.jpg
 
 .. toctree::
    :maxdepth: 2
