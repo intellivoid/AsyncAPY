@@ -45,12 +45,14 @@ An echo server is fairly simple, it always replies with the same request that it
 
 
 Save this script into a file named ``example.py`` and try running it; your output should look like the one below
+ 
+``[INFO] 10/02/2020 16:28:38 PM  {API main} AsyncAPY server is starting up``
 
-```[INFO] 10/02/2020 16:28:38 PM  {API main} AsyncAPY server is starting up
-[DEBUG] 10/02/2020 16:28:38 PM {API main} Running setup function...
-[DEBUG] 10/02/2020 16:28:38 PM {API main} The buffer is set to 1024 bytes, logging is set to DEBUG, encoding is json, header size is set to 4 bytes, byteorder is 'big', settings were loaded from 'attributes'
-[INFO] 10/02/2020 16:28:38 PM  {API main} Now serving  at 0.0.0.0:1500```
+``[DEBUG] 10/02/2020 16:28:38 PM {API main} Running setup function...``
 
+``[DEBUG] 10/02/2020 16:28:38 PM {API main} The buffer is set to 1024 bytes, logging is set to DEBUG, encoding is json, header size is set to 4 bytes, byteorder is 'big', settings were loaded from 'attributes'``
+
+``[INFO] 10/02/2020 16:28:38 PM  {API main} Now serving  at 0.0.0.0:1500``
 
 What happens if we send a packet to our new, shiny, echo server? Let's try to use the testing client to send a packet to our server: create a new empty file, name it ``testclient.py`` and paste the following
 
@@ -68,22 +70,32 @@ What happens if we send a packet to our new, shiny, echo server? Let's try to us
    print(response)
 
 Now open two terminal windows, run ``example.py`` again and then ``testclient.py``, your server output should look like the following:
+ 
+``[INFO] 10/02/2020 16:39:35 PM  {Client handler} New session started, UUID is 7fd5fab0-5393-44ec-a75d-fa4f2c7e4562``
 
-```[INFO] 10/02/2020 16:39:35 PM  {Client handler} New session started, UUID is 7fd5fab0-5393-44ec-a75d-fa4f2c7e4562
-[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} Expected stream length is 11
-[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} Fragmented stream detected, rebuilding
-[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Protocol-Version is V2, Content-Encoding is json
-[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Done! Filters check passed, calling 'echo_server'
-Hello world from Client(127.0.0.1)!
-Echoing back Packet({"test": 1})...
-[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Response handler} Sending response to client
-[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Response Handler} Response sent
-[DEBUG] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Execution of 'echo_server' terminated
-[INFO] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} The connection was closed```
+``[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} Expected stream length is 11``
+
+``[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} Fragmented stream detected, rebuilding``
+
+``[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Protocol-Version is V2, Content-Encoding is json``
+
+``[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Done! Filters check passed, calling 'echo_server'``
+
+``Hello world from Client(127.0.0.1)!``
+
+``Echoing back Packet({"test": 1})...``
+
+``[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Response handler} Sending response to client``
+
+``[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Response Handler} Response sent``
+
+``[DEBUG] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Execution of 'echo_server' terminated``
+
+``[INFO] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} The connection was closed``
 
 while your client output will look like this:
-
-```b'\x00\x00\x00\r\x16\x00{"test": 1}'```
+ 
+``b'\x00\x00\x00\r\x16\x00{"test": 1}'``
 
 As you can see, we got the same JSON encoded packet that we sent!
 
