@@ -36,11 +36,12 @@ class Client:
        :type session: str
     """
 
-    def __init__(self, addr: str, server, stream=None, session: str = None):
+    def __init__(self, addr: str, server, stream=None, session: str = None, encoding: int):
         self.address = addr
         self._server = server
         self._stream = stream
         self.session = session
+        self.encoding = "json" if not encoding else "ziproto"
 
     async def ban(self):
         """

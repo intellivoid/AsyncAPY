@@ -2,6 +2,7 @@ import pytest
 import defaultclient
 import json
 import ziproto
+import socket
 
 
 class TestAsyncAPY:
@@ -25,5 +26,24 @@ class TestAsyncAPY:
            payload = ziproto.decode(response[client.header_size + 2:])
        assert payload == {"test": 1}
        client.disconnect()
+       del client
 
-TestAsyncAPY().test_headers()
+    def test_encodings(self):
+        client = defaultclient.Client("127.0.0.1", 1500)
+        client.connect()
+        encodings = ("json", "ziproto")
+        payload = {"req": "test_payload"}
+        client.send(payload, encoding=encodings[0])
+        response = client.receive_all()
+        response_payload = response[client.header_size + 2:]
+        assert json.loads(response_payload) == payload, response_payload
+        client.disconnect()
+        client.sock = socket.socket()
+        client.connect()
+        client.send(payload, encoding=encodings[1])
+        response = client.receive_all()
+        response_payload = response[client.header_size + 2:]
+        assert ziproto.decode(response_payload) == payload, response_payload
+        client.disconnect()
+
+TestAsyncAPY().test_encodings()

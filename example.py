@@ -12,8 +12,7 @@ server = AsyncAPY(addr='127.0.0.1',
 async def echo_server(client, packet):
    print(f"Hello world from {client}!")
    print(f"Echoing back {packet}...")
-   await client.send(packet)
-
+   await client.send(packet, close=False)
 
 server.start()
 
