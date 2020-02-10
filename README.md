@@ -4,6 +4,8 @@
 
 [![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=latest)](https://asyncapy.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.com/nocturn9x/AsyncAPY.svg?branch=master)](https://travis-ci.com/nocturn9x/AsyncAPY) ![Open Issues](https://img.shields.io/github/issues/nocturn9x/AsyncAPY) ![License](https://img.shields.io/github/license/nocturn9x/AsyncAPY)
 
+![GitHub repo size](https://img.shields.io/github/repo-size/nocturn9x/AsyncAPY)
+
 This repo contains the source code of the AsyncAPY framework, which is provided to the end-user "as is" without any warranty of any kind. 
 
 This software has been developed for Intellivoid Technologies, it wouldn't be there without those amazing guys of which I'm now proud to be part of.
