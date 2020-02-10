@@ -60,7 +60,7 @@ class Client:
             payload = json.loads(payload).encode()
         if encoding == "ziproto":
             payload = ziproto.encode(json.loads(payload))
-        content_length = len(payload).to_bytes(self.header_size, self.byteorder)
+        content_length = (len(payload) + 2).to_bytes(self.header_size, self.byteorder)
         content_encoding = (0).to_bytes(1, "big") if encoding == "json" else (1).to_bytes(1, "big")
         protocol_version = (22).to_bytes(1, "big")
         headers = content_length + protocol_version + content_encoding

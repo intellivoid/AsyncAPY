@@ -19,7 +19,7 @@
 from AsyncAPY.base import AsyncAPY
 import trio
 
-server = AsyncAPY(addr='0.0.0.0', port=1500, encoding="json", logging_level=10, byteorder='big')
+server = AsyncAPY(addr='127.0.0.1', port=1500, encoding="json", logging_level=10, byteorder='big')
 
 
 @server.handler_add()

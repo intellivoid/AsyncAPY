@@ -45,3 +45,17 @@ class TestAsyncAPY:
         client.disconnect()
 
 
+    def test_header_rebuilding(self):
+        client = defaultclient.Client("127.0.0.1", 1500)
+        client.connect()
+        payload = {"req": "test_payload"}
+        payload = json.dumps(payload)
+        length_header = (len(payload) + 2).to_bytes(client.header_size, client.byteorder)
+        content_encoding = (0).to_bytes(1, "big")
+        protocol_version = (22).to_bytes(1, "big")
+        headers = length_header + protocol_version + content_encoding
+        packet = headers + payload.encode()
+        for byte in packet:
+            client.sock.send(byte.to_bytes(1, client.byteorder))
+        assert json.loads(client.receive_all()[client.header_size + 2:]) == json.loads(payload)
+

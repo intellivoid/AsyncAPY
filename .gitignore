@@ -131,4 +131,8 @@ dmypy.json
 
 # PyCharm
 
-.idea/*
+.idea/
+
+# MacOS metadata files
+
+.DS_store
