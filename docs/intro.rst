@@ -13,5 +13,5 @@ This will install AsyncAPY and its dependencies in your system
 
 
 **Note**: On Windows systems, unless you are using PowerShell, you may need to replace ``python3`` with ``py`` or ``py3`` for the commands to work, assuming you added it to ``PYTHONPATH`` when installed Python.
-Please consider also that this command needs admin privileges to be run properly
+Please consider also that this command needs admin privileges to be run properly (There is one dependency which needs to be installed from ``setup.py``)
 
