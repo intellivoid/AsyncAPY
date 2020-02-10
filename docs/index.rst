@@ -13,6 +13,8 @@ Welcome to AsyncAPY's documentation!
    modules
    AsyncAPY
    intro
+   faqs
+   examples
 
 Indices and tables
 ==================

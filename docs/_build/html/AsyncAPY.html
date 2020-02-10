@@ -104,6 +104,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">AsyncAPY - Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faqs.html">AsyncAPY - Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">AsyncAPY - Code Examples</a></li>
 </ul>
 
             
@@ -519,7 +521,7 @@ the field value will also be checked with <code class="docutils literal notransl
 <span id="objects-asyncapy-objects"></span><h2>Objects - AsyncAPY.objects<a class="headerlink" href="#module-AsyncAPY.objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="AsyncAPY.objects.Client">
-<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">addr: str</em>, <em class="sig-param">server</em>, <em class="sig-param">stream=None</em>, <em class="sig-param">session: str = None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">addr: str</em>, <em class="sig-param">server</em>, <em class="sig-param">stream=None</em>, <em class="sig-param">session: str = None</em>, <em class="sig-param">encoding: int = None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This class represents a client, it is a high-level wrapper around the methods and objects of AsyncAPY</p>
 <dl class="field-list simple">
@@ -529,6 +531,7 @@ the field value will also be checked with <code class="docutils literal notransl
 <li><p><strong>server</strong> (class: <code class="docutils literal notranslate"><span class="pre">AsyncAPY.base.AsyncAPY</span></code>) – The server object, needed to send back packets</p></li>
 <li><p><strong>stream</strong> (class: <code class="docutils literal notranslate"><span class="pre">trio.SocketStream</span></code>) – The trio socket object associated with the client</p></li>
 <li><p><strong>session</strong> (<em>str</em>) – The session_id of the client, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>encoding</strong> (<em>int</em>) – The client encoding, determined at every new session (can’t change across the session), it can either be 0, for json, or 1, for ziproto, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 </dl>

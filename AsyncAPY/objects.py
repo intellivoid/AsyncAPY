@@ -35,6 +35,8 @@ class Client:
        :type stream: class: ``trio.SocketStream``
        :param session: The session_id of the client, defaults to ``None``
        :type session: str
+       :param encoding: The client encoding, determined at every new session (can't change across the session), it can either be 0, for json, or 1, for ziproto, defaults to ``None``
+       :type encoding: int
     """
 
     def __init__(self, addr: str, server, stream=None, session: str = None, encoding: int = None):
