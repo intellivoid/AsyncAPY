@@ -11,7 +11,6 @@ AsyncAPY - Official Documentation
    :caption: Contents:
 
    modules
-   AsyncAPY
    intro
    faqs
    examples
