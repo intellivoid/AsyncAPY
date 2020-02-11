@@ -32,3 +32,15 @@ If you need two different encodings, start a new session by closing and opening 
 
 
 Also, `for V1 requests`, the encoding is the server's default encoding and can vary depending on configuration
+
+
+What the hell is ZiProto?
+-------------------------
+
+Directly from `ZiProto's official repo <https://github.com/netkas/ZiProto-Python>`_:
+
+`ZiProto is a format for serializing and compressing data`
+
+`[...] ZiProto is designed with the intention to be used for transferring data instead of using something like JSON`
+`which can use up more bandwidth when you don't intend to have the data shown to the public or end-user`
+
