@@ -5,8 +5,7 @@
 
 AsyncAPY - Official Documentation
 ====================================
-.. image:: logo.jpg
-
+.. image:: ./images/logo.jpg
 
 AsyncAPY is a fully fledged framework to easily deploy asynchronous API endpoints over a custom-made protocol (`AsyncAProto`)
 

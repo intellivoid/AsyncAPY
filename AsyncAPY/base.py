@@ -382,7 +382,7 @@ class AsyncAPY:
         return
 
     async def shutdown(self):
-        """This function is called when the server shuts down
+        """This function is called when the server shuts down.
            It has been thought to be overridden by a custom user-defined class to perform post-shutdown operations.
 
            Note that this function is called only after a proper ``KeyboardInterrupt``, aka ``Ctrl+C``

@@ -131,7 +131,7 @@ class Filters(Filter):
                :type _: class: ``Client``, unused in this specific case
                :param p: A packet object
                :type p: class: ``Packet``
-               :returns shall_pass: ``True`` if the packet's payload folllws the given structure, ``False`` otherwise
+               :returns shall_pass: ``True`` if the packet's payload follows the given structure, ``False`` otherwise
                :rtype: bool
             """
 
