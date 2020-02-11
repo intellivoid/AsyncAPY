@@ -71,5 +71,6 @@ class TestAsyncAPY:
         headers = length_header + protocol_version + content_encoding
         packet = headers + payload.encode()
         client.sock.sendall(packet)
-        assert not client.receive_all()
+        resp = client.receive_all()
+        assert json.loads(resp[client.header_size + 2:]) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}
 

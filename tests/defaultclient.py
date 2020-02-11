@@ -55,9 +55,7 @@ class Client:
         """Encodes the passed payload and sends it across the socket"""
 
         if isinstance(payload, dict):
-            payload = json.dumps(payload).encode()
-        else:
-            payload = json.loads(payload).encode()
+            payload = json.dumps(payload).encode("latin-1")
         if encoding == "ziproto":
             payload = ziproto.encode(json.loads(payload))
         content_length = (len(payload) + 2).to_bytes(self.header_size, self.byteorder)
@@ -111,11 +109,9 @@ class Client:
                         break
                 elif len(data) - self.header_size > content_length:
                     print("Invalid Content-Length header, discarding packet")
-                    del data
-                    del times
                     break
             if times == 600:
                 print("The 60 seconds timeout for reading the socket has expired, exiting...")
                 break
-
+        print(data)
         return data

@@ -123,7 +123,7 @@ class AsyncAPY:
 
     # API RESPONSE HANDLERS #
 
-    async def malformed_request(self, session_id: uuid.uuid4, stream: trio.SocketStream):
+    async def malformed_request(self, session_id: uuid.uuid4, stream: trio.SocketStream, encoding=None):
         """This is an internal method used to reply to a malformed packet/payload. Please note, that this function deals with raw objects, not with the high-level API objects used inside handlers
 
         :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the logging output
@@ -133,9 +133,9 @@ class AsyncAPY:
         """
 
         json_response = bytes(json.dumps({"status": "failure", "error": "ERR_REQUEST_MALFORMED"}), "u8")
-        response_header = len(json_response).to_bytes(self.header_size, self.byteorder)
+        response_header = (len(json_response) + 2).to_bytes(self.header_size, self.byteorder)
         response_data = response_header + json_response
-        await self.send_response(stream, response_data, session_id)
+        await self.send_response(stream, response_data, session_id, from_client=False, encoding=encoding)
 
     # END OF RESPONSE HANDLERS SECTION #
 
@@ -181,10 +181,10 @@ class AsyncAPY:
 
         if not from_client:
             if encoding is None:
-                encoding = self.encoding
+               encoding = 0 if self.encoding == 'json' else 1
             if encoding == 1:
-                header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (1).to_bytes(1, self.byteorder)
-                payload = ziproto.encode(json.loads(response_data[self.header_size:]))
+                payload = ziproto.encode(response_data[self.header_size + 2:])
+                header = (len(payload) + 2).to_bytes(self.header_size, self.byteorder) + (22).to_bytes(1, self.byteorder) + (1).to_bytes(1, self.byteorder)
                 response_data = header + payload
             else:
                 header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (0).to_bytes(1, self.byteorder)
@@ -303,13 +303,17 @@ class AsyncAPY:
                 data = json.loads(content, encoding="utf-8")
             except json.decoder.JSONDecodeError as json_error:
                 logging.error(f"({session_id}) {{Request Decoder}} Invalid JSON data, full exception -> {json_error}")
-                await self.malformed_request(session_id, stream)
+                await self.malformed_request(session_id, stream, encoding=0)
         else:
             try:
                 data = ziproto.decode(content)
+                if not isinstance(data, dict):
+                    logging.error(f"({session_id}) {{Request Decoder}} Invalid ziproto encoded payload!")
+                    await self.malformed_request(session_id, stream, encoding=1)
             except Exception as e:
                 logging.error(f"({session_id}) {{Request Decoder}} Something went wrong while deserializing ZiProto -> {e}")
-                await self.malformed_request(session_id, stream)
+                await self.malformed_request(session_id, stream, encoding=1)
+
         return data
 
     async def parse_call(self, session_id: uuid.uuid4, request: bytes, stream: trio.SocketStream):
@@ -343,13 +347,18 @@ class AsyncAPY:
         logging.debug(f"({session_id}) {{API Parser}} Protocol-Version is {'V1' if protocol_version == 11 else 'V2'}, Content-Encoding is {'json' if not content_encoding else 'ziproto'}")
         if protocol_version == 11 and content_encoding in (0, 1):
             logging.warning(f"({session_id}) {{API Parser}} V1 packets shouldn't include a Content-Encoding header!")
-            await stream.aclose()
+            await self.malformed_request(session_id, stream, encoding=content_encoding)
         else:
             if content_encoding:
                enc = "ziproto"
             else:
                enc = "json"
-            client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=content_encoding)
+            try:
+                client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=content_encoding)
+            except OSError:
+                logging.error(f"({session_id}) {{API Parser}} The connection was closed abruptly")
+                await stream.aclose()
+                return
             packet = Packet(payload, sender=client, encoding=enc)
             if client.address not in self.banned:
                 for handler in self.handlers:
