@@ -28,8 +28,8 @@ This project is part of the Intellivoid Technologies' ecosystem and will be used
 
 ## The main developer
 
-Nocturn9x aka IsGiambyy - [Github](https://github.com/nocturn9x) & [Telegram](t.me/isgiambyy)
-
+Nocturn9x aka IsGiambyy - [Github](https://github.com/nocturn9x) & [Telegram](https://t.me/isgiambyy)
 ## Contributors
 
-Penn5 - [Github](https://github.com/penn5) & [Telegram](t.me/Hackintosh5)
+Penn5 - [Github](https://github.com/penn5) & [Telegram](https://t.me/Hackintosh5)
+
