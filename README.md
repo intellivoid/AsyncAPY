@@ -19,3 +19,19 @@ As of today, the latest version of AsyncAPY is 0.2.4-dev
 # Documentation
 
 The official documentation is available [here](https://asyncapy.readthedocs.io/en/dev)
+
+
+# Credits
+
+## Intellivoid Technologies
+
+This project is part of the Intellivoid Technologies' ecosystem and will be used to serve various services to many users
+
+## The main developer
+
+Nocturn9x aka IsGiambyy - [Github](https://github.com/nocturn9x) & [Telegram](t.me/isgiambyy)
+
+## Contributors
+
+Penn5 - [Github](https://github.com/penn5) & [Telegram](t.me/Hackintosh5)
+
