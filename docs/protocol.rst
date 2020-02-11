@@ -16,7 +16,8 @@ The protocol - A simple header system
 
 AsyncAProto is divided into 2 versions, V1 and V2, which differ in the number of headers that are used.
 
-AsyncAProto V1 does not have the ``Content-Encoding`` header and has been thought for the cases when it's not possible to determine the payload's encoding.
+.. note::
+   AsyncAProto V1 does not have the ``Content-Encoding`` header and has been thought for the cases when it's not possible to determine the payload's encoding.
 
 The three headers are:
 
@@ -43,15 +44,18 @@ and the ZiProto equivalent:
 
 Both the byte order and the header size can be customized, by setting the ``AsyncAPY.byteorder`` and ``AsyncAPY.header_size`` parameters
             
-.. note::
+.. warning::
    Internally, also ZiProto requests are converted into JSON-like data structures, and then converted back to ZiProto before
    being sent to the client. In order to be valid, then, the request MUST have a key-value structure, and then be encoded in ZiProto
 
 
 The protocol - Warnings
 -----------------------
-    
-Please note, that if an invalid header is prepended to the payload, or no header is provided at all, the packet will be considered as corrupted and it'll be ignored. Specifically, the possible cases are:
+
+.. note::
+   Please note, that if an invalid header is prepended to the payload, or no header is provided at all, the packet will be considered as corrupted and it'll be ignored.
+
+Specifically, the possible cases are:	
 
 - If the ``Content-Length`` header is bigger than ``AsyncAPY.header_size`` bytes, the server will read only ``AsyncAPY.header_size`` bytes as the ``Content-Length`` header, thus resulting in undesired behavior (most likely the server won't be able to read the socket correctly, thus resulting in the timeout to expire) 
 
@@ -68,12 +72,12 @@ Please note, that if an invalid header is prepended to the payload, or no header
 - If the complete stream is shorter than ``AsyncAPY.header_size + 3`` bytes, the packet will be rejected
 
                               
-.. note:
+.. note::
    AsyncAPY is not meant for users staying connected a long time, as it's an API server framework, the recommended timeout is 60 seconds (default) 
              
-.. warning:
-   Please also know that the byte order is important and **must be consistent** between the client and the server! The number 24 encoded in big endian is decoded as 6144 if decoded with little endian, the same things happens with little endian byte sequences being decoded as big endian ones, so be careful! 
+.. warning::
+   Please also know that the byte order is important and **must be consistent** between the client and the server! The number 24 encoded in big endian is decoded as 6144 if decoded with little endian, the same thing happens with little endian byte sequences being decoded as big endian ones, so be careful! 
             
 .. note::
    Just as the server must be able to manage any package fragmentation, the clients must also implement the same strategies discussed above
-             
+

@@ -171,7 +171,7 @@ class Handler:
         return self.priority == other.priority
 
     def compare_filters(self, other):
-        """Another method meant for internal use, used inside ``self.__eq__()``, compares filters instead of priorities
+        """A method meant for internal use, used inside ``self.__eq__()``, compares filters instead of priorities
 
         :param other: Another instance of ``Handler``
         :type other: class: ``Handler``

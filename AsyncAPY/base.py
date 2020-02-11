@@ -30,7 +30,7 @@ import configparser
 
 
 class AsyncAPY:
-    """This class is the base class for the AsyncAPython framework.
+    """This class is the base class for the AsyncAPY framework.
 
         It implements AsyncAProto, the dedicated application protocol
         developed specifically for AsyncAPY. It also implements all the functionalities of the AsyncAPY framework
@@ -55,7 +55,7 @@ class AsyncAPY:
         :type byteorder: str, optional
         :param encoding: The server's default encoding for payloads. It is used for V1 packets and it can either be ``'json'`` or ``'ziproto'``, defaults to ``'json'``
         :type encoding: str, optional
-        :param config: The path to the configuration file
+        :param config: The path to the configuration file, defaults to ``None`` (no config)
         :type config: str, None, optional
         :param cfg_parser:  If you want to use a custom configparser object, you can specify it here
         :type cfg_parser: class: ``configparser.ConfigParser()``
@@ -213,7 +213,7 @@ class AsyncAPY:
 
     async def rebuild_incomplete_stream(self, session_id: uuid.uuid4, stream: trio.SocketStream, raw_data: bytes):
         """
-        This function gets called when a stream's length is smaller than self.header_size bytes, which
+        This function gets called when a stream's length is smaller than ``self.header_size`` bytes, which
         is the minimum amount of data needed to parse an API call (The length header)
 
         :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
@@ -282,7 +282,7 @@ class AsyncAPY:
         return stream_data
 
     async def decode_content(self, content, session_id: str, stream: trio.SocketStream, encoding=None):
-        """Decodes the payload with the specified encoding, if any, or falls back to the ``self.encoding``
+        """Decodes the payload with the specified encoding, if any, or falls back to ``self.encoding``
 
            :param content: The byte-encoded payload
            :type content: bytes
@@ -314,7 +314,7 @@ class AsyncAPY:
 
     async def parse_call(self, session_id: uuid.uuid4, request: bytes, stream: trio.SocketStream):
 
-        """This function parses the API request and acts accordingly
+        """This function parses the API request and acts accordingly (e.g. decoding the payload and calling handlers)
 
            :param request: The byte-encoded payload
            :type request: bytes
@@ -376,12 +376,17 @@ class AsyncAPY:
                 await stream.aclose()
 
     async def setup(self):
-        """This function is called when the server is started"""
-
+        """This function is called when the server is started.
+           It has been thought to be overridden by a custom user-defined class to perform pre-startup operations
+        """
         return
 
     async def shutdown(self):
-        """This function is called when the server shuts down"""
+        """This function is called when the server shuts down
+           It has been thought to be overridden by a custom user-defined class to perform post-shutdown operations.
+
+           Note that this function is called only after a proper ``KeyboardInterrupt``, aka ``Ctrl+C``
+           """
         return
 
     async def unban(self, ip: str):
