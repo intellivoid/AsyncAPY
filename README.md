@@ -2,7 +2,7 @@
 
 ![Intellivoid](https://i.imgur.com/LKjpZMX.png)
 
-[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=latest)](https://asyncapy.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=master)](https://travis-ci.com/intellivoid/AsyncAPY) ![Open Issues](https://img.shields.io/github/issues/intellivoid/AsyncAPY) ![License](https://img.shields.io/github/license/intellivoid/AsyncAPY)
+[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=dev)](https://asyncapy.readthedocs.io/en/dev/?badge=dev) [![Build Status](https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=dev)](https://travis-ci.com/intellivoid/AsyncAPY) ![Open Issues](https://img.shields.io/github/issues/intellivoid/AsyncAPY) ![License](https://img.shields.io/github/license/intellivoid/AsyncAPY)
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/nocturn9x/AsyncAPY) ![Version](https://img.shields.io/badge/version-0.2.4--dev-blue)
 
