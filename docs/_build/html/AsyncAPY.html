@@ -175,7 +175,7 @@
 <dt id="AsyncAPY.base.AsyncAPY">
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.base.</code><code class="sig-name descname">AsyncAPY</code><span class="sig-paren">(</span><em class="sig-param">addr: Optional[str] = '127.0.0.1'</em>, <em class="sig-param">port: Optional[int] = 8081</em>, <em class="sig-param">buf: Optional[int] = 1024</em>, <em class="sig-param">logging_level: int = 20</em>, <em class="sig-param">console_format: Optional[str] = '[%(levelname)s] %(asctime)s %(message)s'</em>, <em class="sig-param">datefmt: Optional[str] = '%d/%m/%Y %H:%M:%S %p'</em>, <em class="sig-param">timeout: Optional[int] = 60</em>, <em class="sig-param">header_size: int = 4</em>, <em class="sig-param">byteorder: str = 'big'</em>, <em class="sig-param">encoding: str = 'json'</em>, <em class="sig-param">config: str = None</em>, <em class="sig-param">cfg_parser=None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is the base class for the AsyncAPython framework.</p>
+<p>This class is the base class for the AsyncAPY framework.</p>
 <p>It implements AsyncAProto, the dedicated application protocol
 developed specifically for AsyncAPY. It also implements all the functionalities of the AsyncAPY framework</p>
 <dl class="field-list simple">
@@ -191,7 +191,7 @@ developed specifically for AsyncAPY. It also implements all the functionalities 
 <li><p><strong>header_size</strong> (<em>int</em><em>, </em><em>optional</em>) – The size of the <code class="docutils literal notranslate"><span class="pre">Content-Length</span></code> header can be customized. In an environment with small payloads a 2-byte header may be used to reduce overhead, defaults to 4</p></li>
 <li><p><strong>byteorder</strong> (<em>str</em><em>, </em><em>optional</em>) – The order that the server will follow to read packets. It can either be <code class="docutils literal notranslate"><span class="pre">'little'</span></code> or <code class="docutils literal notranslate"><span class="pre">'big'</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">'big'</span></code></p></li>
 <li><p><strong>encoding</strong> (<em>str</em><em>, </em><em>optional</em>) – The server’s default encoding for payloads. It is used for V1 packets and it can either be <code class="docutils literal notranslate"><span class="pre">'json'</span></code> or <code class="docutils literal notranslate"><span class="pre">'ziproto'</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">'json'</span></code></p></li>
-<li><p><strong>config</strong> (<em>str</em><em>, </em><em>None</em><em>, </em><em>optional</em>) – The path to the configuration file</p></li>
+<li><p><strong>config</strong> (<em>str</em><em>, </em><em>None</em><em>, </em><em>optional</em>) – The path to the configuration file, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code> (no config)</p></li>
 <li><p><strong>cfg_parser</strong> (class: <code class="docutils literal notranslate"><span class="pre">configparser.ConfigParser()</span></code>) – If you want to use a custom configparser object, you can specify it here</p></li>
 </ul>
 </dd>
@@ -240,7 +240,7 @@ developed specifically for AsyncAPY. It also implements all the functionalities 
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.decode_content">
 <em class="property">async </em><code class="sig-name descname">decode_content</code><span class="sig-paren">(</span><em class="sig-param">content</em>, <em class="sig-param">session_id: str</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">encoding=None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.decode_content" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decodes the payload with the specified encoding, if any, or falls back to the <code class="docutils literal notranslate"><span class="pre">self.encoding</span></code></p>
+<dd><p>Decodes the payload with the specified encoding, if any, or falls back to <code class="docutils literal notranslate"><span class="pre">self.encoding</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -309,7 +309,7 @@ developed specifically for AsyncAPY. It also implements all the functionalities 
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.parse_call">
 <em class="property">async </em><code class="sig-name descname">parse_call</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">request: bytes</em>, <em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.parse_call" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function parses the API request and acts accordingly</p>
+<dd><p>This function parses the API request and acts accordingly (e.g. decoding the payload and calling handlers)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -324,7 +324,7 @@ developed specifically for AsyncAPY. It also implements all the functionalities 
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.rebuild_incomplete_stream">
 <em class="property">async </em><code class="sig-name descname">rebuild_incomplete_stream</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">raw_data: bytes</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.rebuild_incomplete_stream" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function gets called when a stream’s length is smaller than self.header_size bytes, which
+<dd><p>This function gets called when a stream’s length is smaller than <code class="docutils literal notranslate"><span class="pre">self.header_size</span></code> bytes, which
 is the minimum amount of data needed to parse an API call (The length header)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -376,13 +376,16 @@ is the minimum amount of data needed to parse an API call (The length header)</p
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.setup">
 <em class="property">async </em><code class="sig-name descname">setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is called when the server is started</p>
+<dd><p>This function is called when the server is started.
+It has been thought to be overridden by a custom user-defined class to perform pre-startup operations</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.shutdown">
 <em class="property">async </em><code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.shutdown" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function is called when the server shuts down</p>
+<dd><p>This function is called when the server shuts down.
+It has been thought to be overridden by a custom user-defined class to perform post-shutdown operations.</p>
+<p>Note that this function is called only after a proper <code class="docutils literal notranslate"><span class="pre">KeyboardInterrupt</span></code>, aka <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code></p>
 </dd></dl>
 
 <dl class="method">
@@ -461,7 +464,7 @@ the field value will also be checked with <code class="docutils literal notransl
 </ul>
 </dd>
 <dt class="field-even">Returns shall_pass</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the filter was passed, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the packet’s payload follows the given structure, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>bool</p>
@@ -496,7 +499,7 @@ the field value will also be checked with <code class="docutils literal notransl
 </ul>
 </dd>
 <dt class="field-even">Returns shall_pass</dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the filter was passed, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the client’s IP is in the filters, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>bool</p>
@@ -648,7 +651,7 @@ with its priority and filters</p>
 <dl class="method">
 <dt id="AsyncAPY.objects.Handler.compare_filters">
 <code class="sig-name descname">compare_filters</code><span class="sig-paren">(</span><em class="sig-param">other</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.compare_filters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Another method meant for internal use, used inside <code class="docutils literal notranslate"><span class="pre">self.__eq__()</span></code>, compares filters instead of priorities</p>
+<dd><p>A method meant for internal use, used inside <code class="docutils literal notranslate"><span class="pre">self.__eq__()</span></code>, compares filters instead of priorities</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>other</strong> (class: <code class="docutils literal notranslate"><span class="pre">Handler</span></code>) – Another instance of <code class="docutils literal notranslate"><span class="pre">Handler</span></code></p>

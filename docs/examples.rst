@@ -7,4 +7,4 @@ Filters Examples
 
 Here is an example of how to use AsyncAPY's ``Filter`` objects
 
-.. literalinclude:: filters.py
+.. literalinclude:: ../examples/filters.py

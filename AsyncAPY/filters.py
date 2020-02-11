@@ -90,7 +90,7 @@ class Filters(Filter):
             :type c: class: ``Client``
             :param _: A packet object, unused in this specific case
             :type _: class: ``Packet``
-            :returns shall_pass: ``True`` if the filter was passed, ``False`` otherwise
+            :returns shall_pass: ``True`` if the client's IP is in the filters, ``False`` otherwise
             :rtype: bool
             """
 
@@ -131,7 +131,7 @@ class Filters(Filter):
                :type _: class: ``Client``, unused in this specific case
                :param p: A packet object
                :type p: class: ``Packet``
-               :returns shall_pass: ``True`` if the filter was passed, ``False`` otherwise
+               :returns shall_pass: ``True`` if the packet's payload follows the given structure, ``False`` otherwise
                :rtype: bool
             """
 
