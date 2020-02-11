@@ -97,7 +97,9 @@ Now open two terminal windows, run ``example.py`` again and then ``testclient.py
 
     [INFO] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} The connection was closed
 
+
 while your client output will look like this:
+
  ::
 
     b'\x00\x00\x00\r\x16\x00{"test": 1}'
@@ -105,7 +107,8 @@ while your client output will look like this:
 As you can see, we got the same JSON encoded packet that we sent!
 
 
-.. note:
+.. note::
+
    Note that the line ``server.add_handler(echo_server)`` can be shortened the following way:
           
 .. code-block:: python
