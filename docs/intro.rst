@@ -58,7 +58,7 @@ Save this script into a file named ``example.py`` and try running it; your outpu
 
 What happens if we send a packet to our new, shiny, echo server? Let's try to use the testing client to send a packet to our server: create a new empty file, name it ``testclient.py`` and paste the following
 
-**Note**: We will be using the test client available `here <https://github.com/nocturn9x/AsyncAPY/tree/dev/tests/defaultclient.py>`_, be sure to download that file and put it in your working directory
+**Note**: We will be using the test client available in the official `Github Repository <https://github.com/nocturn9x/AsyncAPY/tree/dev/tests/defaultclient.py>`_, be sure to download that file and put it in your working directory
 
 .. code-block:: python
 
@@ -105,12 +105,25 @@ while your client output will look like this:
 As you can see, we got the same JSON encoded packet that we sent!
 
 
-**P.S.**: Note that the line ``server.add_handler(echo_server)`` can be shortened the following way:
-
+.. note:
+   Note that the line ``server.add_handler(echo_server)`` can be shortened the following way:
+          
 .. code-block:: python
 
    @server.handler_add()
    async def your_handler(c, p):
       ...
 
+
+
+Filtering payloads and clients
+------------------------------
+
+AsyncAPY gives you the possibility to set some conditions to your handlers, which must all be met for it to be executed. Those conditions are represented in Python trough ``Filter`` objects, which are located in the ``Filters`` class of the ``AsyncAPY.filters`` module (see `here <https://asyncapy.readthedocs.io/en/latest/AsyncAPY.html#module-AsyncAPY.filters>`_)
+
+Filters can be applied to a handler by passing a list of the desired filter(s) objects to the ``AsyncAPY.add_handler()`` method and of course to its decorator counterpart, ``@AsyncAPY.handler_add``.
+
+An example of a filtered handler can be found in our dedicated `examples section <https://asyncapy.readthedocs.io/en/latest/examples.html#filters-examples>`_
+						   
+If you have issues with non-passing filters, try reading our `FAQ <https://asyncapy.readthedocs.io/en/latest/faqs.html#why-don-t-my-filter-pass>`_ on this topic
 
