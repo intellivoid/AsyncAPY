@@ -42,8 +42,8 @@ and the ZiProto equivalent:
 ``\x00\x00\x00\x0b\x16\x01\x81\xa3foo\xa3bar``
 
 Both the byte order and the header size can be customized, by setting the ``AsyncAPY.byteorder`` and ``AsyncAPY.header_size`` parameters
-          
-..note::
+            
+.. note::
    Internally, also ZiProto requests are converted into JSON-like data structures, and then converted back to ZiProto before
    being sent to the client. In order to be valid, then, the request MUST have a key-value structure, and then be encoded in ZiProto
 
