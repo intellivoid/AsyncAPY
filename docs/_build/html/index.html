@@ -152,9 +152,20 @@
             
   <div class="section" id="asyncapy-official-documentation">
 <h1>AsyncAPY - Official Documentation<a class="headerlink" href="#asyncapy-official-documentation" title="Permalink to this headline">¶</a></h1>
-<img alt="_images/logo.jpg" src="_images/logo.jpg" />
+<img alt="_images/logo.png" src="_images/logo.png" />
 <p>AsyncAPY is a fully fledged framework to easily deploy asynchronous API endpoints over a custom-made protocol (<cite>AsyncAProto</cite>)</p>
 <p>It deals with all the low level I/O stuff, error handling and async calls, exposing a high-level and easy-to-use API designed with simplicity in mind.</p>
+<p>Some of its features include:</p>
+<ul class="simple">
+<li><p><strong>Fully</strong> asynchronous</p></li>
+<li><p>Automatic timeout and error handling</p></li>
+<li><p>Custom application layer protocol to reduce overhead</p></li>
+<li><p>Groups: multiple functions can handle the same packet and interact with the remote client</p></li>
+<li><p><strong>Powerful, easy-to-use and high level</strong> API for clients and packets</p></li>
+<li><p>Packets filtering</p></li>
+</ul>
+<p>As of today, there is no native TLS support, as AsyncAPY is meant to be ran behind a load balancer/reverse proxy such as HaProxy or Nginx. If you really want to use it as a stand-alone API server,
+feel free to open an issue on the <a class="reference external" href="https://github.com/intellivoid/AsyncAPY">repository</a>  with the label “enhancement” and I’ll consider adding optional TLS support.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -172,6 +183,7 @@
 <li class="toctree-l2"><a class="reference internal" href="faqs.html#my-console-output-is-not-ordered-why">My console output is not ordered, why?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faqs.html#why-don-t-my-filter-pass">Why don’t my filter pass?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="faqs.html#the-encoding-of-the-responses-is-wrong">The encoding of the responses is wrong!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faqs.html#what-the-hell-is-ziproto">What the hell is ZiProto?</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">AsyncAPY - Code Examples</a><ul>

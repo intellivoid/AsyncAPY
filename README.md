@@ -2,7 +2,7 @@
 
 ![Intellivoid](https://i.imgur.com/D7SOaJJ.png)
 
-[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=latest)](https://asyncapy.readthedocs.io/en/latest/?badge=latest) [![Build Status](https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=master)](https://travis-ci.com/intellivoid/AsyncAPY) ![Open Issues](https://img.shields.io/github/issues/intellivoid/AsyncAPY) ![License](https://img.shields.io/github/license/intellivoid/AsyncAPY)
+[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=dev)](https://asyncapy.readthedocs.io/en/dev/?badge=dev) [![Build Status](https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=dev)](https://travis-ci.com/intellivoid/AsyncAPY) ![Open Issues](https://img.shields.io/github/issues/intellivoid/AsyncAPY) ![License](https://img.shields.io/github/license/intellivoid/AsyncAPY)
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/nocturn9x/AsyncAPY) ![Version](https://img.shields.io/badge/version-0.2.4--dev-blue)
 
@@ -18,7 +18,12 @@ As of today, the latest version of AsyncAPY is 0.2.4-dev
 
 # Documentation
 
+<<<<<<< HEAD
 The official documentation is available [here](https://asyncapy.readthedocs.io)
+=======
+The official documentation is available [here](https://asyncapy.readthedocs.io/en/dev)
+
+>>>>>>> dev
 
 # Credits
 
@@ -29,7 +34,14 @@ This project is part of the Intellivoid Technologies' ecosystem and will be used
 ## The main developer
 
 Nocturn9x aka IsGiambyy - [Github](https://github.com/nocturn9x) & [Telegram](https://t.me/isgiambyy)
+<<<<<<< HEAD
 ## Contributors
 
 Penn5 - [Github](https://github.com/penn5) & [Telegram](https://t.me/Hackintosh5)
 
+=======
+
+## Contributors
+
+Penn5 - [Github](https://github.com/penn5) & [Telegram](https://t.me/Hackintosh5)
+>>>>>>> dev
