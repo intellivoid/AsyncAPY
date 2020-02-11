@@ -18,8 +18,7 @@ As of today, the latest version of AsyncAPY is 0.2.4-dev
 
 # Documentation
 
-The official documentation is available [here](https://asyncapy.readthedocs.io/en/dev)
-
+The official documentation is available [here](https://asyncapy.readthedocs.io)
 
 # Credits
 
@@ -34,3 +33,4 @@ Nocturn9x aka IsGiambyy - [Github](https://github.com/nocturn9x) & [Telegram](ht
 ## Contributors
 
 Penn5 - [Github](https://github.com/penn5) & [Telegram](https://t.me/Hackintosh5)
+
