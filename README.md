@@ -18,4 +18,4 @@ As of today, the latest version of AsyncAPY is 0.2.4-dev
 
 # Documentation
 
-The official documentation is available [here](https://asyncapy.readthedocs.io/en/)
+The official documentation is available [here](https://asyncapy.readthedocs.io)
