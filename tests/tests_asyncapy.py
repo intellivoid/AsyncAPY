@@ -59,3 +59,17 @@ class TestAsyncAPY:
             client.sock.send(byte.to_bytes(1, client.byteorder))
         assert json.loads(client.receive_all()[client.header_size + 2:]) == json.loads(payload)
 
+
+    def test_invalid_v1_request(self):
+        client = defaultclient.Client("127.0.0.1", 1500)
+        client.connect()
+        payload = {"req": "test_payload"}
+        payload = json.dumps(payload)
+        length_header = (len(payload) + 2).to_bytes(client.header_size, client.byteorder)
+        content_encoding = (0).to_bytes(1, "big")
+        protocol_version = (11).to_bytes(1, "big")
+        headers = length_header + protocol_version + content_encoding
+        packet = headers + payload.encode()
+        client.sock.sendall(packet)
+        assert not client.receive_all()
+
