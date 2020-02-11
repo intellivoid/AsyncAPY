@@ -34,6 +34,3 @@ Nocturn9x aka IsGiambyy - [Github](https://github.com/nocturn9x) & [Telegram](ht
 
 Penn5 - [Github](https://github.com/penn5) & [Telegram](https://t.me/Hackintosh5)
 
-## Contributors
-
-Penn5 - [Github](https://github.com/penn5) & [Telegram](https://t.me/Hackintosh5)
