@@ -105,7 +105,7 @@ while your client output will look like this:
 As you can see, we got the same JSON encoded packet that we sent!
 
 
-.. note:
+.. note::
    Note that the line ``server.add_handler(echo_server)`` can be shortened the following way:
           
 .. code-block:: python
