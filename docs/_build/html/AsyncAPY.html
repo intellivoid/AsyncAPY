@@ -294,7 +294,7 @@ developed specifically for AsyncAPY. It also implements all the functionalities 
 
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.malformed_request">
-<em class="property">async </em><code class="sig-name descname">malformed_request</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.malformed_request" title="Permalink to this definition">¶</a></dt>
+<em class="property">async </em><code class="sig-name descname">malformed_request</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">encoding=None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.malformed_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is an internal method used to reply to a malformed packet/payload. Please note, that this function deals with raw objects, not with the high-level API objects used inside handlers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

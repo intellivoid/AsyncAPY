@@ -331,6 +331,10 @@ class AsyncAPY:
         req_valid = False
         protocol_version = request[0]
         content_encoding = request[1]
+        if len(request) < 5:
+            logging.error(f"({session_id}) {{API Parser}} Stream is too short, ignoring!")
+            await stream.aclose()
+            return None
         if protocol_version not in (11, 22):
             logging.error(f"({session_id}) {{API Parser}} Invalid Protocol-Version header in packet!")
             await stream.aclose()
@@ -375,9 +379,11 @@ class AsyncAPY:
         else:
             logging.debug(f"({session_id}) {{API Parser}} Whoops, that user is banned! Ignoring")
             await stream.aclose()
+            return None
         if not req_valid:
             logging.warning(f"({session_id}) {{API Parser}} No such handler for this request, closing the connection to spare memory!")
             await stream.aclose()
+            return None
 
     async def setup(self):
         """This function is called when the server is started.

@@ -69,7 +69,7 @@ Specifically, the possible cases are:
 
 - In case of a V1 request, the server will use the server's default encoding to decode the payload (and reject the packet on decoding failure)
 
-- If the complete stream is shorter than ``AsyncAPY.header_size + 3`` bytes, the packet will be rejected
+- If the complete stream is shorter than ``AsyncAPY.header_size + 5`` bytes, which is the minimum size of a packet, the packet will be rejected
 
                               
 .. note::
