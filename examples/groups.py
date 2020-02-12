@@ -12,7 +12,7 @@ async def echo_server(client, packet):
 
 
 @server.handler_add(priority=1)    # Adding a priority is compulsory, or a RuntimeError exception will be raised
-async def echo_server(client, packet):
+async def echo_server_2(client, packet):
     print(f"Hello world from {client} inside a group!")
     print(f"Echoing back {packet}...")
     await client.send(packet)
