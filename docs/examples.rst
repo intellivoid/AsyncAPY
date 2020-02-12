@@ -11,6 +11,9 @@ Here is an example of how to use AsyncAPY's ``Filter`` objects
 
 Here is an example of how to use AsyncAPY's grouping features
 
+Groups Examples
+---------------
+
 .. literalinclude:: ../examples/groups.py
 
 .. note::
