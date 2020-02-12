@@ -12,7 +12,6 @@ class TestAsyncAPY:
         client.connect()
         client.send({"test": 1}, encoding=enc)
         response = client.receive_all()
-        print(response)
         content_length = int.from_bytes(response[0:client.header_size], client.byteorder)
         protocol_version = int.from_bytes(response[client.header_size:client.header_size + 1], "big")
         content_encoding = int.from_bytes(response[client.header_size + 1:client.header_size + 2], "big")
@@ -72,5 +71,20 @@ class TestAsyncAPY:
         packet = headers + payload.encode()
         client.sock.sendall(packet)
         resp = client.receive_all()
-        assert json.loads(resp[client.header_size + 2:]) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}
+        assert json.loads(resp[client.header_size + 2:]) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}, resp[client.header_size + 2:]
+
+
+    def test_wrong_encoding_header(self):
+        client = defaultclient.Client("127.0.0.1", 1500)
+        client.connect()
+        payload = {"req": "test_payload"}
+        payload = json.dumps(payload)
+        length_header = (len(payload) + 2).to_bytes(client.header_size, client.byteorder)
+        content_encoding = (1).to_bytes(1, "big")
+        protocol_version = (22).to_bytes(1, "big")
+        headers = length_header + protocol_version + content_encoding
+        packet = headers + payload.encode()
+        client.sock.sendall(packet)
+        resp = client.receive_all()
+        assert json.loads(ziproto.decode(resp[client.header_size + 2:]).tobytes()) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}
 

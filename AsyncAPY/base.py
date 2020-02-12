@@ -183,13 +183,13 @@ class AsyncAPY:
             if encoding is None:
                encoding = 0 if self.encoding == 'json' else 1
             if encoding == 1:
-                payload = ziproto.encode(response_data[self.header_size + 2:])
+                payload = ziproto.encode(response_data[self.header_size:])
                 header = (len(payload) + 2).to_bytes(self.header_size, self.byteorder) + (22).to_bytes(1, self.byteorder) + (1).to_bytes(1, self.byteorder)
                 response_data = header + payload
             else:
                 header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (0).to_bytes(1, self.byteorder)
                 payload = json.loads(response_data[self.header_size:])
-                response_data = header + json.dumps(payload).encode()
+                response_data = header + json.dumps(payload).encode("utf-8")
 
         with trio.move_on_after(self.timeout) as cancel_scope:
             try:
@@ -303,7 +303,7 @@ class AsyncAPY:
                 data = json.loads(content, encoding="utf-8")
             except json.decoder.JSONDecodeError as json_error:
                 logging.error(f"({session_id}) {{Request Decoder}} Invalid JSON data, full exception -> {json_error}")
-                await self.malformed_request(session_id, stream, encoding=0)
+                await self.malformed_request(session_id, stream, encoding=0, from_client=False)
         else:
             try:
                 data = ziproto.decode(content)
@@ -312,7 +312,7 @@ class AsyncAPY:
                     await self.malformed_request(session_id, stream, encoding=1)
             except Exception as e:
                 logging.error(f"({session_id}) {{Request Decoder}} Something went wrong while deserializing ZiProto -> {e}")
-                await self.malformed_request(session_id, stream, encoding=1)
+                await self.malformed_request(session_id, stream, encoding=1, from_client=False)
 
         return data
 
