@@ -1,5 +1,5 @@
 # AsyncAPY - A fully fledged Python 3.6+ library to serve APIs asynchronously
-# Copyright (C) 2019-2020 Nocturn9x <https://github.com/nocturn9x>
+# Copyright (C) 2019-2020 Intellivoid <https://github.com/intellivoid>
 #
 # This file is part of AsyncAPY.
 #
@@ -21,7 +21,7 @@ import os
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-
+  
 os.system("python3 -m pip install git+https://github.com/netkas/ZiProto-Python")
 
 setuptools.setup(
@@ -32,7 +32,7 @@ setuptools.setup(
     description="A fully fledged Python 3.6+ library to serve APIs asynchronously",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/nocturn9x/AsyncAPY",
+    url="https://github.com/intellivoid/AsyncAPY",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
