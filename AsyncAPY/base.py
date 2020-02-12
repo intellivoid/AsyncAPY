@@ -303,7 +303,7 @@ class AsyncAPY:
                 data = json.loads(content, encoding="utf-8")
             except json.decoder.JSONDecodeError as json_error:
                 logging.error(f"({session_id}) {{Request Decoder}} Invalid JSON data, full exception -> {json_error}")
-                await self.malformed_request(session_id, stream, encoding=0, from_client=False)
+                await self.malformed_request(session_id, stream, encoding=0)
         else:
             try:
                 data = ziproto.decode(content)
@@ -312,7 +312,7 @@ class AsyncAPY:
                     await self.malformed_request(session_id, stream, encoding=1)
             except Exception as e:
                 logging.error(f"({session_id}) {{Request Decoder}} Something went wrong while deserializing ZiProto -> {e}")
-                await self.malformed_request(session_id, stream, encoding=1, from_client=False)
+                await self.malformed_request(session_id, stream, encoding=1)
 
         return data
 
@@ -329,10 +329,6 @@ class AsyncAPY:
         """
 
         req_valid = False
-        if len(request) < self.header_size + 3:  # Content-Length + Protocol-Version + Content-Encoding + 1 byte-payload
-            logging.error(f"({session_id}) {{API Parser}} Request is too short! Ignoring")
-            await stream.aclose()
-            return None
         protocol_version = request[0]
         content_encoding = request[1]
         if protocol_version not in (11, 22):
@@ -343,46 +339,45 @@ class AsyncAPY:
             logging.error(f"({session_id}) {{API Parser}} Invalid Content-Encoding header in packet!")
             await stream.aclose()
             return None
+        if protocol_version == 11 and content_encoding in (0, 1):
+            logging.error(f"({session_id}) {{API Parser}} V1 packets shouldn't include a Content-Encoding header!")
+            await self.malformed_request(session_id, stream, encoding=content_encoding)
         payload = await self.decode_content(request[2:], session_id, stream, encoding=content_encoding)
         logging.debug(f"({session_id}) {{API Parser}} Protocol-Version is {'V1' if protocol_version == 11 else 'V2'}, Content-Encoding is {'json' if not content_encoding else 'ziproto'}")
-        if protocol_version == 11 and content_encoding in (0, 1):
-            logging.warning(f"({session_id}) {{API Parser}} V1 packets shouldn't include a Content-Encoding header!")
-            await self.malformed_request(session_id, stream, encoding=content_encoding)
+        if content_encoding:
+            enc = "ziproto"
         else:
-            if content_encoding:
-               enc = "ziproto"
-            else:
-               enc = "json"
-            try:
-                client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=content_encoding)
-            except OSError:
-                logging.error(f"({session_id}) {{API Parser}} The connection was closed abruptly")
-                await stream.aclose()
-                return
-            packet = Packet(payload, sender=client, encoding=enc)
-            if client.address not in self.banned:
-                for handler in self.handlers:
-                    if isinstance(handler, Group):
-                        if handler.check(client, packet):
-                            req_valid = True
-                            logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, running group of functions")
-                            for group_handler in handler:
-                                logging.debug(f"({session_id}) {{API Parser}} Calling '{group_handler.function.__name__}'")
-                                await group_handler.call(client, packet)
-                                logging.debug(f"({session_id}) {{API Parser}} Execution of '{group_handler.function.__name__}' terminated")
-                    else:
-                        if handler.check(client, packet):
-                            req_valid = True
-                            logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, calling '{handler.function.__name__}'")
-                            await handler.call(client, packet)
-                            logging.debug(
+            enc = "json"
+        try:
+            client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=content_encoding)
+        except OSError:
+            logging.error(f"({session_id}) {{API Parser}} The connection was closed abruptly")
+            await stream.aclose()
+            return
+        packet = Packet(payload, sender=client, encoding=enc)
+        if client.address not in self.banned:
+            for handler in self.handlers:
+                if isinstance(handler, Group):
+                    if handler.check(client, packet):
+                        req_valid = True
+                        logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, running group of functions")
+                        for group_handler in handler:
+                            logging.debug(f"({session_id}) {{API Parser}} Calling '{group_handler.function.__name__}'")
+                            await group_handler.call(client, packet)
+                            logging.debug(f"({session_id}) {{API Parser}} Execution of '{group_handler.function.__name__}' terminated")
+                else:
+                    if handler.check(client, packet):
+                        req_valid = True
+                        logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, calling '{handler.function.__name__}'")
+                        await handler.call(client, packet)
+                        logging.debug(
                                 f"({session_id}) {{API Parser}} Execution of '{handler.function.__name__}' terminated")
-            else:
-                logging.debug(f"({session_id}) {{API Parser}} Whoops, that user is banned! Ignoring")
-                await stream.aclose()
-            if not req_valid:
-                logging.warning(f"({session_id}) {{API Parser}} No such handler for this request, closing the connection to spare memory!")
-                await stream.aclose()
+        else:
+            logging.debug(f"({session_id}) {{API Parser}} Whoops, that user is banned! Ignoring")
+            await stream.aclose()
+        if not req_valid:
+            logging.warning(f"({session_id}) {{API Parser}} No such handler for this request, closing the connection to spare memory!")
+            await stream.aclose()
 
     async def setup(self):
         """This function is called when the server is started.
@@ -462,7 +457,7 @@ class AsyncAPY:
                                 break
                             logging.debug(f"({session_id}) {{Client handler}} Stream completed, processing API call")
                             try:
-                                await self.parse_call(session_id, raw_data, stream)
+                                await self.parse_call(session_id, actual_data, stream)
                             except StopPropagation:
                                 await stream.aclose()
                                 logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
@@ -525,7 +520,7 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
 
         new = []
         for handler in self.handlers:
-            comparison, self.handlers = handler.compare(self.handlers, self.handlers)
+            comparison, self.handlers = handler.compare(self.handlers, self.handlers.copy())
             if len(comparison) > 1:
                 new.append(Group(comparison))
             else:
