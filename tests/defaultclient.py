@@ -113,5 +113,4 @@ class Client:
             if times == 600:
                 print("The 60 seconds timeout for reading the socket has expired, exiting...")
                 break
-        print(data)
         return data
