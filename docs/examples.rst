@@ -5,14 +5,23 @@ AsyncAPY - Code Examples
 Filters Examples
 ----------------
 
-Here is an example of how to use AsyncAPY's ``Filter`` objects
+Here is an example of how to use AsyncAPY's ``Filters`` objects
 
 .. literalinclude:: ../examples/filters.py
 
-Here is an example of how to use AsyncAPY's grouping features
+You can also use multiple ``Filters`` objects, e.g. ``Filters.Ip``, by doing the following
+
+.. literalinclude:: ../examples/morefilters.py
+
+.. warning::
+    If you want to allow multiple ips inside the ``Filters.Ip`` filter, pass
+    a list of ips, **NOT** multiple ``Filters.Ip`` objects!
+
 
 Groups Examples
 ---------------
+
+Here is an example of how to use AsyncAPY's grouping features
 
 .. literalinclude:: ../examples/groups.py
 
