@@ -22,14 +22,30 @@ Some of its features include:
 
 - **Fully** asynchronous
 - Automatic timeout and error handling
-- Custom application layer protocol to reduce overhead
+- Custom application layer protocol
 - Groups: multiple functions can handle the same packet and interact with the remote client
-- **Powerful, easy-to-use and high level** API for clients and packets
+- **Powerful, easy-to-use and high level** API for clients, packets and sessions
 - Packets filtering
 
-As of today, there is no native TLS support, as AsyncAPY is meant to be ran behind a load balancer/reverse proxy such as HaProxy or Nginx. If you really want to use it as a stand-alone API server, 
+As of today, there is no native TLS support, as AsyncAPY is meant to be ran behind a load balancer/reverse proxy such as HaProxy. If you really want to use it as a stand-alone API server, 
 feel free to open an issue on the `repository <https://github.com/intellivoid/AsyncAPY>`_  with the label "enhancement" and I'll consider adding optional TLS support.
-											
+
+
+What's new in AsyncAPY 0.3
+--------------------------
+
+The version 0.3 brought some great changes, listed below:
+
+- The way both ``Client`` and ``Packet`` object get their ``encoding`` parameter has changed for consisency purposes, check the docs!
+- Sessions are no longer just a useful way to recognize different clients in the console output, but are now ``Session`` objects which can be handy in a number of cases to interact with different clients in the same handler
+- ``Packet`` objects now have a ``dict_payload`` attribute, which is a dictionary representation of the ``payload`` attribute
+- ``Packet`` objects now suppport dict-like accessing! With a payload like ``{"foo": "bar"}``, you can do `packet["foo"]`` to get ``"bar"``
+
+.. warning::
+
+   AsyncAPY 0.3 is still in the staging phase and it's not stable enough for production!
+   If you find any bugs, please let us know by opening an `issue on the repository <https://github.com/intellivoid/AsyncAPY/issues/new/choose>`_
+
 
 .. toctree::
    :maxdepth: 2

@@ -105,6 +105,8 @@ class Packet:
     :type encoding: int
     :param sender: This parameter is meant to be initialized internally, and points to the ``Client`` object that sent the associated payload, defaults to ``None``
     :type sender: Union[Client, None], optional
+
+    ``Packet`` objects have a dict-like interface to access the payload easily. If the packet's payload is ``{"foo": "bar"}``, you can get the value of foo by doing ``yourpacket["foo"]``
     """
 
     def __init__(self, fields: Union[dict, str, bytes], encoding: str, sender: Union[Client, None] = None):
