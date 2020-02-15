@@ -22,6 +22,7 @@ from types import FunctionType
 from .errors import StopPropagation
 import json
 import ziproto
+import uuid
 
 
 class Client:
@@ -29,11 +30,11 @@ class Client:
 
        :param addr: The client's IP address
        :type address: str
-       :param server: The server object, needed to send back packets
+       :param server: The server object, needed to send back packets, it is stored in ``self._server``
        :type server: class: ``AsyncAPY.base.AsyncAPY``
        :param stream: The trio socket object associated with the client
        :type stream: class: ``trio.SocketStream``
-       :param session: The session_id of the client, defaults to ``None``
+       :param session: The session_id of the client, defaults to ``None``. Note that, internally, this parameter is replaced by a ``Session`` object
        :type session: str
        :param encoding: The client encoding, determined at every new session (can't change across the session), it can either be 0, for json, or 1, for ziproto, defaults to ``None``
        :type encoding: int
@@ -46,13 +47,13 @@ class Client:
         self.session = session
         self.encoding = "json" if not encoding else "ziproto"
 
-    async def ban(self):
+    def ban(self):
         """
         Bans the client's IP address from the server, without closing the currently
         open connection
         """
 
-        self._server.banned.add(self.address[0])
+        self._server._banned.add(self.address)
 
     async def send(self, packet, close: bool = True):
         """High-level wrapper function around `AsyncAPY.send_response()`
@@ -64,8 +65,8 @@ class Client:
         """
 
         payload = packet.payload.encode("utf-8")
-        length_header = packet.length.to_bytes(self._server.header_size, self._server.byteorder)
-        if packet.encoding == 0:
+        length_header = (packet.length + 2).to_bytes(self._server.header_size, self._server.byteorder)
+        if packet.encoding == "json":
             content_encoding = (0).to_bytes(1, self._server.byteorder)
         else:
             payload = ziproto.encode(json.loads(payload))
@@ -82,9 +83,16 @@ class Client:
         """
 
         await self._stream.aclose()
+        if self.session in self._server._sessions[self.address]:
+            self._server._sessions[self.address].remove(self.session)
 
     def __repr__(self):
         return f"Client({self.address})"
+
+    def get_sessions(self):
+        """Returns all the active sessions associated with the client's IP address"""
+
+        return self._server._sessions[self.address]
 
 
 class Packet:
@@ -93,8 +101,8 @@ class Packet:
 
     :param fields: The payload, it can either be a Python dictionary or valid JSON string (it can also be encoded as bytes)
     :type fields: Union[dict, str, bytes]
-    :param encoding: The payload desired encoding, it can either be ``"json"`` or ``"ziproto"``
-    :type encoding: str
+    :param encoding: The payload desired encoding, it can either be 0, for json, or 1 for ziproto
+    :type encoding: int
     :param sender: This parameter is meant to be initialized internally, and points to the ``Client`` object that sent the associated payload, defaults to ``None``
     :type sender: Union[Client, None], optional
     """
@@ -103,21 +111,22 @@ class Packet:
         """Object constructor"""
 
         self.sender = sender
-        if not isinstance(encoding, str):
-            raise ValueError("The encoding must be string!")
-        if not encoding in ("json", "ziproto"):
-            raise ValueError("The encoding must either be 'ziproto' or 'json'!")
-        if encoding == "json":
-            self.encoding = 0
-        elif encoding == "ziproto":
-            self.encoding = 1
+        if not isinstance(encoding, int):
+            raise ValueError("The encoding must be int!")
+        if encoding not in (0, 1):
+            raise ValueError("The encoding must either be 0 or 1!")
+        if encoding == 0:
+            self.encoding = "json"
+        elif encoding == 1:
+            self.encoding = "ziproto"
         if isinstance(fields, dict):
             self.payload = json.dumps(fields)
         elif isinstance(fields, bytes):
             self.payload = json.dumps(json.loads(fields.decode("utf-8")))
         else:
             self.payload = json.dumps(json.loads(fields))
-        self.length = len(self.payload) + 2
+        self.length = len(self.payload)
+        self.dict_payload = json.loads(self.payload)
 
     async def stop_propagation(self):
         """Stops a packet within a group, see ``AsyncAPY.errors.StopPropagation``
@@ -128,6 +137,14 @@ class Packet:
     def __repr__(self):
         return f"Packet({self.payload})"
 
+    def __iter__(self):
+        return self.dict_payload.__iter__()
+
+    def __contains__(self, other):
+        return self.dict_payload.__contains__(other)
+
+    def __getitem__(self, key):
+        return self.dict_payload.__getitem__(key)
 
 class Handler:
 
@@ -296,3 +313,53 @@ class Group:
 
         return self.handlers.__iter__()
 
+
+class Session:
+
+    """This class represents a client session
+
+       :param session_id: The UUID of the session
+       :type session_id: class: ``uuid.uuid4``
+       :param client: The client object associated with the current session
+       :type client: class: ``Client``
+       :param date: The UNIX Epoch timestamp of when the session was created
+       :type date: float
+    """
+
+    def __init__(self, session_id: uuid.uuid4, client: Client, date: float):
+       """Object constructor"""
+
+       self.session_id = session_id
+       self.client = client
+       self.date = date
+
+    async def close(self):
+        """Closes the associated client connection"""
+
+        await self.client.close()
+
+    def get_client(self):
+        """Returns the associated client object"""
+
+        return self.client
+
+    def ban_client(self, close=False):
+        """Bans the associated client' IP from the server
+
+           :param close: If ``True``, the associated client connection will be closed after its IP gets banned, defaults to ``False``
+        """
+
+        self.client.ban()
+        if close:
+            self.close()
+
+    def __repr__(self):
+        return f"Session({str(self.session_id)})"
+
+    def __hash__(self):
+        return hash(self.session_id)
+
+    def __eq__(self, other):
+        if self.__hash__() == other.__hash__() and other.date == self.date:
+            return True
+        return False

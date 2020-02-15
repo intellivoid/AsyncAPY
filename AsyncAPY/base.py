@@ -22,10 +22,11 @@ import sys
 import uuid
 import json
 from typing import Optional
-from .objects import Handler, Group, Client, Packet
+from .objects import Handler, Group, Client, Packet, Session
 from .errors import StopPropagation
 import ziproto
 import configparser
+import time
 # import ssl -> TODO Add TLS support soon, not a priority though
 
 
@@ -61,9 +62,10 @@ class AsyncAPY:
         :type cfg_parser: class: ``configparser.ConfigParser()``
     """
 
-    banned = set()
-    handlers = []
-    levels = {0: "NOTSET", 10: "DEBUG", 20: "INFO", 30: "WARNING", 40: "ERROR", 50: "Critical"}
+    _banned = set()
+    _handlers = []
+    _levels = {0: "NOTSET", 10: "DEBUG", 20: "INFO", 30: "WARNING", 40: "ERROR", 50: "Critical"}
+    _sessions = {}
 
     def __init__(self, addr: Optional[str] = "127.0.0.1", port: Optional[int] = 8081, buf: Optional[int] = 1024,
                  logging_level: int = logging.INFO,
@@ -73,6 +75,7 @@ class AsyncAPY:
         """Object constructor"""
 
         # Type checking
+
         if not isinstance(addr, str):
             raise ValueError("addr must be a string!")
         if not isinstance(port, int):
@@ -87,7 +90,7 @@ class AsyncAPY:
             raise ValueError("header_size must be an integer!")
         if not isinstance(timeout, int):
             raise ValueError("timeout must be an integer!")
-        if logging_level not in list(self.levels.keys()):
+        if logging_level not in list(self._levels.keys()):
             raise ValueError("logging_level must either be 0, 10, 20, 30, 40 or 50!")
         if not isinstance(console_format, str):
             raise ValueError("console_format must be a string!")
@@ -140,7 +143,7 @@ class AsyncAPY:
     # END OF RESPONSE HANDLERS SECTION #
 
     def add_handler(self, handler, filters=None, priority: int = 0):
-        """Registers an handler, creating a ``Handler`` object and appending it to the ``self.handlers`` attribute
+        """Registers an handler, creating a ``Handler`` object and appending it to the ``self._handlers`` attribute
 
            :param handler: A function object, it can either be synchronous or asynchronous, but the former is not recommended
            :type handler: function
@@ -149,7 +152,7 @@ class AsyncAPY:
            :param priority: Defines the execution priority inside a group of handlers, defaults to 0
         """
 
-        self.handlers.append(Handler(handler, filters, priority))
+        self._handlers.append(Handler(handler, filters, priority))
 
     def handler_add(self, filters=None, priority: int = 0):
         """Decorator version of ``AsyncAPY.add_handler()``"""
@@ -348,19 +351,21 @@ class AsyncAPY:
             await self.malformed_request(session_id, stream, encoding=content_encoding)
         payload = await self.decode_content(request[2:], session_id, stream, encoding=content_encoding)
         logging.debug(f"({session_id}) {{API Parser}} Protocol-Version is {'V1' if protocol_version == 11 else 'V2'}, Content-Encoding is {'json' if not content_encoding else 'ziproto'}")
-        if content_encoding:
-            enc = "ziproto"
-        else:
-            enc = "json"
         try:
             client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=content_encoding)
         except OSError:
             logging.error(f"({session_id}) {{API Parser}} The connection was closed abruptly")
             await stream.aclose()
             return
-        packet = Packet(payload, sender=client, encoding=enc)
-        if client.address not in self.banned:
-            for handler in self.handlers:
+        packet = Packet(payload, sender=client, encoding=content_encoding)
+        session = Session(session_id, client, time.time())
+        if not self._sessions.get(client.address, None):
+            self._sessions[client.address] = [session, ]
+        else:
+            self._sessions[client.address].append(session)
+        client.session = session
+        if client.address not in self._banned:
+            for handler in self._handlers:
                 if isinstance(handler, Group):
                     if handler.check(client, packet):
                         req_valid = True
@@ -369,6 +374,8 @@ class AsyncAPY:
                             logging.debug(f"({session_id}) {{API Parser}} Calling '{group_handler.function.__name__}'")
                             await group_handler.call(client, packet)
                             logging.debug(f"({session_id}) {{API Parser}} Execution of '{group_handler.function.__name__}' terminated")
+                        if session in self._sessions[client.address]:
+                            self._sessions[client.address].remove(session)
                 else:
                     if handler.check(client, packet):
                         req_valid = True
@@ -378,11 +385,15 @@ class AsyncAPY:
                                 f"({session_id}) {{API Parser}} Execution of '{handler.function.__name__}' terminated")
         else:
             logging.debug(f"({session_id}) {{API Parser}} Whoops, that user is banned! Ignoring")
+            if session in self._sessions[client.address]:
+                self._sessions[client.address].remove(session)
             await stream.aclose()
             return None
         if not req_valid:
             logging.warning(f"({session_id}) {{API Parser}} No such handler for this request, closing the connection to spare memory!")
             await stream.aclose()
+            if session in self._sessions[client.address]:
+                self._sessions[client.address].remove(session)
             return None
 
     async def setup(self):
@@ -406,9 +417,9 @@ class AsyncAPY:
            :type ip: str
         """
 
-        if ip in self.banned:
+        if ip in self._banned:
             logging.debug(f"{{BanHammer}} '{ip}' unbanned!")
-            self.banned.remove(ip)
+            self._banned.remove(ip)
 
     async def handle_client(self, stream: trio.SocketStream):
         """This function handles a single client connection, assigning it a unique UUID, and acts accordingly
@@ -497,6 +508,8 @@ class AsyncAPY:
                                 break
         if cancel_scope.cancelled_caught:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
+            if Session(session_id, None, None) in self._sessions[stream.getsockname[0]]:
+                self._sessions.remove(Session(session_id, None, None)
 
     async def serve_forever(self):
         """This function is the server's main loop
@@ -506,7 +519,7 @@ class AsyncAPY:
         logging.info(" {API main} AsyncAPY server is starting up")
         logging.debug("{API main} Running setup function...")
         await self.setup()
-        logging.debug(f"{{API main}} The buffer is set to {self.buf} bytes, logging is set to {self.levels[self.logging_level]}, \
+        logging.debug(f"{{API main}} The buffer is set to {self.buf} bytes, logging is set to {self._levels[self.logging_level]}, \
 encoding is {self.encoding}, header size is set to {self.header_size} bytes, byteorder is '{self.byteorder}', \
 settings were loaded from '{self.config if self.config else 'attributes'}'")
         try:
@@ -525,12 +538,12 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
         """Starts the server, doing some magic to group handlers before calling ``self.serve_forever()``"""
 
         new = []
-        for handler in self.handlers:
-            comparison, self.handlers = handler.compare(self.handlers, self.handlers.copy())
+        for handler in self._handlers:
+            comparison, self._handlers = handler.compare(self._handlers, self._handlers.copy())
             if len(comparison) > 1:
                 new.append(Group(comparison))
             else:
                 new.append(handler)
-        self.handlers = new
+        self._handlers = new
         del new
         trio.run(self.serve_forever)
