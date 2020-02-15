@@ -21,12 +21,12 @@ import os
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-  
+
 os.system("python3 -m pip install git+https://github.com/netkas/ZiProto-Python")
 
 setuptools.setup(
     name="AsyncAPY",
-    version="0.2.4-dev",
+    version="0.2.5",
     author="Mattia Giambirtone aka Nocturn9x",
     author_email="nocturn9x@intellivoid.info",
     description="A fully fledged Python 3.6+ library to serve APIs asynchronously",
