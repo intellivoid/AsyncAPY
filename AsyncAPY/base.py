@@ -109,6 +109,15 @@ class AsyncAPY:
             self.config, self.parser = config, cfg_parser
             self.load_config()
 
+    async def run_sync_task(self, sync_fn, *args, *, cancellable=False, limiter=None):
+       """Convert a blocking operation into an async operation using a thread.
+
+          This is just a shorthand for ``trio.to_thread.run_sync()``, check `trio's documentation <https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync>`_ to know more
+       """
+
+       return await trio.to_thread.run_sync(sync_fn, *args, *, cancellable=cancellable, limiter=limiter)
+
+
     def load_config(self):
         """Loads the configuration file and applies changes, this method is meant for internal use"""
 
