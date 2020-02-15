@@ -199,7 +199,7 @@ developed specifically for AsyncAPY. It also implements all the functionalities 
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.add_handler">
 <code class="sig-name descname">add_handler</code><span class="sig-paren">(</span><em class="sig-param">handler</em>, <em class="sig-param">filters=None</em>, <em class="sig-param">priority: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.add_handler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Registers an handler, creating a <code class="docutils literal notranslate"><span class="pre">Handler</span></code> object and appending it to the <code class="docutils literal notranslate"><span class="pre">self.handlers</span></code> attribute</p>
+<dd><p>Registers an handler, creating a <code class="docutils literal notranslate"><span class="pre">Handler</span></code> object and appending it to the <code class="docutils literal notranslate"><span class="pre">self._handlers</span></code> attribute</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -210,11 +210,6 @@ developed specifically for AsyncAPY. It also implements all the functionalities 
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="attribute">
-<dt id="AsyncAPY.base.AsyncAPY.banned">
-<code class="sig-name descname">banned</code><em class="property"> = {}</em><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.banned" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.complete_stream">
@@ -276,16 +271,6 @@ developed specifically for AsyncAPY. It also implements all the functionalities 
 <dd><p>Decorator version of <code class="docutils literal notranslate"><span class="pre">AsyncAPY.add_handler()</span></code></p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="AsyncAPY.base.AsyncAPY.handlers">
-<code class="sig-name descname">handlers</code><em class="property"> = []</em><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.handlers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="AsyncAPY.base.AsyncAPY.levels">
-<code class="sig-name descname">levels</code><em class="property"> = {0: 'NOTSET', 10: 'DEBUG', 20: 'INFO', 30: 'WARNING', 40: 'ERROR', 50: 'Critical'}</em><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.levels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.load_config">
 <code class="sig-name descname">load_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.load_config" title="Permalink to this definition">¶</a></dt>
@@ -294,7 +279,7 @@ developed specifically for AsyncAPY. It also implements all the functionalities 
 
 <dl class="method">
 <dt id="AsyncAPY.base.AsyncAPY.malformed_request">
-<em class="property">async </em><code class="sig-name descname">malformed_request</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.malformed_request" title="Permalink to this definition">¶</a></dt>
+<em class="property">async </em><code class="sig-name descname">malformed_request</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">stream: trio.SocketStream</em>, <em class="sig-param">encoding=None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.malformed_request" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is an internal method used to reply to a malformed packet/payload. Please note, that this function deals with raw objects, not with the high-level API objects used inside handlers</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -341,6 +326,13 @@ is the minimum amount of data needed to parse an API call (The length header)</p
 <dd class="field-odd"><p>Union[bytes, None]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.base.AsyncAPY.run_sync_task">
+<em class="property">async </em><code class="sig-name descname">run_sync_task</code><span class="sig-paren">(</span><em class="sig-param">sync_fn</em>, <em class="sig-param">*args</em>, <em class="sig-param">cancellable=False</em>, <em class="sig-param">limiter=None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY.run_sync_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a blocking operation into an async operation using a thread.</p>
+<p>This is just a shorthand for <code class="docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code>, check <a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync">trio’s documentation</a> to know more</p>
 </dd></dl>
 
 <dl class="method">
@@ -523,16 +515,16 @@ the field value will also be checked with <code class="docutils literal notransl
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>addr</strong> – The client’s IP address</p></li>
-<li><p><strong>server</strong> (class: <code class="docutils literal notranslate"><span class="pre">AsyncAPY.base.AsyncAPY</span></code>) – The server object, needed to send back packets</p></li>
+<li><p><strong>server</strong> (class: <code class="docutils literal notranslate"><span class="pre">AsyncAPY.base.AsyncAPY</span></code>) – The server object, needed to send back packets, it is stored in <code class="docutils literal notranslate"><span class="pre">self._server</span></code></p></li>
 <li><p><strong>stream</strong> (class: <code class="docutils literal notranslate"><span class="pre">trio.SocketStream</span></code>) – The trio socket object associated with the client</p></li>
-<li><p><strong>session</strong> (<em>str</em>) – The session_id of the client, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>session</strong> (<em>str</em>) – The session_id of the client, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>. Note that, internally, this parameter is replaced by a <code class="docutils literal notranslate"><span class="pre">Session</span></code> object</p></li>
 <li><p><strong>encoding</strong> (<em>int</em>) – The client encoding, determined at every new session (can’t change across the session), it can either be 0, for json, or 1, for ziproto, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 </dl>
 <dl class="method">
 <dt id="AsyncAPY.objects.Client.ban">
-<em class="property">async </em><code class="sig-name descname">ban</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.ban" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ban</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.ban" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bans the client’s IP address from the server, without closing the currently
 open connection</p>
 </dd></dl>
@@ -541,6 +533,12 @@ open connection</p>
 <dt id="AsyncAPY.objects.Client.close">
 <em class="property">async </em><code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Closes the client connection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.objects.Client.get_sessions">
+<code class="sig-name descname">get_sessions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client.get_sessions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all the active sessions associated with the client’s IP address</p>
 </dd></dl>
 
 <dl class="method">
@@ -687,11 +685,12 @@ with its priority and filters</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fields</strong> (<em>Union</em><em>[</em><em>dict</em><em>, </em><em>str</em><em>, </em><em>bytes</em><em>]</em>) – The payload, it can either be a Python dictionary or valid JSON string (it can also be encoded as bytes)</p></li>
-<li><p><strong>encoding</strong> (<em>str</em>) – The payload desired encoding, it can either be <code class="docutils literal notranslate"><span class="pre">&quot;json&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ziproto&quot;</span></code></p></li>
+<li><p><strong>encoding</strong> (<em>int</em>) – The payload desired encoding, it can either be 0, for json, or 1 for ziproto</p></li>
 <li><p><strong>sender</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#AsyncAPY.objects.Client" title="AsyncAPY.objects.Client"><em>Client</em></a><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – This parameter is meant to be initialized internally, and points to the <code class="docutils literal notranslate"><span class="pre">Client</span></code> object that sent the associated payload, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 </dl>
+<p><code class="docutils literal notranslate"><span class="pre">Packet</span></code> objects have a dict-like interface to access the payload easily. If the packet’s payload is <code class="docutils literal notranslate"><span class="pre">{&quot;foo&quot;:</span> <span class="pre">&quot;bar&quot;}</span></code>, you can get the value of foo by doing <code class="docutils literal notranslate"><span class="pre">yourpacket[&quot;foo&quot;]</span></code></p>
 <dl class="method">
 <dt id="AsyncAPY.objects.Packet.stop_propagation">
 <em class="property">async </em><code class="sig-name descname">stop_propagation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Packet.stop_propagation" title="Permalink to this definition">¶</a></dt>
@@ -701,6 +700,45 @@ with its priority and filters</p>
 <dd class="field-odd"><p>StopPropagation</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="AsyncAPY.objects.Session">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Session</code><span class="sig-paren">(</span><em class="sig-param">session_id: uuid.uuid4</em>, <em class="sig-param">client: AsyncAPY.objects.Client</em>, <em class="sig-param">date: float</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class represents a client session</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session_id</strong> (class: <code class="docutils literal notranslate"><span class="pre">uuid.uuid4</span></code>) – The UUID of the session</p></li>
+<li><p><strong>client</strong> (class: <code class="docutils literal notranslate"><span class="pre">Client</span></code>) – The client object associated with the current session</p></li>
+<li><p><strong>date</strong> (<em>float</em>) – The UNIX Epoch timestamp of when the session was created</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="AsyncAPY.objects.Session.ban_client">
+<code class="sig-name descname">ban_client</code><span class="sig-paren">(</span><em class="sig-param">close=False</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Session.ban_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bans the associated client’ IP from the server</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>close</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the associated client connection will be closed after its IP gets banned, defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.objects.Session.close">
+<em class="property">async </em><code class="sig-name descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Session.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the associated client connection</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.objects.Session.get_client">
+<code class="sig-name descname">get_client</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Session.get_client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the associated client object</p>
 </dd></dl>
 
 </dd></dl>

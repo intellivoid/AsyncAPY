@@ -7,8 +7,8 @@ AsyncAPY - Official Documentation
 ====================================
 .. image:: ./images/logo.png
 
-.. image:: https://readthedocs.org/projects/asyncapy/badge/?version=newversions-v0.3
-   :target: https://asyncapy.readthedocs.io/en/newversions-v0.3/?badge=newversions-v0.3
+.. image:: https://readthedocs.org/projects/asyncapy/badge/?version=v0.3-alpha
+   :target: https://asyncapy.readthedocs.io/en/v0.3-alpha/?badge=v0.3-alpha
    :alt: Documentation Status
 
 .. image:: https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=master
