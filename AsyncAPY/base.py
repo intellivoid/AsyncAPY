@@ -509,7 +509,7 @@ class AsyncAPY:
         if cancel_scope.cancelled_caught:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
             if Session(session_id, None, None) in self._sessions[stream.getsockname[0]]:
-                self._sessions.remove(Session(session_id, None, None)
+                self._sessions.remove(Session(session_id, None, None))
 
     async def serve_forever(self):
         """This function is the server's main loop
