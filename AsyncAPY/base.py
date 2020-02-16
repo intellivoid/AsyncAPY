@@ -271,11 +271,10 @@ class AsyncAPY:
         """
 
         stream_data = b""
+        logging.debug(f"({session_id}) {{Stream completer}} Requesting {self.buf} more bytes until length {header}")
         with trio.move_on_after(self.timeout) as cancel_scope:
             while len(stream_data) < header:
                 try:
-                    logging.debug(
-                        f"({session_id}) {{Stream completer}} Requesting {self.buf} more bytes until length {header}")
                     stream_data += await stream.receive_some(max_bytes=self.buf)
                 except trio.BrokenResourceError:
                     logging.info(f"({session_id}) {{Stream completer}} The connection was closed")
