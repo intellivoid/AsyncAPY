@@ -11,7 +11,7 @@ before_install:
   - pip install -U pip
   - pip install -U pytest
   - pip install trio setuptools wheel
-  - python setup.py install 
+  - python travis_setup.py install 
       
 script:
    - nohup python example.py &

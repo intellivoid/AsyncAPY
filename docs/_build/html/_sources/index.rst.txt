@@ -11,6 +11,7 @@ AsyncAPY - Official Documentation
    :target: https://asyncapy.readthedocs.io/en/v0.3-alpha/?badge=v0.3-alpha
    :alt: Documentation Status
 
+
 .. image:: https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=master
     :target: https://travis-ci.com/intellivoid/AsyncAPY
 
