@@ -60,6 +60,8 @@ class AsyncAPY:
         :type config: str, None, optional
         :param cfg_parser:  If you want to use a custom configparser object, you can specify it here
         :type cfg_parser: class: ``configparser.ConfigParser()``
+        :param session_limit: Defines how many concurrent sessions a client can instantiate, defaults to 0 (disabled)
+        :type session_limit: int, optional
     """
 
     _banned = set()
@@ -71,29 +73,31 @@ class AsyncAPY:
                  logging_level: int = logging.INFO,
                  console_format: Optional[str] = "[%(levelname)s] %(asctime)s %(message)s",
                  datefmt: Optional[str] = "%d/%m/%Y %H:%M:%S %p", timeout: Optional[int] = 60, header_size: int = 4,
-                 byteorder: str = "big", encoding: str = "json", config: str or None = None, cfg_parser=None):
+                 byteorder: str = "big", encoding: str = "json", config: str or None = None, cfg_parser=None, session_limit: int = 0):
         """Object constructor"""
 
         # Type checking
 
         if not isinstance(addr, str):
-            raise ValueError("addr must be a string!")
+            raise TypeError("addr must be a string!")
         if not isinstance(port, int):
-            raise ValueError("port must be an integer!")
+            raise TypeError("port must be an integer!")
         if not isinstance(buf, int):
-            raise ValueError("buf must be an integer!")
+            raise TypeError("buf must be an integer!")
         if byteorder not in ("big", "little"):
-            raise ValueError("byteorder must either be 'little' or 'big'!")
+            raise TypeError("byteorder must either be 'little' or 'big'!")
         if encoding not in ("json", "ziproto"):
-            raise ValueError("encoding must either be 'json' or 'ziproto'!")
+            raise TypeError("encoding must either be 'json' or 'ziproto'!")
         if not isinstance(header_size, int):
-            raise ValueError("header_size must be an integer!")
+            raise TypeError("header_size must be an integer!")
         if not isinstance(timeout, int):
-            raise ValueError("timeout must be an integer!")
+            raise TypeError("timeout must be an integer!")
         if logging_level not in list(self._levels.keys()):
-            raise ValueError("logging_level must either be 0, 10, 20, 30, 40 or 50!")
+            raise TypeError("logging_level must either be 0, 10, 20, 30, 40 or 50!")
         if not isinstance(console_format, str):
-            raise ValueError("console_format must be a string!")
+            raise TypeError("console_format must be a string!")
+        if not isinstance(session_limit, int):
+            raise TypeError("session_limit must be int!")
         self.addr = addr
         self.port = port
         self.buf = buf
@@ -105,6 +109,7 @@ class AsyncAPY:
         self.byteorder = byteorder
         self.encoding = encoding
         self.config = None
+        self.session_limit = session_limit
         if config:
             self.config, self.parser = config, cfg_parser
             self.load_config()
@@ -372,6 +377,13 @@ class AsyncAPY:
         else:
             self._sessions[client.address].append(session)
         client.session = session
+        if self.session_limit:
+            if len(client.get_sessions) >= self.session_limit:
+                logging.warning(f"({session_id}) {{API Parser}} Maximum number of concurrent sessions reached! Closing the current one")
+                if session in self._sessions[client.address]:
+                    self._sessions[client.address].remove(session)
+                await stream.aclose()
+                return None
         if client.address not in self._banned:
             for handler in self._handlers:
                 if isinstance(handler, Group):
