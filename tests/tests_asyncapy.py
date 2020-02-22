@@ -69,7 +69,7 @@ class TestAsyncAPY:
         packet = headers + payload.encode()
         client.sock.sendall(packet)
         resp = client.receive_all()
-        assert json.loads(resp[client.header_size + 2:]) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}, resp[client.header_size + 2:]
+        assert not resp
 
     def test_wrong_encoding_header(self):
         client = defaultclient.Client("127.0.0.1", 1500)
@@ -83,5 +83,7 @@ class TestAsyncAPY:
         packet = headers + payload.encode()
         client.sock.sendall(packet)
         resp = client.receive_all()
-        assert json.loads(ziproto.decode(resp[client.header_size + 2:]).tobytes()) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}
+        assert not resp
 
+
+TestAsyncAPY().test_invalid_v1_request()

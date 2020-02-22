@@ -22,7 +22,6 @@ class Client:
        :type header_size: int
     """
 
-
     def __init__(self, addr: str, port: int, byteorder: str = "big", header_size: int = 4):
         """Object constructor"""
 

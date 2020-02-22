@@ -1,5 +1,5 @@
 # AsyncAPY - A fully fledged Python 3.6+ library to serve APIs asynchronously
-# Copyright (C) 2019-2020 Intellivoid <https://github.com/Intellivoid>
+# Copyright (C) 2019-2020 Nocturn9x <https://github.com/nocturn9x>
 #
 # This file is part of AsyncAPY.
 #
@@ -30,7 +30,7 @@ import configparser
 
 
 class AsyncAPY:
-    """This class is the base class for the AsyncAPY framework.
+    """This class is the base class for the AsyncAPython framework.
 
         It implements AsyncAProto, the dedicated application protocol
         developed specifically for AsyncAPY. It also implements all the functionalities of the AsyncAPY framework
@@ -55,7 +55,7 @@ class AsyncAPY:
         :type byteorder: str, optional
         :param encoding: The server's default encoding for payloads. It is used for V1 packets and it can either be ``'json'`` or ``'ziproto'``, defaults to ``'json'``
         :type encoding: str, optional
-        :param config: The path to the configuration file, defaults to ``None`` (no config)
+        :param config: The path to the configuration file
         :type config: str, None, optional
         :param cfg_parser:  If you want to use a custom configparser object, you can specify it here
         :type cfg_parser: class: ``configparser.ConfigParser()``
@@ -121,23 +121,6 @@ class AsyncAPY:
                     opts[opt] = int(opts[opt])
                 setattr(self, opt, opts[opt])
 
-    # API RESPONSE HANDLERS #
-
-    async def malformed_request(self, session_id: uuid.uuid4, stream: trio.SocketStream, encoding=None):
-        """This is an internal method used to reply to a malformed packet/payload. Please note, that this function deals with raw objects, not with the high-level API objects used inside handlers
-
-        :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the logging output
-        :type session_id: class: ``uuid.uuid4``
-        :param stream: The trio asynchronous socket associated to a client, can be found in ``Client._stream``
-        :type stream: class: ``trio.SocketStream``
-        """
-
-        json_response = bytes(json.dumps({"status": "failure", "error": "ERR_REQUEST_MALFORMED"}), "u8")
-        response_header = (len(json_response) + 2).to_bytes(self.header_size, self.byteorder)
-        response_data = response_header + json_response
-        await self.send_response(stream, response_data, session_id, from_client=False, encoding=encoding)
-
-    # END OF RESPONSE HANDLERS SECTION #
 
     def add_handler(self, handler, filters=None, priority: int = 0):
         """Registers an handler, creating a ``Handler`` object and appending it to the ``self.handlers`` attribute
@@ -181,15 +164,15 @@ class AsyncAPY:
 
         if not from_client:
             if encoding is None:
-               encoding = 0 if self.encoding == 'json' else 1
+                encoding = self.encoding
             if encoding == 1:
-                payload = ziproto.encode(response_data[self.header_size:])
-                header = (len(payload) + 2).to_bytes(self.header_size, self.byteorder) + (22).to_bytes(1, self.byteorder) + (1).to_bytes(1, self.byteorder)
+                header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (1).to_bytes(1, self.byteorder)
+                payload = ziproto.encode(json.loads(response_data[self.header_size:]))
                 response_data = header + payload
             else:
                 header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (0).to_bytes(1, self.byteorder)
                 payload = json.loads(response_data[self.header_size:])
-                response_data = header + json.dumps(payload).encode("utf-8")
+                response_data = header + json.dumps(payload).encode()
 
         with trio.move_on_after(self.timeout) as cancel_scope:
             try:
@@ -213,7 +196,7 @@ class AsyncAPY:
 
     async def rebuild_incomplete_stream(self, session_id: uuid.uuid4, stream: trio.SocketStream, raw_data: bytes):
         """
-        This function gets called when a stream's length is smaller than ``self.header_size`` bytes, which
+        This function gets called when a stream's length is smaller than self.header_size bytes, which
         is the minimum amount of data needed to parse an API call (The length header)
 
         :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
@@ -282,7 +265,7 @@ class AsyncAPY:
         return stream_data
 
     async def decode_content(self, content, session_id: str, stream: trio.SocketStream, encoding=None):
-        """Decodes the payload with the specified encoding, if any, or falls back to ``self.encoding``
+        """Decodes the payload with the specified encoding, if any, or falls back to the ``self.encoding``
 
            :param content: The byte-encoded payload
            :type content: bytes
@@ -296,6 +279,7 @@ class AsyncAPY:
            :rtype: dict
         """
 
+        data = None
         if encoding is None:
             encoding = 0 if self.encoding == "json" else 1
         if encoding == 0:
@@ -303,22 +287,16 @@ class AsyncAPY:
                 data = json.loads(content, encoding="utf-8")
             except json.decoder.JSONDecodeError as json_error:
                 logging.error(f"({session_id}) {{Request Decoder}} Invalid JSON data, full exception -> {json_error}")
-                await self.malformed_request(session_id, stream, encoding=0)
         else:
             try:
                 data = ziproto.decode(content)
-                if not isinstance(data, dict):
-                    logging.error(f"({session_id}) {{Request Decoder}} Invalid ziproto encoded payload!")
-                    await self.malformed_request(session_id, stream, encoding=1)
             except Exception as e:
                 logging.error(f"({session_id}) {{Request Decoder}} Something went wrong while deserializing ZiProto -> {e}")
-                await self.malformed_request(session_id, stream, encoding=1)
-
         return data
 
     async def parse_call(self, session_id: uuid.uuid4, request: bytes, stream: trio.SocketStream):
 
-        """This function parses the API request and acts accordingly (e.g. decoding the payload and calling handlers)
+        """This function parses the API request and acts accordingly
 
            :param request: The byte-encoded payload
            :type request: bytes
@@ -331,10 +309,6 @@ class AsyncAPY:
         req_valid = False
         protocol_version = request[0]
         content_encoding = request[1]
-        if len(request) < 5:
-            logging.error(f"({session_id}) {{API Parser}} Stream is too short, ignoring!")
-            await stream.aclose()
-            return None
         if protocol_version not in (11, 22):
             logging.error(f"({session_id}) {{API Parser}} Invalid Protocol-Version header in packet!")
             await stream.aclose()
@@ -343,60 +317,45 @@ class AsyncAPY:
             logging.error(f"({session_id}) {{API Parser}} Invalid Content-Encoding header in packet!")
             await stream.aclose()
             return None
-        if protocol_version == 11 and content_encoding in (0, 1):
-            logging.error(f"({session_id}) {{API Parser}} V1 packets shouldn't include a Content-Encoding header!")
-            await self.malformed_request(session_id, stream, encoding=content_encoding)
         payload = await self.decode_content(request[2:], session_id, stream, encoding=content_encoding)
         logging.debug(f"({session_id}) {{API Parser}} Protocol-Version is {'V1' if protocol_version == 11 else 'V2'}, Content-Encoding is {'json' if not content_encoding else 'ziproto'}")
-        if content_encoding:
-            enc = "ziproto"
+        if protocol_version == 11 and content_encoding in (0, 1):
+            logging.warning(f"({session_id}) {{API Parser}} V1 packets shouldn't include a Content-Encoding header!")
+            await stream.aclose()
         else:
-            enc = "json"
-        try:
             client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=content_encoding)
-        except OSError:
-            logging.error(f"({session_id}) {{API Parser}} The connection was closed abruptly")
-            await stream.aclose()
-            return
-        packet = Packet(payload, sender=client, encoding=enc)
-        if client.address not in self.banned:
-            for handler in self.handlers:
-                if isinstance(handler, Group):
-                    if handler.check(client, packet):
-                        req_valid = True
-                        logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, running group of functions")
-                        for group_handler in handler:
-                            logging.debug(f"({session_id}) {{API Parser}} Calling '{group_handler.function.__name__}'")
-                            await group_handler.call(client, packet)
-                            logging.debug(f"({session_id}) {{API Parser}} Execution of '{group_handler.function.__name__}' terminated")
-                else:
-                    if handler.check(client, packet):
-                        req_valid = True
-                        logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, calling '{handler.function.__name__}'")
-                        await handler.call(client, packet)
-                        logging.debug(
+            packet = Packet(payload, sender=client, encoding=content_encoding)
+            if client.address not in self.banned:
+                for handler in self.handlers:
+                    if isinstance(handler, Group):
+                        if handler.check(client, packet):
+                            req_valid = True
+                            logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, running group of functions")
+                            for group_handler in handler:
+                                logging.debug(f"({session_id}) {{API Parser}} Calling '{group_handler.function.__name__}'")
+                                await group_handler.call(client, packet)
+                                logging.debug(f"({session_id}) {{API Parser}} Execution of '{group_handler.function.__name__}' terminated")
+                    else:
+                        if handler.check(client, packet):
+                            req_valid = True
+                            logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, calling '{handler.function.__name__}'")
+                            await handler.call(client, packet)
+                            logging.debug(
                                 f"({session_id}) {{API Parser}} Execution of '{handler.function.__name__}' terminated")
-        else:
-            logging.debug(f"({session_id}) {{API Parser}} Whoops, that user is banned! Ignoring")
-            await stream.aclose()
-            return None
-        if not req_valid:
-            logging.warning(f"({session_id}) {{API Parser}} No such handler for this request, closing the connection to spare memory!")
-            await stream.aclose()
-            return None
+            else:
+                logging.debug(f"({session_id}) {{API Parser}} Whoops, that user is banned! Ignoring")
+                await stream.aclose()
+            if not req_valid:
+                logging.warning(f"({session_id}) {{API Parser}} No such handler for this request, closing the connection to spare memory!")
+                await stream.aclose()
 
     async def setup(self):
-        """This function is called when the server is started.
-           It has been thought to be overridden by a custom user-defined class to perform pre-startup operations
-        """
+        """This function is called when the server is started"""
+
         return
 
     async def shutdown(self):
-        """This function is called when the server shuts down.
-           It has been thought to be overridden by a custom user-defined class to perform post-shutdown operations.
-
-           Note that this function is called only after a proper ``KeyboardInterrupt``, aka ``Ctrl+C``
-           """
+        """This function is called when the server shuts down"""
         return
 
     async def unban(self, ip: str):
@@ -443,58 +402,31 @@ class AsyncAPY:
                         break
                     else:
                         raw_data = stream_complete
-                        header = int.from_bytes(raw_data[0:self.header_size], self.byteorder)
-                        logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
-                        if len(raw_data) - self.header_size == header:
-                            logging.debug(f"({session_id}) {{Client handler}} Stream completed, processing API call")
-                            try:
-                                await self.parse_call(session_id, raw_data, stream)
-                            except StopPropagation:
-                                logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
-                                await stream.aclose()
-                                break
-                        else:
-                            logging.debug(
-                                f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding in progress")
-                            actual_data = await self.complete_stream(header, stream, session_id)
-                            if actual_data is None:
-                                logging.error(f"({session_id}) {{Client Handler}} The operation has timed out")
-                                await stream.aclose()
-                                break
-                            logging.debug(f"({session_id}) {{Client handler}} Stream completed, processing API call")
-                            try:
-                                await self.parse_call(session_id, actual_data, stream)
-                            except StopPropagation:
-                                await stream.aclose()
-                                logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
-                                break
+                header = int.from_bytes(raw_data[0:self.header_size], self.byteorder)
+                logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
+                if len(raw_data[self.header_size:]) == header:
+                    logging.debug(f"({session_id}) {{Client handler}} Stream complete, processing API call")
+                    try:
+                        await self.parse_call(session_id, raw_data[self.header_size:], stream)
+                    except StopPropagation:
+                        await stream.aclose()
+                        logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
+                        break
                 else:
-                    header = int.from_bytes(raw_data[0:self.header_size], self.byteorder)
-                    logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
-                    if len(raw_data[self.header_size:]) == header:
-                        logging.debug(f"({session_id}) {{Client handler}} Stream complete, processing API call")
+                    logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
+                    stream_complete = await self.complete_stream(header - len(raw_data[self.header_size:]), stream, session_id)
+                    if stream_complete is None:
+                        logging.debug(f"({session_id}) {{Client handler}} The operation has timed out")
+                        await stream.aclose()
+                        break
+                    else:
+                        raw_data += stream_complete
                         try:
                             await self.parse_call(session_id, raw_data[self.header_size:], stream)
                         except StopPropagation:
                             await stream.aclose()
                             logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
                             break
-                    else:
-                        logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
-                        stream_complete = await self.complete_stream(header - len(raw_data[self.header_size:]), stream,
-                                                                     session_id)
-                        if stream_complete is None:
-                            logging.debug(f"({session_id}) {{Client handler}} The operation has timed out")
-                            await stream.aclose()
-                            break
-                        else:
-                            raw_data += stream_complete
-                            try:
-                                await self.parse_call(session_id, raw_data[self.header_size:], stream)
-                            except StopPropagation:
-                                await stream.aclose()
-                                logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
-                                break
         if cancel_scope.cancelled_caught:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
 
@@ -526,7 +458,7 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
 
         new = []
         for handler in self.handlers:
-            comparison, self.handlers = handler.compare(self.handlers, self.handlers.copy())
+            comparison, self.handlers = handler.compare(self.handlers, self.handlers)
             if len(comparison) > 1:
                 new.append(Group(comparison))
             else:

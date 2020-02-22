@@ -44,7 +44,7 @@ class Client:
         self._server = server
         self._stream = stream
         self.session = session
-        self.encoding = "json" if not encoding else "ziproto"
+        self.encoding = encoding
 
     async def ban(self):
         """
@@ -99,18 +99,15 @@ class Packet:
     :type sender: Union[Client, None], optional
     """
 
-    def __init__(self, fields: Union[dict, str, bytes], encoding: str, sender: Union[Client, None] = None):
+    def __init__(self, fields: Union[dict, str, bytes], encoding: int, sender: Union[Client, None] = None):
         """Object constructor"""
 
         self.sender = sender
-        if not isinstance(encoding, str):
-            raise ValueError("The encoding must be string!")
-        if not encoding in ("json", "ziproto"):
-            raise ValueError("The encoding must either be 'ziproto' or 'json'!")
-        if encoding == "json":
-            self.encoding = 0
-        elif encoding == "ziproto":
-            self.encoding = 1
+        if not isinstance(encoding, int):
+            raise ValueError("The encoding must be int!")
+        if encoding not in (0, 1):
+            raise ValueError("The encoding must either be ziproto (1) or json (0)!")
+        self.encoding = encoding
         if isinstance(fields, dict):
             self.payload = json.dumps(fields)
         elif isinstance(fields, bytes):
