@@ -19,8 +19,7 @@
 from AsyncAPY.base import AsyncAPY
 from AsyncAPY.filters import Filters
 
-server = AsyncAPY(addr='127.0.0.1', port=1500, encoding="json", logging_level=10, byteorder='big')
-
+server = AsyncAPY(config='server.conf')
 
 @server.handler_add()
 async def echo_server(client, packet):

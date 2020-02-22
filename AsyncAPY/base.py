@@ -378,7 +378,7 @@ class AsyncAPY:
             self._sessions[client.address].append(session)
         client.session = session
         if self.session_limit:
-            if len(client.get_sessions) >= self.session_limit:
+            if len(client.get_sessions()) >= self.session_limit:
                 logging.warning(f"({session_id}) {{API Parser}} Maximum number of concurrent sessions reached! Closing the current one")
                 if session in self._sessions[client.address]:
                     self._sessions[client.address].remove(session)
@@ -527,7 +527,7 @@ class AsyncAPY:
                                 break
         if cancel_scope.cancelled_caught:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
-            if Session(session_id, None, None) in self._sessions[stream.getsockname()[0]]:
+            if Session(session_id, None, None) in self._sessions.get(stream.getsockname()[0], None):
                 self._sessions.remove(Session(session_id, None, None))
 
     async def serve_forever(self):
@@ -565,7 +565,6 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
                     self._handlers.remove(h)
             else:
                 new.append(handler)
-                self._handlers.remove(handler)
         self._handlers = new
         del new
         trio.run(self.serve_forever)

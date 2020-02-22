@@ -2,6 +2,7 @@ import defaultclient
 import json
 import ziproto
 import socket
+import time
 
 
 class TestAsyncAPY:
@@ -55,6 +56,7 @@ class TestAsyncAPY:
         packet = headers + payload.encode()
         for byte in packet:
             client.sock.send(byte.to_bytes(1, client.byteorder))
+            time.sleep(0.1)
         assert json.loads(client.receive_all()[client.header_size + 2:]) == json.loads(payload)
 
     def test_invalid_v1_request(self):
@@ -84,4 +86,5 @@ class TestAsyncAPY:
         client.sock.sendall(packet)
         resp = client.receive_all()
         assert json.loads(ziproto.decode(resp[client.header_size + 2:]).tobytes()) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}
+
 

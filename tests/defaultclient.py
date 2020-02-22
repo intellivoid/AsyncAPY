@@ -22,12 +22,12 @@ class Client:
        :type byteorder: str
        :param header_size: The size of the ``Content-Length`` header, defaults to 4
        :type header_size: int
-       :param tls: If ``True``, the client will initiate a TLS encrypted connection, defaults to ``True``
+       :param tls: If ``True``, the client will initiate a TLS encrypted connection, defaults to ``False``
        :type tls: optional, bool
     """
 
 
-    def __init__(self, addr: str, port: int, byteorder: str = "big", header_size: int = 4, tls: bool = True):
+    def __init__(self, addr: str, port: int, byteorder: str = "big", header_size: int = 4, tls: bool = False):
         """Object constructor"""
 
         if not isinstance(addr, str):
@@ -48,7 +48,7 @@ class Client:
     def connect(self):
         """Connects to ``self.addr:self.port``"""
 
-        if not self.tls
+        if not self.tls:
             self.sock = socket.socket()
         else:
             self.sock = ssl.wrap_socket(socket.socket())
