@@ -480,7 +480,7 @@ class AsyncAPY:
                             logging.debug(f"({session_id}) {{Client handler}} Stream completed, processing API call")
                             try:
                                 await self.parse_call(session_id, raw_data, stream)
-                            except StopPropagation:w
+                            except StopPropagation:
                                 logging.debug(f"({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
                                 await stream.aclose()
                                 break
@@ -497,7 +497,7 @@ class AsyncAPY:
                                 await self.parse_call(session_id, actual_data, stream)
                             except StopPropagation:
                                 await stream.aclose()
-                                logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
+                                logging.debug(f"({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
                                 break
                 else:
                     header = int.from_bytes(raw_data[0:self.header_size], self.byteorder)
@@ -508,12 +508,11 @@ class AsyncAPY:
                             await self.parse_call(session_id, raw_data[self.header_size:], stream)
                         except StopPropagation:
                             await stream.aclose()
-                            logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
+                            logging.debug(f"({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
                             break
                     else:
                         logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
-                        stream_complete = await self.complete_stream(header - len(raw_data[self.header_size:]), stream,
-                                                                     session_id)
+                        stream_complete = await self.complete_stream(header, stream, session_id)
                         if stream_complete is None:
                             logging.debug(f"({session_id}) {{Client handler}} The operation has timed out")
                             await stream.aclose()
@@ -524,11 +523,11 @@ class AsyncAPY:
                                 await self.parse_call(session_id, raw_data[self.header_size:], stream)
                             except StopPropagation:
                                 await stream.aclose()
-                                logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
+                                logging.debug(f"({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
                                 break
         if cancel_scope.cancelled_caught:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
-            if Session(session_id, None, None) in self._sessions[stream.getsockname[0]]:
+            if Session(session_id, None, None) in self._sessions[stream.getsockname()[0]]
                 self._sessions.remove(Session(session_id, None, None))
 
     async def serve_forever(self):
@@ -566,4 +565,5 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
                 new.append(handler)
         self._handlers = new
         del new
-        trio.run(self.serve_forever)
+        print(self._handlers)
+    #    trio.run(self.serve_forever)
