@@ -480,8 +480,8 @@ class AsyncAPY:
                             logging.debug(f"({session_id}) {{Client handler}} Stream completed, processing API call")
                             try:
                                 await self.parse_call(session_id, raw_data, stream)
-                            except StopPropagation:
-                                logging.debug("({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
+                            except StopPropagation:w
+                                logging.debug(f"({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
                                 await stream.aclose()
                                 break
                         else:
