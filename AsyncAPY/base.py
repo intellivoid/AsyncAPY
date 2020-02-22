@@ -557,15 +557,18 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
     def start(self):
         """Starts the server, doing some magic to group handlers before calling ``self.serve_forever()``"""
 
-        new = []
+        handlers = []
+        grps = []
         for handler in self._handlers:
             comparison = handler.compare(self._handlers)
             if len(comparison) > 1:
-                new.append(Group(comparison))
-                for h in comparison:
-                    self._handlers.remove(h)
+                grps.append(Group(comparison))
             else:
-                new.append(handler)
-        self._handlers = new
-        del new
-        trio.run(self.serve_forever)
+                handlers.append(handler)
+        for index, grp in enumerate(grps):
+            if index != len(grps) - 1:
+                if grp in grps[index:]:
+                    grps.remove(grp)
+        self._handlers = grps + handlers
+        del grps, handlers
+        trio.run(self.serve_forever) 

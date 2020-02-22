@@ -204,19 +204,17 @@ class Handler:
                 return False
         return True
 
-    def compare(self, others: List, start=0):
+    def compare(self, others: List):
         """Compares one or more handlers to self, returns the list of the matching handlers and the original list
 
-        :param others: A list of one or more handlers
+        :param others: A list of one or more handlers to compare to ``self``
         :type others: List[Handler]
-        :param handlers: The current value of ``AsyncAPY.base.AsyncAPY.handlers``
-        :type handlers: List[Handler]
-        :param start: The index to start from inside ``others``, defaults to 0
-        :type start: int, optional
+        :returns ret: The list of the handlers with common filters and different priorities, please note that this always contains at least one element (which is ``self``)
+        :rtype: List[Handler]
         """
 
-        ret = []
-        for handler in others[start:]:
+        ret = [self]
+        for handler in others:
             if handler == self:
                 ret.append(handler)
         return ret
@@ -232,8 +230,6 @@ class Handler:
             raise TypeError(f"The __eq__ operator is meant to compare Handler objects only, not {other}!")
         filters_equals = self.compare_filters(other)
         priority_equals = self.compare_priority(other)
-        if other is self:
-            return True
         if not priority_equals:
             if filters_equals:
                 return True
@@ -264,6 +260,8 @@ class Handler:
 
         return await self.function(*args)
 
+    def __hash__(self):
+        return hash(self.function.__name__)
 
 class Group:
 
@@ -315,6 +313,8 @@ class Group:
 
         return self.handlers.__iter__()
 
+    def __hash__(self):
+        return hash(self.handlers[0].function.__name__)
 
 class Session:
 
