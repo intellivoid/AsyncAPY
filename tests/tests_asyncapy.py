@@ -85,5 +85,3 @@ class TestAsyncAPY:
         resp = client.receive_all()
         assert not resp
 
-
-TestAsyncAPY().test_invalid_v1_request()
