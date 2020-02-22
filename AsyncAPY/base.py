@@ -312,6 +312,7 @@ class AsyncAPY:
            :rtype: dict
         """
 
+        data = ""
         if encoding is None:
             encoding = 0 if self.encoding == "json" else 1
         if encoding == 0:
