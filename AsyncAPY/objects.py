@@ -204,7 +204,7 @@ class Handler:
                 return False
         return True
 
-    def compare(self, others: List, handlers, start=0):
+    def compare(self, others: List, start=0):
         """Compares one or more handlers to self, returns the list of the matching handlers and the original list
 
         :param others: A list of one or more handlers
@@ -219,11 +219,7 @@ class Handler:
         for handler in others[start:]:
             if handler == self:
                 ret.append(handler)
-                try:
-                    handlers.remove(handler)
-                except ValueError:
-                    pass
-        return ret, handlers
+        return ret
 
     def __eq__(self, other):
         """Implements ``self == other``, only meant to compare ``Handler`` objects
@@ -238,9 +234,7 @@ class Handler:
         priority_equals = self.compare_priority(other)
         if other is self:
             return True
-        if filters_equals & priority_equals:
-            raise RuntimeError("Multiple handlers with identical filters cannot share priority level!")
-        elif not priority_equals:
+        if not priority_equals:
             if filters_equals:
                 return True
             else:
@@ -284,6 +278,12 @@ class Group:
         """Object constructor"""
 
         self.handlers = sorted(handlers, key=lambda x: x.priority)
+        for index, handler in enumerate(self.handlers):
+            if not len(self.handlers) - index == 1:
+                first = handler.priority
+                second = self.handlers[index + 1].priority
+                if first == second:
+                    raise RuntimeError("Handlers with identical filters cannot share priority level!")
 
     def check(self, client: Client, packet: Packet):
         """Checks the filters of the group, one time only on the first filter

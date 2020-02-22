@@ -527,7 +527,7 @@ class AsyncAPY:
                                 break
         if cancel_scope.cancelled_caught:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
-            if Session(session_id, None, None) in self._sessions[stream.getsockname()[0]]
+            if Session(session_id, None, None) in self._sessions[stream.getsockname()[0]]:
                 self._sessions.remove(Session(session_id, None, None))
 
     async def serve_forever(self):
@@ -558,12 +558,15 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
 
         new = []
         for handler in self._handlers:
-            comparison, self._handlers = handler.compare(self._handlers, self._handlers.copy())
+            comparison = handler.compare(self._handlers)
             if len(comparison) > 1:
                 new.append(Group(comparison))
+                for h in comparison:
+                    self._handlers.remove(h)
             else:
                 new.append(handler)
+                self._handlers.remove(handler)
         self._handlers = new
         del new
         print(self._handlers)
-    #    trio.run(self.serve_forever)
+        trio.run(self.serve_forever)

@@ -2,6 +2,8 @@ import socket
 import ziproto
 import json
 import time
+import ssl
+
 
 ADDR = '127.0.0.1'
 PORT = 1500
@@ -20,10 +22,12 @@ class Client:
        :type byteorder: str
        :param header_size: The size of the ``Content-Length`` header, defaults to 4
        :type header_size: int
+       :param tls: If ``True``, the client will initiate a TLS encrypted connection, defaults to ``True``
+       :type tls: optional, bool
     """
 
 
-    def __init__(self, addr: str, port: int, byteorder: str = "big", header_size: int = 4):
+    def __init__(self, addr: str, port: int, byteorder: str = "big", header_size: int = 4, tls: bool = True):
         """Object constructor"""
 
         if not isinstance(addr, str):
@@ -39,11 +43,15 @@ class Client:
         self.byteorder = byteorder
         self.header_size = header_size
         self.sock = None
+        self.tls = tls
 
     def connect(self):
         """Connects to ``self.addr:self.port``"""
 
-        self.sock = socket.socket()
+        if not self.tls
+            self.sock = socket.socket()
+        else:
+            self.sock = ssl.wrap_socket(socket.socket())
         self.sock.connect((self.addr, self.port))
 
     def disconnect(self):
