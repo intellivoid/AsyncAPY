@@ -19,14 +19,13 @@
 from AsyncAPY.base import AsyncAPY
 from AsyncAPY.filters import Filters
 
-server = AsyncAPY(addr='127.0.0.1', port=1500, encoding="json", logging_level=20, byteorder='big')
+server = AsyncAPY(addr='127.0.0.1', port=1500, encoding="json", logging_level=10, byteorder='big')
 
 
 @server.handler_add()
 async def echo_server(client, packet):
     print(f"Hello world from {client}!")
     print(f"Echoing back {packet}...")
-    print(f"Active sessions: {client.get_sessions()}")
     await client.send(packet, close=False)
 
 
@@ -34,7 +33,6 @@ async def echo_server(client, packet):
 async def filtered_handler(client, packet):
     print(f"Propagation succesful from {client}!")
     print(f"Packet received is {packet}")
-    print(f"Active sessions (filtered): {client.get_sessions()}")
     await client.close()
 
 

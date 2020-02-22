@@ -568,5 +568,4 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
                 self._handlers.remove(handler)
         self._handlers = new
         del new
-        print(self._handlers)
         trio.run(self.serve_forever)
