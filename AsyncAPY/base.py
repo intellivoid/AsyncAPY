@@ -220,6 +220,10 @@ class AsyncAPY:
                 logging.info(f"({session_id}) {{Response Handler}} The connection was closed")
                 await stream.aclose()
                 return False
+            except trio.BusyResourceError as busy:
+                logging.error(f"({session_id}) {{Response Handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
+                await stream.aclose()
+                return False
         if cancel_scope.cancelled_caught:
             return None
         else:
