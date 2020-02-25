@@ -64,7 +64,7 @@ What happens if we send a packet to our new, shiny, echo server? Let's try to us
 
    import defaultclient  # Make sure defaultclient.py is in your workdir
 
-   client = defaultclient.Client("0.0.0.0", 1500)  
+   client = defaultclient.Client("0.0.0.0", 1500, tls=False)  
    enc = 'json'
    client.connect()
    client.send({"test": 1}, encoding=enc)
@@ -108,11 +108,11 @@ As you can see, we got the same JSON encoded packet that we sent!
 .. note::
    Note that the line ``server.add_handler(echo_server)`` can be shortened the following way:
           
-.. code-block:: python
+   .. code-block:: python
 
-   @server.handler_add()
-   async def your_handler(c, p):
-      ...
+      @server.handler_add()
+      async def your_handler(c, p):
+         ...
 
 
 
