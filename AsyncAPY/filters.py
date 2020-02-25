@@ -97,10 +97,6 @@ class Filters(Filter):
 
             return c.address in self.ips
 
-    class IPBlacklist(Ip):
-        
-
-
 
     class Fields(Filter):
         """Filters fields inside packets.

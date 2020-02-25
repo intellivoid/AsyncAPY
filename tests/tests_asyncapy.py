@@ -30,24 +30,24 @@ class TestAsyncAPY:
         client = defaultclient.Client("127.0.0.1", 1501, tls=False)
         client.connect()
         encodings = ("json", "ziproto")
-        payload = {"req": "test_payload"}
+        payload = {"req": "bar"}
         client.send(payload, encoding=encodings[0])
         response = client.receive_all()
         response_payload = response[client.header_size + 2:]
         assert json.loads(response_payload) == payload, response_payload
-        client.disconnect()
-        client.sock = socket.socket()
-        client.connect()
-        client.send(payload, encoding=encodings[1])
+        del payload, response, response_payload
+        expected = {"response": "OK"}
+        client.send({"req": "test_payload"}, encoding="json")
+        print(client.receive_all())  # Discard the echoed packet
         response = client.receive_all()
         response_payload = response[client.header_size + 2:]
-        assert ziproto.decode(response_payload) == payload, response_payload
+        assert json.loads(response_payload) == expected, response_payload
         client.disconnect()
 
     def test_header_rebuilding(self):
         client = defaultclient.Client("127.0.0.1", 1501, tls=False)
         client.connect()
-        payload = {"req": "test_payload"}
+        payload = {"foo": "test_payload"}
         payload = json.dumps(payload)
         length_header = (len(payload) + 2).to_bytes(client.header_size, client.byteorder)
         content_encoding = (0).to_bytes(1, "big")
@@ -76,7 +76,7 @@ class TestAsyncAPY:
     def test_wrong_encoding_header(self):
         client = defaultclient.Client("127.0.0.1", 1501, tls=False)
         client.connect()
-        payload = {"req": "test_payload"}
+        payload = {"invalid": True}
         payload = json.dumps(payload)
         length_header = (len(payload) + 2).to_bytes(client.header_size, client.byteorder)
         content_encoding = (1).to_bytes(1, "big")
@@ -87,15 +87,13 @@ class TestAsyncAPY:
         resp = client.receive_all()
         assert json.loads(ziproto.decode(resp[client.header_size + 2:]).tobytes()) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}
 
-
     def test_timeout(self):
         client = defaultclient.Client("127.0.0.1", 1501, tls=False)
         client.connect()
         time.sleep(60)
         try:
             stuff = client.receive_all()
-        except Exception:
-            pass
         finally:
             assert not stuff, ("Timeout not expired!", stuff)
+
 

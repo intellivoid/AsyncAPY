@@ -18,6 +18,8 @@
 
 from AsyncAPY.base import AsyncAPY
 from AsyncAPY.filters import Filters
+from AsyncAPY.objects import Packet
+
 
 server = AsyncAPY(config='server.conf')
 
@@ -28,16 +30,18 @@ async def echo_server(client, packet):
     await client.send(packet, close=False)
 
 
-@server.handler_add([Filters.Fields(req=r'test_payload')])
+@server.handler_add([Filters.Fields(req='test_payload')])
 async def filtered_handler(client, packet):
     print(f"Propagation succesful from {client}!")
     print(f"Packet received is {packet}")
+    await client.send(Packet({"response": "OK"}, encoding=client.encoding))
     await client.close()
 
-@server.handler_add()
-async def error(c, p):
-    pass
+
+@server.handler_add(priority=1)     # Just a test for groups, heh
+async def lul(c, p):
+    print("omaewa lul")
+
 
 
 server.start()
-

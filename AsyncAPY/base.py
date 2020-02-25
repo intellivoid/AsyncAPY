@@ -375,6 +375,7 @@ class AsyncAPY:
             logging.error(f"({session_id}) {{API Parser}} The connection was closed abruptly")
             await stream.aclose()
             return
+        content_encoding = "json" if not content_encoding else "ziproto"
         packet = Packet(payload, sender=client, encoding=content_encoding)
         session = Session(session_id, client, time.time())
         if not self._sessions.get(client.address, None):
@@ -573,6 +574,7 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
             if index != len(grps) - 1:
                 if grp in grps[index:]:
                     grps.remove(grp)
+
         self._handlers = grps + handlers
         del grps, handlers
-        trio.run(self.serve_forever) 
+        trio.run(self.serve_forever)

@@ -101,8 +101,8 @@ class Packet:
 
     :param fields: The payload, it can either be a Python dictionary or valid JSON string (it can also be encoded as bytes)
     :type fields: Union[dict, str, bytes]
-    :param encoding: The payload desired encoding, it can either be ``json`` or ``ziproto``
-    :type encoding: str
+    :param encoding: The payload desired encoding, it can either be 0, for json, or 1 for ziproto
+    :type encoding: int
     :param sender: This parameter is meant to be initialized internally, and points to the ``Client`` object that sent the associated payload, defaults to ``None``
     :type sender: Union[Client, None], optional
 
@@ -113,10 +113,14 @@ class Packet:
         """Object constructor"""
 
         self.sender = sender
-        if not isinstance(encoding, str):
-            raise ValueError("The encoding must be str!")
-        if encoding not in ("json", "ziproto"):
-            raise ValueError("The encoding must either be 'json' or 'ziproto'!")
+        if not isinstance(encoding, int):
+            raise ValueError("The encoding must be int!")
+        if encoding not in (0, 1):
+            raise ValueError("The encoding must either be 0 or 1!")
+        if encoding == 0:
+            self.encoding = "json"
+        elif encoding == 1:
+            self.encoding = "ziproto"
         if isinstance(fields, dict):
             self.payload = json.dumps(fields)
         elif isinstance(fields, bytes):
@@ -125,7 +129,7 @@ class Packet:
             self.payload = json.dumps(json.loads(fields))
         self.length = len(self.payload)
         self.dict_payload = json.loads(self.payload)
-        self.encoding = encoding
+
     async def stop_propagation(self):
         """Stops a packet within a group, see ``AsyncAPY.errors.StopPropagation``
 
@@ -232,8 +236,8 @@ class Handler:
             else:
                 return False
         else:
-            if filters_equals and other is not self:
-                raise RuntimeError("Handlers with identical filters cannot share priority level!")
+
+            return False
 
     def check(self, client: Client, packet: Packet):
         """Iteratively calls the ``check()`` method on ``self.filters``, returns ``True`` if all filters return ``True``, ``False`` otherwise
