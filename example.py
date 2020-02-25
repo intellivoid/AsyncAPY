@@ -34,6 +34,10 @@ async def filtered_handler(client, packet):
     print(f"Packet received is {packet}")
     await client.close()
 
+@server.handler_add()
+async def error(c, p):
+    pass
+
 
 server.start()
 

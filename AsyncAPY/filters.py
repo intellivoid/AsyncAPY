@@ -35,7 +35,8 @@ class Filters(Filter):
     """
 
     class Ip(Filter):
-        """Filters one or more IP addresses
+        """Filters one or more IP addresses, allowing only the ones inside the filter to pass
+           Note: This filter is dynamic, it can be updated at runtime if assigned to a variable
 
            :param ips: An ip or a list of ip addresses
            :type ips: Union[List[str], str]
@@ -95,6 +96,11 @@ class Filters(Filter):
             """
 
             return c.address in self.ips
+
+    class IPBlacklist(Ip):
+        
+
+
 
     class Fields(Filter):
         """Filters fields inside packets.
@@ -157,4 +163,5 @@ class Filters(Filter):
             """
 
             return f"Filter.Fields({self.fields})"
+
 
