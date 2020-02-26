@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -471,7 +471,8 @@ the field value will also be checked with <code class="docutils literal notransl
 <dt id="AsyncAPY.filters.Filters.Ip">
 <em class="property">class </em><code class="sig-name descname">Ip</code><span class="sig-paren">(</span><em class="sig-param">ips: Union[List[str], str]</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Ip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
-<p>Filters one or more IP addresses</p>
+<p>Filters one or more IP addresses, allowing only the ones inside the filter to pass
+Note: This filter is dynamic, it can be updated at runtime if assigned to a variable</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ips</strong> (<em>Union</em><em>[</em><em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – An ip or a list of ip addresses</p>
@@ -634,15 +635,17 @@ with its priority and filters</p>
 
 <dl class="method">
 <dt id="AsyncAPY.objects.Handler.compare">
-<code class="sig-name descname">compare</code><span class="sig-paren">(</span><em class="sig-param">others: List</em>, <em class="sig-param">handlers</em>, <em class="sig-param">start=0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.compare" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compare</code><span class="sig-paren">(</span><em class="sig-param">others: List</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Handler.compare" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compares one or more handlers to self, returns the list of the matching handlers and the original list</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>others</strong> (<em>List</em><em>[</em><a class="reference internal" href="#AsyncAPY.objects.Handler" title="AsyncAPY.objects.Handler"><em>Handler</em></a><em>]</em>) – A list of one or more handlers</p></li>
-<li><p><strong>handlers</strong> (<em>List</em><em>[</em><a class="reference internal" href="#AsyncAPY.objects.Handler" title="AsyncAPY.objects.Handler"><em>Handler</em></a><em>]</em>) – The current value of <code class="docutils literal notranslate"><span class="pre">AsyncAPY.base.AsyncAPY.handlers</span></code></p></li>
-<li><p><strong>start</strong> (<em>int</em><em>, </em><em>optional</em>) – The index to start from inside <code class="docutils literal notranslate"><span class="pre">others</span></code>, defaults to 0</p></li>
-</ul>
+<dd class="field-odd"><p><strong>others</strong> (<em>List</em><em>[</em><a class="reference internal" href="#AsyncAPY.objects.Handler" title="AsyncAPY.objects.Handler"><em>Handler</em></a><em>]</em>) – A list of one or more handlers to compare to <code class="docutils literal notranslate"><span class="pre">self</span></code></p>
+</dd>
+<dt class="field-even">Returns ret</dt>
+<dd class="field-even"><p>The list of the handlers with common filters and different priorities, please note that this always contains at least one element (which is <code class="docutils literal notranslate"><span class="pre">self</span></code>)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#AsyncAPY.objects.Handler" title="AsyncAPY.objects.Handler">Handler</a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -686,7 +689,7 @@ with its priority and filters</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fields</strong> (<em>Union</em><em>[</em><em>dict</em><em>, </em><em>str</em><em>, </em><em>bytes</em><em>]</em>) – The payload, it can either be a Python dictionary or valid JSON string (it can also be encoded as bytes)</p></li>
-<li><p><strong>encoding</strong> (<em>int</em>) – The payload desired encoding, it can either be 0, for json, or 1 for ziproto</p></li>
+<li><p><strong>encoding</strong> (<em>str</em>) – The payload desired encoding, it can either be <code class="docutils literal notranslate"><span class="pre">json</span></code> or <code class="docutils literal notranslate"><span class="pre">ziproto</span></code></p></li>
 <li><p><strong>sender</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#AsyncAPY.objects.Client" title="AsyncAPY.objects.Client"><em>Client</em></a><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – This parameter is meant to be initialized internally, and points to the <code class="docutils literal notranslate"><span class="pre">Client</span></code> object that sent the associated payload, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>

@@ -57,8 +57,7 @@ Save this script into a file named ``example.py`` and try running it; your outpu
     [INFO] 10/02/2020 16:28:38 PM  {API main} Now serving  at 0.0.0.0:1500
 
 What happens if we send a packet to our new, shiny, echo server? Let's try to use the testing client to send a packet to our server: create a new empty file, name it ``testclient.py`` and paste the following
-
-**Note**: We will be using the test client available in the official `Github Repository <https://github.com/nocturn9x/AsyncAPY/tree/dev/tests/defaultclient.py>`_, be sure to download that file and put it in your working directory
+We will be using the test client available in the official `Github Repository <https://github.com/nocturn9x/AsyncAPY/tree/dev/tests/defaultclient.py>`_, be sure to download that file and put it in your working directory
 
 .. code-block:: python
 
@@ -98,6 +97,7 @@ Now open two terminal windows, run ``example.py`` again and then ``testclient.py
     [INFO] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} The connection was closed
 
 while your client output will look like this:
+
  ::
 
     b'\x00\x00\x00\r\x16\x00{"test": 1}'
@@ -123,7 +123,24 @@ AsyncAPY gives you the possibility to set some conditions to your handlers, whic
 
 Filters can be applied to a handler by passing a list of the desired filter(s) objects to the ``AsyncAPY.add_handler()`` method and of course to its decorator counterpart, ``@AsyncAPY.handler_add``.
 
-An example of a filtered handler can be found in our dedicated `examples section <https://asyncapy.readthedocs.io/en/latest/examples.html#filters-examples>`_
+An example of a filtered handler can be found in our dedicated `examples section <https://asyncapy.readthedocs.io/en/dev/examples.html#filters-examples>`_
 						   
 If you have issues with non-passing filters, try reading our `FAQ <https://asyncapy.readthedocs.io/en/latest/faqs.html#why-don-t-my-filter-pass>`_ on this topic
+
+
+
+Groups - Handling the same request multiple times
+-------------------------------------------------
+
+One of the most interesting features of AsyncAPY, is that it allows a client to interact with multiple handlers.
+So if, for example, you wanted to perform some authentication with a handler, but then you needed that same payload you would normally make a new request, but __with AsyncAPY there is no need for that**!
+
+Lucky you, AsyncAPY suppports handler grouping, meaning that handler with identical filters and different priorities will be grouped together and executed consecutively according on their priority: The lower priority, the higher execution precedence.
+
+.. warning
+
+   To take full advantages of groups, you have to pass ``close=False`` to `Client.send()``, or the next handlers
+   won't be able to communicate with the client.
+
+You may find an example of a group of handlers in `this <https://asyncapy.readthedocs.io/en/dev/examples.html#filters-examples>`_ section
 
