@@ -133,7 +133,7 @@ Groups - Handling the same request multiple times
 -------------------------------------------------
 
 One of the most interesting features of AsyncAPY, is that it allows a client to interact with multiple handlers.
-So if, for example, you wanted to perform some authentication with a handler, but then you needed that same payload you would normally make a new request, but __with AsyncAPY there is no need for that**!
+So if, for example, you wanted to perform some authentication with a handler, but then you needed that same payload you would normally make a new request, but **with AsyncAPY there is no need for that**!
 
 Lucky you, AsyncAPY suppports handler grouping, meaning that handler with identical filters and different priorities will be grouped together and executed consecutively according on their priority: The lower priority, the higher execution precedence.
 
