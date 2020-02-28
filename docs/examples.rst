@@ -5,7 +5,7 @@ AsyncAPY - Code Examples
 Filters Examples
 ----------------
 
-Here is an example of how to use AsyncAPY's ``Filters`` objects
+Here is an example on how to use AsyncAPY's ``Filters`` objects
 
 .. literalinclude:: ../examples/filters.py
 
@@ -21,7 +21,7 @@ You can also use multiple ``Filters`` objects, e.g. ``Filters.Ip``, by doing the
 Groups Examples
 ---------------
 
-Here is an example of how to use AsyncAPY's grouping features
+Here is an example on how to use AsyncAPY's grouping features
 
 .. literalinclude:: ../examples/groups.py
 

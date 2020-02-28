@@ -13,7 +13,6 @@ This will install AsyncAPY and its dependencies in your system
 
 
 **Note**: On Windows systems, unless you are using PowerShell, you may need to replace ``python3`` with ``py`` or ``py3`` for the commands to work, assuming you added it to ``PYTHONPATH`` when installed Python.
-Please consider also that this command needs admin privileges to be run properly (There is one dependency which needs to be installed from ``setup.py``)
 
 
 Hello, world!
@@ -57,7 +56,9 @@ Save this script into a file named ``example.py`` and try running it; your outpu
     [INFO] 10/02/2020 16:28:38 PM  {API main} Now serving  at 0.0.0.0:1500
 
 What happens if we send a packet to our new, shiny, echo server? Let's try to use the testing client to send a packet to our server: create a new empty file, name it ``testclient.py`` and paste the following
-We will be using the test client available in the official `Github Repository <https://github.com/nocturn9x/AsyncAPY/tree/dev/tests/defaultclient.py>`_, be sure to download that file and put it in your working directory
+
+..info ::
+   We will be using the test client available in the official `Github Repository <https://github.com/nocturn9x/AsyncAPY/tree/dev/tests/defaultclient.py>`_, be sure to download that file and put it in your working directory
 
 .. code-block:: python
 
@@ -121,7 +122,7 @@ Filtering payloads and clients
 
 AsyncAPY gives you the possibility to set some conditions to your handlers, which must all be met for it to be executed. Those conditions are represented in Python trough ``Filter`` objects, which are located in the ``Filters`` class of the ``AsyncAPY.filters`` module (see `here <https://asyncapy.readthedocs.io/en/latest/AsyncAPY.html#module-AsyncAPY.filters>`_)
 
-Filters can be applied to a handler by passing a list of the desired filter(s) objects to the ``AsyncAPY.add_handler()`` method and of course to its decorator counterpart, ``@AsyncAPY.handler_add``.
+Filters can be applied to a handler by passing a list of the desired filter object(s) to the ``AsyncAPY.add_handler()`` method and of course to its decorator counterpart, ``@AsyncAPY.handler_add``.
 
 An example of a filtered handler can be found in our dedicated `examples section <https://asyncapy.readthedocs.io/en/dev/examples.html#filters-examples>`_
 						   

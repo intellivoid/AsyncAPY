@@ -42,9 +42,9 @@ The version 0.3 brought some great changes, listed below:
 - ``Packet`` objects now have a ``dict_payload`` attribute, which is a dictionary representation of the ``payload`` attribute
 - ``Packet`` objects now suppport dict-like accessing! With a payload like ``{"foo": "bar"}``, you can do ``packet["foo"]`` to get ``"bar"``
 
-.. warning::
+.. info::
 
-   AsyncAPY 0.3 is still in the staging phase and it's not stable enough for production!
+   AsyncAPY 0.3 has been thoroughly tested and is now stable enough for production
    If you find any bugs, please let us know by opening an `issue on the repository <https://github.com/intellivoid/AsyncAPY/issues/new/choose>`_
 
 
