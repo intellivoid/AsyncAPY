@@ -37,7 +37,7 @@ What's new in AsyncAPY 0.3
 
 The version 0.3 brought some great changes, listed below:
 
-- The way both ``Client`` and ``Packet`` object get their ``encoding`` parameter has changed for consisency purposes, check the `docs <https://asyncapy.readthedocs.io/en/newversions-v0.3/AsyncAPY.html>`_
+- The way both ``Client`` and ``Packet`` object get their ``encoding`` parameter has changed for consistency purposes, check the `docs <https://asyncapy.readthedocs.io/en/newversions-v0.3/AsyncAPY.html>`_
 - Sessions are no longer just a useful way to recognize different clients in the console output, but are now ``Session`` objects which can be handy in a number of cases to interact with different clients in the same handler
 - ``Packet`` objects now have a ``dict_payload`` attribute, which is a dictionary representation of the ``payload`` attribute
 - ``Packet`` objects now suppport dict-like accessing! With a payload like ``{"foo": "bar"}``, you can do ``packet["foo"]`` to get ``"bar"``
