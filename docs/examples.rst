@@ -26,7 +26,7 @@ Here is an example on how to use AsyncAPY's grouping features
 .. literalinclude:: ../examples/groups.py
 
 .. note::
-    It is possible to group handlers with filters, too, as long as they
+    It is possible to group handlers with filters, as long as they
     share the same filters, not necessarily in the same order, and have
     different priorities
 
