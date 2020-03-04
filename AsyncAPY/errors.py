@@ -1,5 +1,5 @@
 # AsyncAPY - A fully fledged Python 3.6+ library to serve APIs asynchronously
-# Copyright (C) 2019-2020 Intellivoid <https://github.com/Intellivoid>
+# Copyright (C) 2019-2020 nocturn9x <https://github.com/nocturn9x>
 #
 # This file is part of AsyncAPY.
 #
