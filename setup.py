@@ -1,5 +1,5 @@
 # AsyncAPY - A fully fledged Python 3.6+ library to serve APIs asynchronously
-# Copyright (C) 2019-2020 nocturn9x <https://github.com/nocturn9x>
+# Copyright (C) 2019-2020 intellivoid <https://github.com/intellivoid>
 #
 # This file is part of AsyncAPY.
 #
@@ -27,12 +27,12 @@ os.system("python3 -m pip install git+https://github.com/netkas/ZiProto-Python -
 setuptools.setup(
     name="AsyncAPY",
     version="0.3-alpha",
-    author="Mattia Giambirtone aka Nocturn9x",
-    author_email="hackhab@gmail.com",
+    author="Intellivoid Technologies",
+    author_email="nocturn9x@intellivoid.net",
     description="A fully fledged Python 3.6+ library to serve APIs asynchronously",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/nocturn9x/AsyncAPY",
+    url="https://github.com/intellivoid/AsyncAPY",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

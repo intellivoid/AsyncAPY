@@ -12,6 +12,10 @@ BaseClass - AsyncAPY.base
    :undoc-members:
    :show-inheritance:
 
+.. versionadded:: 0.3
+   The ``session_limit`` parameter
+
+
 Exceptions - AsyncAPY.errors
 ----------------------------
 
@@ -37,6 +41,8 @@ Objects - AsyncAPY.objects
    :undoc-members:
    :show-inheritance:
 
+.. versionadded:: 0.3
+   The ``Session`` class and related behavior in the `Client` and `AsyncAPY` class
 
 Module contents
 ---------------
