@@ -56,7 +56,7 @@ class Filters(Filter):
                     raise ValueError("Invalid IP address in filter!")
             else:
                 raise ValueError("ips parameter must be string or list of strings!")
-            self.ips = {ips}
+            self.ips = {*ips}
 
         def __eq__(self, other):
             """Implements ``self == other``
