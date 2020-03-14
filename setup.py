@@ -40,4 +40,7 @@ setuptools.setup(
         "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)"
     ],
     python_requires='>=3.6',
+    install_requires=[
+        "trio",
+    ]
 )
