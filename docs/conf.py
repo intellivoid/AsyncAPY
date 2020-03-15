@@ -18,12 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'AsyncAPY'
-copyright = '2020, Mattia Giambirtone'
-author = 'Mattia Giambirtone'
+copyright = '2020, Intellivoid Technologies'
+author = 'Intellivoid Technologies'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.1'
-
+release = '0.3.0'
 
 # -- General configuration ---------------------------------------------------
 
