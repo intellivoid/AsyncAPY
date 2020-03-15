@@ -17,9 +17,7 @@
 # along with AsyncAPY.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-import json
 from typing import Union, List
-from .objects import Packet
 
 
 class Filter(object):
@@ -57,7 +55,10 @@ class Filters(Filter):
                     raise ValueError("Invalid IP address in filter!")
             else:
                 raise ValueError("ips parameter must be string or list of strings!")
-            self.ips = {*ips}
+            if isinstance(ips, list):
+                self.ips = {*ips}
+            else:
+                self.ips = {ips}
 
         def __eq__(self, other):
             """Implements ``self == other``
@@ -130,7 +131,7 @@ class Filters(Filter):
             else:
                 return {k: x[k] for k in x if k in y and x[k] == y[k]} == x
 
-        def check(self, _, p: Packet):
+        def check(self, _, p):
             """Implements the method to check if a filter matches a given packet/client couple or not
 
                :param _: A client object

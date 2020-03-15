@@ -574,7 +574,7 @@ settings were loaded from '{self.config if self.config else 'attributes'}'")
             if index != len(grps) - 1:
                 if grp in grps[index:]:
                     grps.remove(grp)
-
         self._handlers = grps + handlers
+        print(self._handlers)
         del grps, handlers
-        trio.run(self.serve_forever)
+        # trio.run(self.serve_forever)
