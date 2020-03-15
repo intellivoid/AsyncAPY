@@ -19,6 +19,7 @@
 import re
 import json
 from typing import Union, List
+from .objects import Packet
 
 
 class Filter(object):
@@ -97,7 +98,6 @@ class Filters(Filter):
 
             return c.address in self.ips
 
-
     class Fields(Filter):
         """Filters fields inside packets.
         This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be ``None``, or a valid regular expression.
@@ -126,7 +126,7 @@ class Filters(Filter):
 
             return self.fields == other.fields
 
-        def check(self, _, p):
+        def check(self, _, p: Packet):
             """Implements the method to check if a filter matches a given packet/client couple or not
 
                :param _: A client object
@@ -137,7 +137,7 @@ class Filters(Filter):
                :rtype: bool
             """
 
-            fields = json.loads(p.payload)
+            fields = p.dict_payload
             for field_name in self.fields:
                 regex = self.fields[field_name]
                 if field_name not in fields:

@@ -23,6 +23,7 @@ from AsyncAPY.objects import Packet
 
 server = AsyncAPY(config='server.conf')
 
+
 @server.handler_add()
 async def echo_server(client, packet):
     print(f"Hello world from {client}!")
