@@ -99,7 +99,7 @@ class Filters(Filter):
 
     class Fields(Filter):
         """Filters fields inside packets.
-        This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be ``None``, or a valid regular expression.
+        This filter accepts an unlimited number of keyword arguments, that can either be ``None``, or a valid regex.
         In the first case, the filter will match if the request contains the specified field name, while in the other case
         the field value will also be checked with ``re.match()``, using the provided parameter as pattern.
 
@@ -123,7 +123,11 @@ class Filters(Filter):
             :rtype: bool
             """
 
-            return self.fields == other.fields
+            x, y = self.fields, other.fields
+            if len(x) > len(y):
+                return {k: x[k] for k in x if k in y and x[k] == y[k]} == y
+            else:
+                return {k: x[k] for k in x if k in y and x[k] == y[k]} == x
 
         def check(self, _, p):
             """Implements the method to check if a filter matches a given packet/client couple or not

@@ -26,7 +26,6 @@ class Client:
        :type tls: optional, bool
     """
 
-
     def __init__(self, addr: str, port: int, byteorder: str = "big", header_size: int = 4, tls: bool = False):
         """Object constructor"""
 
@@ -115,9 +114,6 @@ class Client:
                     else:
                         print("Could not rebuild stream, bye")
                         break
-                elif len(data) - self.header_size > content_length:
-                    print("Invalid Content-Length header, discarding packet")
-                    break
             if times == 600:
                 print("The 60 seconds timeout for reading the socket has expired, exiting...")
                 break
