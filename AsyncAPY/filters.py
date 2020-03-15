@@ -97,7 +97,6 @@ class Filters(Filter):
 
             return c.address in self.ips
 
-
     class Fields(Filter):
         """Filters fields inside packets.
         This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be ``None``, or a valid regular expression.
