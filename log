@@ -1,0 +1,82 @@
+nohup: ignoring input
+[INFO] 15/03/2020 21:31:29 PM  {API main} AsyncAPY server is starting up
+[DEBUG] 15/03/2020 21:31:29 PM {API main} Running setup function...
+[DEBUG] 15/03/2020 21:31:29 PM {API main} The buffer is set to 1024 bytes, logging is set to DEBUG, encoding is json, header size is set to 4 bytes, byteorder is 'big', settings were loaded from 'server.conf'
+[INFO] 15/03/2020 21:31:29 PM  {API main} Now serving  at 127.0.0.1:1501
+[INFO] 15/03/2020 21:31:56 PM  {Client handler} New session started, UUID is faf7be52-1017-4606-bb00-ba385ff27e79
+[DEBUG] 15/03/2020 21:31:56 PM (faf7be52-1017-4606-bb00-ba385ff27e79) {Client handler} Expected stream length is 13
+[DEBUG] 15/03/2020 21:31:56 PM (faf7be52-1017-4606-bb00-ba385ff27e79) {Client handler} Stream complete, processing API call
+[DEBUG] 15/03/2020 21:31:56 PM (faf7be52-1017-4606-bb00-ba385ff27e79) {API Parser} Protocol-Version is V2, Content-Encoding is json
+[DEBUG] 15/03/2020 21:31:56 PM (faf7be52-1017-4606-bb00-ba385ff27e79) {API Parser} Done! Filters check passed, running group of functions
+[DEBUG] 15/03/2020 21:31:56 PM (faf7be52-1017-4606-bb00-ba385ff27e79) {API Parser} Calling 'echo_server'
+[DEBUG] 15/03/2020 21:31:56 PM (Session(faf7be52-1017-4606-bb00-ba385ff27e79)) {Response handler} Sending response to client
+[DEBUG] 15/03/2020 21:31:56 PM (Session(faf7be52-1017-4606-bb00-ba385ff27e79)) {Response Handler} Response sent
+[DEBUG] 15/03/2020 21:31:56 PM (faf7be52-1017-4606-bb00-ba385ff27e79) {API Parser} Execution of 'echo_server' terminated
+[DEBUG] 15/03/2020 21:31:56 PM (faf7be52-1017-4606-bb00-ba385ff27e79) {API Parser} Calling 'lul'
+[DEBUG] 15/03/2020 21:31:56 PM (faf7be52-1017-4606-bb00-ba385ff27e79) {API Parser} Execution of 'lul' terminated
+[INFO] 15/03/2020 21:31:56 PM (faf7be52-1017-4606-bb00-ba385ff27e79) {Client handler} Stream has ended
+[INFO] 15/03/2020 21:31:56 PM  {Client handler} New session started, UUID is 966ea689-bccf-4f69-9b5c-ddd25a88b63a
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {Client handler} Expected stream length is 16
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {Client handler} Stream complete, processing API call
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Protocol-Version is V2, Content-Encoding is json
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Done! Filters check passed, running group of functions
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Calling 'echo_server'
+[DEBUG] 15/03/2020 21:31:56 PM (Session(966ea689-bccf-4f69-9b5c-ddd25a88b63a)) {Response handler} Sending response to client
+[DEBUG] 15/03/2020 21:31:56 PM (Session(966ea689-bccf-4f69-9b5c-ddd25a88b63a)) {Response Handler} Response sent
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Execution of 'echo_server' terminated
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Calling 'lul'
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Execution of 'lul' terminated
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {Client handler} Expected stream length is 25
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {Client handler} Stream complete, processing API call
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Protocol-Version is V2, Content-Encoding is json
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Done! Filters check passed, running group of functions
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Calling 'echo_server'
+[DEBUG] 15/03/2020 21:31:56 PM (Session(966ea689-bccf-4f69-9b5c-ddd25a88b63a)) {Response handler} Sending response to client
+[DEBUG] 15/03/2020 21:31:56 PM (Session(966ea689-bccf-4f69-9b5c-ddd25a88b63a)) {Response Handler} Response sent
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Execution of 'echo_server' terminated
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Calling 'lul'
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Execution of 'lul' terminated
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Done! Filters check passed, calling 'filtered_handler'
+[DEBUG] 15/03/2020 21:31:56 PM (Session(966ea689-bccf-4f69-9b5c-ddd25a88b63a)) {Response handler} Sending response to client
+[DEBUG] 15/03/2020 21:31:56 PM (Session(966ea689-bccf-4f69-9b5c-ddd25a88b63a)) {Response Handler} Response sent
+[DEBUG] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {API Parser} Execution of 'filtered_handler' terminated
+[INFO] 15/03/2020 21:31:56 PM (966ea689-bccf-4f69-9b5c-ddd25a88b63a) {Client handler} The connection was closed
+[INFO] 15/03/2020 21:31:56 PM  {Client handler} New session started, UUID is d8121b10-86a8-47ea-a14a-d254c98e6021
+[DEBUG] 15/03/2020 21:31:56 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Client handler} Stream is shorter than header size, rebuilding
+[DEBUG] 15/03/2020 21:31:56 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Stream rebuilder} Requesting 1 more byte
+[DEBUG] 15/03/2020 21:31:56 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Stream rebuilder} Requesting 1 more byte
+[DEBUG] 15/03/2020 21:31:57 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Stream rebuilder} Requesting 1 more byte
+[DEBUG] 15/03/2020 21:31:57 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Stream rebuilder} Stream is now 4 byte(s) long
+[DEBUG] 15/03/2020 21:31:57 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Client handler} Expected stream length is 25
+[DEBUG] 15/03/2020 21:31:57 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Client handler} Fragmented stream detected, rebuilding in progress
+[DEBUG] 15/03/2020 21:31:57 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Stream completer} Requesting 1024 more bytes until length 25
+[DEBUG] 15/03/2020 21:31:59 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Client handler} Stream completed, processing API call
+[DEBUG] 15/03/2020 21:31:59 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {API Parser} Protocol-Version is V2, Content-Encoding is json
+[DEBUG] 15/03/2020 21:31:59 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {API Parser} Done! Filters check passed, running group of functions
+[DEBUG] 15/03/2020 21:31:59 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {API Parser} Calling 'echo_server'
+[DEBUG] 15/03/2020 21:31:59 PM (Session(d8121b10-86a8-47ea-a14a-d254c98e6021)) {Response handler} Sending response to client
+[DEBUG] 15/03/2020 21:31:59 PM (Session(d8121b10-86a8-47ea-a14a-d254c98e6021)) {Response Handler} Response sent
+[DEBUG] 15/03/2020 21:31:59 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {API Parser} Execution of 'echo_server' terminated
+[DEBUG] 15/03/2020 21:31:59 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {API Parser} Calling 'lul'
+[DEBUG] 15/03/2020 21:31:59 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {API Parser} Execution of 'lul' terminated
+[INFO] 15/03/2020 21:31:59 PM (d8121b10-86a8-47ea-a14a-d254c98e6021) {Client handler} Stream has ended
+[INFO] 15/03/2020 21:31:59 PM  {Client handler} New session started, UUID is 92c982fe-bbf8-4f29-85da-1d04da661ef4
+[DEBUG] 15/03/2020 21:31:59 PM (92c982fe-bbf8-4f29-85da-1d04da661ef4) {Client handler} Expected stream length is 25
+[DEBUG] 15/03/2020 21:31:59 PM (92c982fe-bbf8-4f29-85da-1d04da661ef4) {Client handler} Stream complete, processing API call
+[ERROR] 15/03/2020 21:31:59 PM (92c982fe-bbf8-4f29-85da-1d04da661ef4) {API Parser} V1 packets shouldn't include a Content-Encoding header!
+[DEBUG] 15/03/2020 21:31:59 PM (92c982fe-bbf8-4f29-85da-1d04da661ef4) {Response handler} Sending response to client
+[DEBUG] 15/03/2020 21:31:59 PM (92c982fe-bbf8-4f29-85da-1d04da661ef4) {Response Handler} Response sent
+[DEBUG] 15/03/2020 21:31:59 PM (92c982fe-bbf8-4f29-85da-1d04da661ef4) {API Parser} Protocol-Version is V1, Content-Encoding is json
+[ERROR] 15/03/2020 21:31:59 PM (92c982fe-bbf8-4f29-85da-1d04da661ef4) {API Parser} The connection was closed abruptly
+[INFO] 15/03/2020 21:31:59 PM (92c982fe-bbf8-4f29-85da-1d04da661ef4) {Client handler} The connection was closed
+[INFO] 15/03/2020 21:31:59 PM  {Client handler} New session started, UUID is 3441eea4-a39b-4ba8-ad80-03ad2fd7ff73
+[DEBUG] 15/03/2020 21:31:59 PM (3441eea4-a39b-4ba8-ad80-03ad2fd7ff73) {Client handler} Expected stream length is 19
+[DEBUG] 15/03/2020 21:31:59 PM (3441eea4-a39b-4ba8-ad80-03ad2fd7ff73) {Client handler} Stream complete, processing API call
+[ERROR] 15/03/2020 21:31:59 PM (3441eea4-a39b-4ba8-ad80-03ad2fd7ff73) {Request Decoder} Invalid ziproto encoded payload!
+[DEBUG] 15/03/2020 21:31:59 PM (3441eea4-a39b-4ba8-ad80-03ad2fd7ff73) {Response handler} Sending response to client
+[DEBUG] 15/03/2020 21:31:59 PM (3441eea4-a39b-4ba8-ad80-03ad2fd7ff73) {Response Handler} Response sent
+[DEBUG] 15/03/2020 21:31:59 PM (3441eea4-a39b-4ba8-ad80-03ad2fd7ff73) {API Parser} Protocol-Version is V2, Content-Encoding is ziproto
+[ERROR] 15/03/2020 21:31:59 PM (3441eea4-a39b-4ba8-ad80-03ad2fd7ff73) {API Parser} The connection was closed abruptly
+[INFO] 15/03/2020 21:31:59 PM (3441eea4-a39b-4ba8-ad80-03ad2fd7ff73) {Client handler} The connection was closed
+[INFO] 15/03/2020 21:31:59 PM  {Client handler} New session started, UUID is e970b643-7a15-492e-afa0-b532b831b00e
+[ERROR] 15/03/2020 21:32:59 PM (e970b643-7a15-492e-afa0-b532b831b00e) {Client handler} The operation has timed out
