@@ -18,6 +18,8 @@
 
 import re
 from typing import Union, List
+from copy import deepcopy
+
 
 
 class Filter(object):
@@ -73,7 +75,10 @@ class Filters(Filter):
             if not isinstance(other, Filter):
                 raise ValueError("The equality comparison is meant for Filters objects only!")
             if isinstance(other, Filters.Ip):
-                return True if self.ips - other.ips == set() else False
+                if len(self.ips) < len(other.ips):
+                    return True if self.ips - other.ips == set() else False
+                elif len(self.ips) > len(other.ips):
+                    return True if other.ips - self.ips == set() else False
             else:
                 return False
 
@@ -142,7 +147,7 @@ class Filters(Filter):
                :rtype: bool
             """
 
-            fields = p.dict_payload
+            fields = deepcopy(p.dict_payload)
             for field_name in self.fields:
                 regex = self.fields[field_name]
                 if field_name not in fields:
