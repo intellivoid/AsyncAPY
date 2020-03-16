@@ -1,6 +1,6 @@
 # AsyncAPY - A fully fledged Python 3.6+ library to serve APIs asynchronously 
 
-![Logo](https://i.imgur.com/D7SOaJJ.png)
+![Logo](https://i.ibb.co/2jsY3Kv/IMG-20200316-114028-125.png)
 
 [![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=dev)](https://asyncapy.readthedocs.io/en/dev/?badge=dev) [![Build Status](https://travis-ci.com/nocturn9x/AsyncAPY.svg?branch=master)](https://travis-ci.com/nocturn9x/AsyncAPY) ![Open Issues](https://img.shields.io/github/issues/intellivoid/AsyncAPY) ![License](https://img.shields.io/github/license/intellivoid/AsyncAPY)
 
