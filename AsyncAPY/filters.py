@@ -18,7 +18,7 @@
 
 import re
 from typing import Union, List
-
+from copy import deepcopy
 
 class Filter(object):
     """The standard base for all filters"""
@@ -142,7 +142,7 @@ class Filters(Filter):
                :rtype: bool
             """
 
-            fields = p.dict_payload
+            fields = deepcopy(p.dict_payload)
             for field_name in self.fields:
                 regex = self.fields[field_name]
                 if field_name not in fields:
