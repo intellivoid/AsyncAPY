@@ -57,12 +57,10 @@ Save this script into a file named ``example.py`` and try running it; your outpu
 
 What happens if we send a packet to our new, shiny, echo server? Let's try to use the testing client to send a packet to our server: create a new empty file, name it ``testclient.py`` and paste the following
 
-..info ::
-   We will be using the test client available in the official `Github Repository <https://github.com/nocturn9x/AsyncAPY/tree/dev/tests/defaultclient.py>`_, be sure to download that file and put it in your working directory
 
 .. code-block:: python
 
-   import defaultclient  # Make sure defaultclient.py is in your workdir
+   import AsyncAPY.defaultclient  # Make sure defaultclient.py is in your workdir
 
    client = defaultclient.Client("0.0.0.0", 1500, tls=False)  
    enc = 'json'
@@ -140,8 +138,12 @@ Lucky you, AsyncAPY suppports handler grouping, meaning that handler with identi
 
 .. warning
 
-   To take full advantages of groups, you have to pass ``close=False`` to `Client.send()``, or the next handlers
+   To take full advantages of groups, you have to pass ``close=False`` to ``Client.send()``, or the next handlers
    won't be able to communicate with the client.
 
+   It's also worth noting that overlapping filters, that therefore share some common attributes (e.g. two ``Filters.Ip`` which have some IP addresses in common)
+   will be grouped too, if the conditions to make a group are met
+
 You may find an example of a group of handlers in `this <https://asyncapy.readthedocs.io/en/dev/examples.html#filters-examples>`_ section
+
 

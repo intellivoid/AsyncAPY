@@ -26,7 +26,6 @@ class Client:
        :type tls: optional, bool
     """
 
-
     def __init__(self, addr: str, port: int, byteorder: str = "big", header_size: int = 4, tls: bool = False):
         """Object constructor"""
 
@@ -34,7 +33,7 @@ class Client:
             raise ValueError("address must be string!")
         if not isinstance(port, int):
             raise ValueError("port must be an integer!")
-        if not byteorder in ("big", "little"):
+        if byteorder not in ("big", "little"):
             raise ValueError("byteorder must either be big or little!")
         if not isinstance(header_size, int):
             raise ValueError("header_size must be an integer!")
@@ -100,7 +99,7 @@ class Client:
         while len(data) < self.header_size:
             try:
                 data += self.sock.recv(1024)
-            except Exception as error:
+            except socket.error as error:
                 print(f"An error occurred while reading from socket -> {error}")
             if not len(data) >= self.header_size:
                 time.sleep(0.1)
@@ -113,11 +112,8 @@ class Client:
                     if missing:
                         data += missing
                     else:
-                        print("Could not rebuild stream, bye")
+                        print("Could not rebuild stream")
                         break
-                elif len(data) - self.header_size > content_length:
-                    print("Invalid Content-Length header, discarding packet")
-                    break
             if times == 600:
                 print("The 60 seconds timeout for reading the socket has expired, exiting...")
                 break

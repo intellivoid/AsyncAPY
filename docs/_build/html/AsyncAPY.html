@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -440,7 +440,7 @@ to prevent the runner function from going further and forwarding the packet to t
 <em class="property">class </em><code class="sig-name descname">Fields</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
 <p>Filters fields inside packets.
-This filter accepts an unlimited number of keyword arguments, whose corresponding parameters can either be <code class="docutils literal notranslate"><span class="pre">None</span></code>, or a valid regular expression.
+This filter accepts an unlimited number of keyword arguments, that can either be <code class="docutils literal notranslate"><span class="pre">None</span></code>, or a valid regex.
 In the first case, the filter will match if the request contains the specified field name, while in the other case
 the field value will also be checked with <code class="docutils literal notranslate"><span class="pre">re.match()</span></code>, using the provided parameter as pattern.</p>
 <dl class="field-list simple">
@@ -751,7 +751,7 @@ with its priority and filters</p>
 </dd></dl>
 
 <div class="versionadded">
-<p><span class="versionmodified added">New in version 0.3: </span>The <code class="docutils literal notranslate"><span class="pre">Session</span></code> class and related behavior in the <cite>Client</cite> and <cite>AsyncAPY</cite> class</p>
+<p><span class="versionmodified added">New in version 0.3: </span>The <code class="docutils literal notranslate"><span class="pre">Session</span></code> class and related behavior in the <code class="docutils literal notranslate"><span class="pre">Client</span></code> and <code class="docutils literal notranslate"><span class="pre">AsyncAPY</span></code> class</p>
 </div>
 </div>
 <div class="section" id="module-AsyncAPY">
