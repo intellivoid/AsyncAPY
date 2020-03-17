@@ -100,8 +100,9 @@ class Client:
         while len(data) < self.header_size:
             try:
                 data += self.sock.recv(1024)
-            except Exception as error:
+            except socket.error as error:
                 print(f"An error occurred while reading from socket -> {error}")
+                break
             if not len(data) >= self.header_size:
                 time.sleep(0.1)
                 times += 1
@@ -113,11 +114,8 @@ class Client:
                     if missing:
                         data += missing
                     else:
-                        print("Could not rebuild stream, bye")
+                        print("Could not rebuild stream")
                         break
-                elif len(data) - self.header_size > content_length:
-                    print("Invalid Content-Length header, discarding packet")
-                    break
             if times == 600:
                 print("The 60 seconds timeout for reading the socket has expired, exiting...")
                 break
