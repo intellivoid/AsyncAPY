@@ -30,7 +30,7 @@ Some of its features include:
 - Packets filtering
 
 As of today, there is no native TLS support, as AsyncAPY is meant to be ran behind a load balancer/reverse proxy such as HaProxy. If you really want to use it as a stand-alone API server, 
-feel free to open an issue on the `repository <https://github.com/intellivoid/AsyncAPY>`_  with the label "enhancement" and I'll consider adding optional TLS support.
+feel free to open an issue on the `repository <https://github.com/nocturn9x/AsyncAPY>`_  with the label "enhancement" and I'll consider adding optional TLS support.
 
 
 What's new in AsyncAPY 0.3
@@ -47,7 +47,7 @@ The version 0.3 brought some great changes, listed below:
 
    AsyncAPY 0.3 has been thoroughly tested and is now stable enough for production.
 
-   If you find any bugs, please let us know by opening an `issue on the repository <https://github.com/intellivoid/AsyncAPY/issues/new/choose>`_
+   If you find any bugs, please let us know by opening an `issue on the repository <https://github.com/nocturn9x/AsyncAPY/issues/new/choose>`_
 
 
 .. toctree::

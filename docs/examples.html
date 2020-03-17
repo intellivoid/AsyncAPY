@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>AsyncAPY - Code Examples &mdash; AsyncAPY 0.3.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="AsyncAPY - The Protocol" href="protocol.html" />
+    <link rel="prev" title="AsyncAPY - Frequently Asked Questions" href="faqs.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> AsyncAPY
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">AsyncAPY</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">AsyncAPY - Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faqs.html">AsyncAPY - Frequently Asked Questions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AsyncAPY - Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#filters-examples">Filters Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#groups-examples">Groups Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">AsyncAPY - The Protocol</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AsyncAPY</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>AsyncAPY - Code Examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="asyncapy-code-examples">
+<h1>AsyncAPY - Code Examples<a class="headerlink" href="#asyncapy-code-examples" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="filters-examples">
+<h2>Filters Examples<a class="headerlink" href="#filters-examples" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example on how to use AsyncAPY’s <code class="docutils literal notranslate"><span class="pre">Filters</span></code> objects</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">AsyncAPY.base</span> <span class="kn">import</span> <span class="n">AsyncAPY</span>
+<span class="kn">from</span> <span class="nn">AsyncAPY.filters</span> <span class="kn">import</span> <span class="n">Filters</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">AsyncAPY</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1500</span><span class="p">)</span>
+
+<span class="c1"># This filter will match any digit in the &#39;foo&#39; field,</span>
+<span class="c1"># and anything in the &#39;bar&#39; field, e.g.:</span>
+<span class="c1"># {&quot;foo&quot;: 12355, &quot;bar&quot;: &quot;anything&quot;}</span>
+
+<span class="nd">@server</span><span class="o">.</span><span class="n">handler_add</span><span class="p">([</span><span class="n">Filters</span><span class="o">.</span><span class="n">Fields</span><span class="p">(</span><span class="n">foo</span><span class="o">=</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="kc">None</span><span class="p">)])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">filtered_handler</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You can also use multiple <code class="docutils literal notranslate"><span class="pre">Filters</span></code> objects, e.g. <code class="docutils literal notranslate"><span class="pre">Filters.Ip</span></code>, by doing the following</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">AsyncAPY.base</span> <span class="kn">import</span> <span class="n">AsyncAPY</span>
+<span class="kn">from</span> <span class="nn">AsyncAPY.filters</span> <span class="kn">import</span> <span class="n">Filters</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">AsyncAPY</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1500</span><span class="p">)</span>
+
+<span class="c1"># This filter will match any digit in the &#39;foo&#39; field,</span>
+<span class="c1"># and anything in the &#39;bar&#39; field, e.g.:</span>
+<span class="c1"># {&quot;foo&quot;: 12355, &quot;bar&quot;: &quot;anything&quot;}</span>
+<span class="c1"># Also, only packets coming from localhost (127.0.0.1) and from 151.53.88.15, will reach</span>
+<span class="c1"># this handler</span>
+
+
+<span class="nd">@server</span><span class="o">.</span><span class="n">handler_add</span><span class="p">([</span><span class="n">Filters</span><span class="o">.</span><span class="n">Fields</span><span class="p">(</span><span class="n">foo</span><span class="o">=</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">bar</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">Filters</span><span class="o">.</span><span class="n">Ip</span><span class="p">([</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="s2">&quot;151.53.88.15&quot;</span><span class="p">])])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">filtered_handler</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you want to allow multiple ips inside the <code class="docutils literal notranslate"><span class="pre">Filters.Ip</span></code> filter, pass
+a list of ips, <strong>NOT</strong> multiple <code class="docutils literal notranslate"><span class="pre">Filters.Ip</span></code> objects!</p>
+</div>
+</div>
+<div class="section" id="groups-examples">
+<h2>Groups Examples<a class="headerlink" href="#groups-examples" title="Permalink to this headline">¶</a></h2>
+<p>Here is an example on how to use AsyncAPY’s grouping features</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">AsyncAPY.base</span> <span class="kn">import</span> <span class="n">AsyncAPY</span>
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">AsyncAPY</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">1500</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="n">logging_level</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>
+
+
+<span class="nd">@server</span><span class="o">.</span><span class="n">handler_add</span><span class="p">()</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">echo_server</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello world from </span><span class="si">{</span><span class="n">client</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echoing back </span><span class="si">{</span><span class="n">packet</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">packet</span><span class="p">,</span> <span class="n">close</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># packet.stop_propagation()  # Uncomment to prevent the packet from being forwarded to the next handler</span>
+
+
+<span class="nd">@server</span><span class="o">.</span><span class="n">handler_add</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>    <span class="c1"># Adding a priority is compulsory, or a RuntimeError exception will be raised</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">echo_server_2</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello world from </span><span class="si">{</span><span class="n">client</span><span class="si">}</span><span class="s2"> inside a group!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echoing back </span><span class="si">{</span><span class="n">packet</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+
+<span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is possible to group handlers with filters, as long as they
+share the same filters, not necessarily in the same order, and have
+different priorities</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="protocol.html" class="btn btn-neutral float-right" title="AsyncAPY - The Protocol" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="faqs.html" class="btn btn-neutral float-left" title="AsyncAPY - Frequently Asked Questions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intellivoid Technologies
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,320 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>AsyncAPY - Getting started &mdash; AsyncAPY 0.3.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="AsyncAPY - Frequently Asked Questions" href="faqs.html" />
+    <link rel="prev" title="AsyncAPY - API Documentation" href="AsyncAPY.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> AsyncAPY
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="modules.html">AsyncAPY</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">AsyncAPY - Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing">Installing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hello-world">Hello, world!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filtering-payloads-and-clients">Filtering payloads and clients</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#groups-handling-the-same-request-multiple-times">Groups - Handling the same request multiple times</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faqs.html">AsyncAPY - Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">AsyncAPY - Code Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">AsyncAPY - The Protocol</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AsyncAPY</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>AsyncAPY - Getting started</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="asyncapy-getting-started">
+<h1>AsyncAPY - Getting started<a class="headerlink" href="#asyncapy-getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<p>Right now, the package is not available on PyPi because some custom dependencies need to be documented and published to the index before AsyncAPY can be succesfully installed via <code class="docutils literal notranslate"><span class="pre">pip</span></code>.
+In the meanwhile, you can run the following command in your terminal/shell (assuming <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span></code> are already installed):</p>
+<p><code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">--user</span> <span class="pre">git+https://github.com/intellivoid/AsyncAPY</span></code></p>
+<p>This will install AsyncAPY and its dependencies in your system</p>
+<p><strong>Note</strong>: On Windows systems, unless you are using PowerShell, you may need to replace <code class="docutils literal notranslate"><span class="pre">python3</span></code> with <code class="docutils literal notranslate"><span class="pre">py</span></code> or <code class="docutils literal notranslate"><span class="pre">py3</span></code> for the commands to work, assuming you added it to <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> when installed Python.</p>
+</div>
+<div class="section" id="hello-world">
+<h2>Hello, world!<a class="headerlink" href="#hello-world" title="Permalink to this headline">¶</a></h2>
+<p>Let’s write our very first API server with AsyncAPY, an echo server.</p>
+<p>An echo server is fairly simple, it always replies with the same request that it got from the client</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">AsyncAPY.base</span> <span class="kn">import</span> <span class="n">AsyncAPY</span>   <span class="c1"># Import the base class</span>
+
+
+<span class="n">server</span> <span class="o">=</span> <span class="n">AsyncAPY</span><span class="p">(</span><span class="n">addr</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span>
+                  <span class="n">logging_level</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>  <span class="c1"># Debug mode</span>
+                  <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>
+                  <span class="n">port</span><span class="o">=</span><span class="mi">1500</span>
+                 <span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">echo_server</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hello world from </span><span class="si">{</span><span class="n">client</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Echoing back </span><span class="si">{</span><span class="n">packet</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+
+<span class="n">server</span><span class="o">.</span><span class="n">add_handler</span><span class="p">(</span><span class="n">echo_server</span><span class="p">)</span>   <span class="c1"># Register our handler</span>
+
+<span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>    <span class="c1"># Start the server</span>
+</pre></div>
+</div>
+<p>Save this script into a file named <code class="docutils literal notranslate"><span class="pre">example.py</span></code> and try running it; your output should look like the one below</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="mi">10</span><span class="o">/</span><span class="mi">02</span><span class="o">/</span><span class="mi">2020</span> <span class="mi">16</span><span class="p">:</span><span class="mi">28</span><span class="p">:</span><span class="mi">38</span> <span class="n">PM</span>  <span class="p">{</span><span class="n">API</span> <span class="n">main</span><span class="p">}</span> <span class="n">AsyncAPY</span> <span class="n">server</span> <span class="ow">is</span> <span class="n">starting</span> <span class="n">up</span>
+
+<span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="mi">10</span><span class="o">/</span><span class="mi">02</span><span class="o">/</span><span class="mi">2020</span> <span class="mi">16</span><span class="p">:</span><span class="mi">28</span><span class="p">:</span><span class="mi">38</span> <span class="n">PM</span> <span class="p">{</span><span class="n">API</span> <span class="n">main</span><span class="p">}</span> <span class="n">Running</span> <span class="n">setup</span> <span class="n">function</span><span class="o">...</span>
+
+<span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="mi">10</span><span class="o">/</span><span class="mi">02</span><span class="o">/</span><span class="mi">2020</span> <span class="mi">16</span><span class="p">:</span><span class="mi">28</span><span class="p">:</span><span class="mi">38</span> <span class="n">PM</span> <span class="p">{</span><span class="n">API</span> <span class="n">main</span><span class="p">}</span> <span class="n">The</span> <span class="n">buffer</span> <span class="ow">is</span> <span class="nb">set</span> <span class="n">to</span> <span class="mi">1024</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">logging</span> <span class="ow">is</span> <span class="nb">set</span> <span class="n">to</span> <span class="n">DEBUG</span><span class="p">,</span><span class="o">...</span>
+
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="mi">10</span><span class="o">/</span><span class="mi">02</span><span class="o">/</span><span class="mi">2020</span> <span class="mi">16</span><span class="p">:</span><span class="mi">28</span><span class="p">:</span><span class="mi">38</span> <span class="n">PM</span>  <span class="p">{</span><span class="n">API</span> <span class="n">main</span><span class="p">}</span> <span class="n">Now</span> <span class="n">serving</span>  <span class="n">at</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span><span class="p">:</span><span class="mi">1500</span>
+</pre></div>
+</div>
+<p>What happens if we send a packet to our new, shiny, echo server? Let’s try to use the testing client to send a packet to our server: create a new empty file, name it <code class="docutils literal notranslate"><span class="pre">testclient.py</span></code> and paste the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">AsyncAPY.defaultclient</span>  <span class="c1"># Make sure defaultclient.py is in your workdir</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">defaultclient</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="mi">1500</span><span class="p">,</span> <span class="n">tls</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">enc</span> <span class="o">=</span> <span class="s1">&#39;json&#39;</span>
+<span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">({</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">receive_all</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now open two terminal windows, run <code class="docutils literal notranslate"><span class="pre">example.py</span></code> again and then <code class="docutils literal notranslate"><span class="pre">testclient.py</span></code>, your server output should look like the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[INFO] 10/02/2020 16:39:35 PM  {Client handler} New session started, UUID is 7fd5fab0-5393-44ec-a75d-fa4f2c7e4562
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} Expected stream length is 11
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} Fragmented stream detected, rebuilding
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Protocol-Version is V2, Content-Encoding is json
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Done! Filters check passed, calling &#39;echo_server&#39;
+
+Hello world from Client(127.0.0.1)!
+
+Echoing back Packet({&quot;test&quot;: 1})...
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Response handler} Sending response to client
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Response Handler} Response sent
+
+[DEBUG] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Execution of &#39;echo_server&#39; terminated
+
+[INFO] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} The connection was closed
+</pre></div>
+</div>
+<p>while your client output will look like this:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00\x00\x00\r\x16\x00</span><span class="s1">{&quot;test&quot;: 1}&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>As you can see, we got the same JSON encoded packet that we sent!</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that the line <code class="docutils literal notranslate"><span class="pre">server.add_handler(echo_server)</span></code> can be shortened the following way:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@server</span><span class="o">.</span><span class="n">handler_add</span><span class="p">()</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">your_handler</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="filtering-payloads-and-clients">
+<h2>Filtering payloads and clients<a class="headerlink" href="#filtering-payloads-and-clients" title="Permalink to this headline">¶</a></h2>
+<p>AsyncAPY gives you the possibility to set some conditions to your handlers, which must all be met for it to be executed. Those conditions are represented in Python trough <code class="docutils literal notranslate"><span class="pre">Filter</span></code> objects, which are located in the <code class="docutils literal notranslate"><span class="pre">Filters</span></code> class of the <code class="docutils literal notranslate"><span class="pre">AsyncAPY.filters</span></code> module (see <a class="reference external" href="https://asyncapy.readthedocs.io/en/latest/AsyncAPY.html#module-AsyncAPY.filters">here</a>)</p>
+<p>Filters can be applied to a handler by passing a list of the desired filter object(s) to the <code class="docutils literal notranslate"><span class="pre">AsyncAPY.add_handler()</span></code> method and of course to its decorator counterpart, <code class="docutils literal notranslate"><span class="pre">&#64;AsyncAPY.handler_add</span></code>.</p>
+<p>An example of a filtered handler can be found in our dedicated <a class="reference external" href="https://asyncapy.readthedocs.io/en/dev/examples.html#filters-examples">examples section</a></p>
+<p>If you have issues with non-passing filters, try reading our <a class="reference external" href="https://asyncapy.readthedocs.io/en/latest/faqs.html#why-don-t-my-filter-pass">FAQ</a> on this topic</p>
+</div>
+<div class="section" id="groups-handling-the-same-request-multiple-times">
+<h2>Groups - Handling the same request multiple times<a class="headerlink" href="#groups-handling-the-same-request-multiple-times" title="Permalink to this headline">¶</a></h2>
+<p>One of the most interesting features of AsyncAPY, is that it allows a client to interact with multiple handlers.
+So if, for example, you wanted to perform some authentication with a handler, but then you needed that same payload you would normally make a new request, but <strong>with AsyncAPY there is no need for that</strong>!</p>
+<p>Lucky you, AsyncAPY suppports handler grouping, meaning that handler with identical filters and different priorities will be grouped together and executed consecutively according on their priority: The lower priority, the higher execution precedence.</p>
+<p>You may find an example of a group of handlers in <a class="reference external" href="https://asyncapy.readthedocs.io/en/dev/examples.html#filters-examples">this</a> section</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="faqs.html" class="btn btn-neutral float-right" title="AsyncAPY - Frequently Asked Questions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="AsyncAPY.html" class="btn btn-neutral float-left" title="AsyncAPY - API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Intellivoid Technologies
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
