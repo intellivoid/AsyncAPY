@@ -42,7 +42,7 @@ Objects - AsyncAPY.objects
    :show-inheritance:
 
 .. versionadded:: 0.3
-   The ``Session`` class and related behavior in the `Client` and `AsyncAPY` class
+   The ``Session`` class and related behavior in the ``Client`` and ``AsyncAPY`` class
 
 Module contents
 ---------------
