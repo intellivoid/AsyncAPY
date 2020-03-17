@@ -7,7 +7,7 @@
 ![Open Issues](https://img.shields.io/github/issues/nocturn9x/AsyncAPY) 
 ![License](https://img.shields.io/github/license/nocturn9x/AsyncAPY)
 ![Stars](https://img.shields.io/github/stars/nocturn9x/AsyncAPY)
-
+![Python version](https://img.shields.io/badge/python-%3E%3D3.6-yellow)
 ![GitHub repo size](https://img.shields.io/github/repo-size/nocturn9x/AsyncAPY)
 ![Version](https://img.shields.io/badge/version-0.3.0--alpha-blue)
 
@@ -20,6 +20,10 @@ The developer and/or Intellivoid Technologies will not take any responsibility f
 This project is published under the `Lesser General Public License Version 3`, for more detailed information check the `LICENSE` file provided within the repository. 
 
 As of today, the latest version of AsyncAPY is 0.3.0
+
+# Long story short
+
+AsyncAPY is a Python framework, supporting Python 3.6 and above, that simplifies the process of creating API backends with an async flavor without having to actually deal with the low-level I/O operation, cancellation handling and all that messy stuff, because AsyncAPY does it for you, and it does so in a smart way that grants stability and low resource demand.
 
 # Documentation
 
