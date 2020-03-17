@@ -7,7 +7,7 @@
 ![Open Issues](https://img.shields.io/github/issues/nocturn9x/AsyncAPY) 
 ![License](https://img.shields.io/github/license/nocturn9x/AsyncAPY)
 ![Stars](https://img.shields.io/github/stars/nocturn9x/AsyncAPY)
-
+![Python version](https://img.shields.io/badge/python-%3E%3D3.6-yellow) 
 ![GitHub repo size](https://img.shields.io/github/repo-size/nocturn9x/AsyncAPY)
 ![Version](https://img.shields.io/badge/version-0.3.0--alpha-blue)
 
