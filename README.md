@@ -95,6 +95,40 @@ response = client.receive_all()
 print(response)
 ```
 
+
+Now open two terminal windows, run `example.py` again and then `testclient.py`, your server output should look like the following:
+
+```[INFO] 10/02/2020 16:39:35 PM  {Client handler} New session started, UUID is 7fd5fab0-5393-44ec-a75d-fa4f2c7e4562
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} Expected stream length is 11
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} Fragmented stream detected, rebuilding
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Protocol-Version is V2, Content-Encoding is json
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Done! Filters check passed, calling 'echo_server'
+
+Hello world from Client(127.0.0.1)!
+
+Echoing back Packet({"test": 1})...
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Response handler} Sending response to client
+
+[DEBUG] 10/02/2020 16:39:35 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Response Handler} Response sent
+
+[DEBUG] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {API Parser} Execution of 'echo_server' terminated
+
+
+[INFO] 10/02/2020 16:39:36 PM (7fd5fab0-5393-44ec-a75d-fa4f2c7e4562) {Client handler} The connection was closed
+```
+
+while your client output will look like this:
+
+`b'\x00\x00\x00\r\x16\x00{"test": 1}'`
+
+As you can see, we got the same JSON encoded packet that we sent!
+
+
 # Credits
 
 ## The main developer
