@@ -129,6 +129,16 @@ while your client output will look like this:
 As you can see, we got the same JSON encoded packet that we sent!
 
 
+__Note__: The line `server.add_handler(echo_server)` can be shortened the following way:
+
+```python
+@server.handler_add()
+async def your_handler(c, p):
+   ...
+```
+
+For a much more advanced usage you may want to check the official [documentation](https://asyncapy.readthedocs.io)
+
 # Credits
 
 ## The main developer
