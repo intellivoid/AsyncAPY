@@ -25,6 +25,7 @@ Some of its features are:
 - **Minimize** boilerplate code
 - Native support for JSON and a custom standard (see [here](https://github.com/netkas/ZiProto-Python))
 - Simple protocol specifications: The protocol can be easily reimplemented in any language
+- Automatic handling of API subscriptions (API keys)
 
 # Documentation
 
