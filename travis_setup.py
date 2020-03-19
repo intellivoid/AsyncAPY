@@ -26,7 +26,7 @@ os.system("python3 -m pip install git+https://github.com/netkas/ZiProto-Python")
 
 setuptools.setup(
     name="AsyncAPY",
-    version="0.3-alpha",
+    version="0.3.2",
     author="Intellivoid Technologies",
     author_email="nocturn9x@intellivoid.net",
     description="A fully fledged Python 3.6+ library to serve APIs asynchronously",
