@@ -19,6 +19,8 @@
 import re
 from typing import Union, List
 from copy import deepcopy
+from .util import APIKeyFactory
+
 
 class Filter(object):
     """The standard base for all filters"""
@@ -166,3 +168,40 @@ class Filters(Filter):
             return f"Filter.Fields({self.fields})"
 
 
+    class APIFactory(Filter):
+
+        """A class that wraps around the ``APIKeyFactory`` class and its children, but as a filter
+           This filter passes if the provided field name is in the incoming packet and its value is a valid API key inside ``self.factory``
+
+           :param factory: The ``APIKeyFactory`` object
+           :type factory: class: APIKeyFactory
+           :param field_name: The name of the field to lookup into incoming packets, if the field if not present, the filter won't pass
+           :type field_name: str
+
+        """
+
+        def __init__(self, factory: APIKeyFactory, field_name: str):
+            """Object constructor"""
+
+            self.factory = factory
+            self.field_name = field_name
+
+
+        def check(self, _, packet):
+            """Implements ``self.check``, returns ``True`` if ``self.field_name`` exist in the provided packet and its value is a valid API key
+
+               :param _: A client object
+               :type _: class: ``Client``, unused in this specific case
+               :param p: A packet object
+               :type p: class: ``Packet``
+               :returns shall_pass: ``True`` if the filter passed, ``False`` otherwise
+               :rtype: bool
+            """
+
+            if packet.dict_payload.get(self.field_name, None):
+                return packet.dict_payload[self.field_name] in self.factory
+
+        def __eq__(self, other):
+            """Implements equality comparison"""
+
+            return self.factory == other.factory and self.field_name == other.field_name
