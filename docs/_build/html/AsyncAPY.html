@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>AsyncAPY - API Documentation &mdash; AsyncAPY 0.3.0 documentation</title>
+  <title>AsyncAPY package &mdash; AsyncAPY 0.3.0 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -83,12 +83,14 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">AsyncAPY</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">AsyncAPY - API Documentation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#modules">Modules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.base">BaseClass - AsyncAPY.base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.errors">Exceptions - AsyncAPY.errors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.filters">Filters - AsyncAPY.filters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.objects">Objects - AsyncAPY.objects</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">AsyncAPY package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.base">AsyncAPY.base module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.defaultclient">AsyncAPY.defaultclient module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.errors">AsyncAPY.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.filters">AsyncAPY.filters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.objects">AsyncAPY.objects module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY.util">AsyncAPY.util module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-AsyncAPY">Module contents</a></li>
 </ul>
 </li>
@@ -145,7 +147,7 @@
         
           <li><a href="modules.html">AsyncAPY</a> &raquo;</li>
         
-      <li>AsyncAPY - API Documentation</li>
+      <li>AsyncAPY package</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -164,13 +166,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="asyncapy-api-documentation">
-<h1>AsyncAPY - API Documentation<a class="headerlink" href="#asyncapy-api-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="modules">
-<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="asyncapy-package">
+<h1>AsyncAPY package<a class="headerlink" href="#asyncapy-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-AsyncAPY.base">
-<span id="baseclass-asyncapy-base"></span><h2>BaseClass - AsyncAPY.base<a class="headerlink" href="#module-AsyncAPY.base" title="Permalink to this headline">¶</a></h2>
+<span id="asyncapy-base-module"></span><h2>AsyncAPY.base module<a class="headerlink" href="#module-AsyncAPY.base" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="AsyncAPY.base.AsyncAPY">
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.base.</code><code class="sig-name descname">AsyncAPY</code><span class="sig-paren">(</span><em class="sig-param">addr: Optional[str] = '127.0.0.1'</em>, <em class="sig-param">port: Optional[int] = 8081</em>, <em class="sig-param">buf: Optional[int] = 1024</em>, <em class="sig-param">logging_level: int = 20</em>, <em class="sig-param">console_format: Optional[str] = '[%(levelname)s] %(asctime)s %(message)s'</em>, <em class="sig-param">datefmt: Optional[str] = '%d/%m/%Y %H:%M:%S %p'</em>, <em class="sig-param">timeout: Optional[int] = 60</em>, <em class="sig-param">header_size: int = 4</em>, <em class="sig-param">byteorder: str = 'big'</em>, <em class="sig-param">encoding: str = 'json'</em>, <em class="sig-param">config: str = None</em>, <em class="sig-param">cfg_parser=None</em>, <em class="sig-param">session_limit: int = 0</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.base.AsyncAPY" title="Permalink to this definition">¶</a></dt>
@@ -400,12 +402,62 @@ It has been thought to be overridden by a custom user-defined class to perform p
 
 </dd></dl>
 
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.3: </span>The <code class="docutils literal notranslate"><span class="pre">session_limit</span></code> parameter</p>
 </div>
+<div class="section" id="module-AsyncAPY.defaultclient">
+<span id="asyncapy-defaultclient-module"></span><h2>AsyncAPY.defaultclient module<a class="headerlink" href="#module-AsyncAPY.defaultclient" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="AsyncAPY.defaultclient.Client">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.defaultclient.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">addr: str</em>, <em class="sig-param">port: int</em>, <em class="sig-param">byteorder: str = 'big'</em>, <em class="sig-param">header_size: int = 4</em>, <em class="sig-param">tls: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.defaultclient.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is the official python implementation of the AsyncAProto client</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>addr</strong> (<em>str</em>) – The address of the server to connect to</p></li>
+<li><p><strong>port</strong> (<em>int</em>) – The port of the server to connect to</p></li>
+<li><p><strong>byteorder</strong> (<em>str</em>) – The client’s byteorder, it can either be <code class="docutils literal notranslate"><span class="pre">&quot;big&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;little&quot;</span></code>, detault to <code class="docutils literal notranslate"><span class="pre">&quot;big&quot;</span></code></p></li>
+<li><p><strong>header_size</strong> (<em>int</em>) – The size of the <code class="docutils literal notranslate"><span class="pre">Content-Length</span></code> header, defaults to 4</p></li>
+<li><p><strong>tls</strong> (<em>optional</em><em>, </em><em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the client will initiate a TLS encrypted connection, defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="AsyncAPY.defaultclient.Client.connect">
+<code class="sig-name descname">connect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.defaultclient.Client.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connects to <code class="docutils literal notranslate"><span class="pre">self.addr:self.port</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.defaultclient.Client.disconnect">
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.defaultclient.Client.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes <code class="docutils literal notranslate"><span class="pre">self.sock</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.defaultclient.Client.receive_all">
+<code class="sig-name descname">receive_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.defaultclient.Client.receive_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads from <code class="docutils literal notranslate"><span class="pre">self.sock</span></code> until the packet is complete</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.defaultclient.Client.send">
+<code class="sig-name descname">send</code><span class="sig-paren">(</span><em class="sig-param">payload: dict</em>, <em class="sig-param">encoding: str = 'json'</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.defaultclient.Client.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes the passed payload and sends it across the socket, please note that this method does NOT catch any exception if an error occurs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>payload</strong> (<em>dict</em><em> or </em><em>str</em><em>, </em><em>optional</em>) – The payload to send as a dictionary object or a valid JSON serializable string</p></li>
+<li><p><strong>encoding</strong> (<em>str</em><em>, </em><em>optional</em>) – The encoding of the payload, note that this should be kept consistent across the session, as the encoding of responses cannot change during a session once defined (your packets will still be decoded properly, but you won’t get the same encoding of your payloads)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-AsyncAPY.errors">
-<span id="exceptions-asyncapy-errors"></span><h2>Exceptions - AsyncAPY.errors<a class="headerlink" href="#module-AsyncAPY.errors" title="Permalink to this headline">¶</a></h2>
+<span id="asyncapy-errors-module"></span><h2>AsyncAPY.errors module<a class="headerlink" href="#module-AsyncAPY.errors" title="Permalink to this headline">¶</a></h2>
 <dl class="exception">
 <dt id="AsyncAPY.errors.StopPropagation">
 <em class="property">exception </em><code class="sig-prename descclassname">AsyncAPY.errors.</code><code class="sig-name descname">StopPropagation</code><a class="headerlink" href="#AsyncAPY.errors.StopPropagation" title="Permalink to this definition">¶</a></dt>
@@ -416,7 +468,7 @@ to prevent the runner function from going further and forwarding the packet to t
 
 </div>
 <div class="section" id="module-AsyncAPY.filters">
-<span id="filters-asyncapy-filters"></span><h2>Filters - AsyncAPY.filters<a class="headerlink" href="#module-AsyncAPY.filters" title="Permalink to this headline">¶</a></h2>
+<span id="asyncapy-filters-module"></span><h2>AsyncAPY.filters module<a class="headerlink" href="#module-AsyncAPY.filters" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="AsyncAPY.filters.Filter">
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.filters.</code><code class="sig-name descname">Filter</code><a class="headerlink" href="#AsyncAPY.filters.Filter" title="Permalink to this definition">¶</a></dt>
@@ -435,6 +487,42 @@ to prevent the runner function from going further and forwarding the packet to t
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.filters.</code><code class="sig-name descname">Filters</code><a class="headerlink" href="#AsyncAPY.filters.Filters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
 <p>This class implements all the filters in AsyncAPY</p>
+<dl class="class">
+<dt id="AsyncAPY.filters.Filters.APIFactory">
+<em class="property">class </em><code class="sig-name descname">APIFactory</code><span class="sig-paren">(</span><em class="sig-param">factory: AsyncAPY.util.APIKeyFactory</em>, <em class="sig-param">field_name: str</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.APIFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#AsyncAPY.filters.Filter" title="AsyncAPY.filters.Filter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncAPY.filters.Filter</span></code></a></p>
+<p>A class that wraps around the <code class="docutils literal notranslate"><span class="pre">APIKeyFactory</span></code> class and its children, but as a filter
+This filter passes if the provided field name is in the incoming packet and its value is a valid API key inside <code class="docutils literal notranslate"><span class="pre">self.factory</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>factory</strong> (<em>class: APIKeyFactory</em>) – The <code class="docutils literal notranslate"><span class="pre">APIKeyFactory</span></code> object</p></li>
+<li><p><strong>field_name</strong> (<em>str</em>) – The name of the field to lookup into incoming packets, if the field if not present, the filter won’t pass</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="AsyncAPY.filters.Filters.APIFactory.check">
+<code class="sig-name descname">check</code><span class="sig-paren">(</span><em class="sig-param">_</em>, <em class="sig-param">packet</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.APIFactory.check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements <code class="docutils literal notranslate"><span class="pre">self.check</span></code>, returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">self.field_name</span></code> exist in the provided packet and its value is a valid API key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_</strong> (class: <code class="docutils literal notranslate"><span class="pre">Client</span></code>, unused in this specific case) – A client object</p></li>
+<li><p><strong>p</strong> (class: <code class="docutils literal notranslate"><span class="pre">Packet</span></code>) – A packet object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns shall_pass</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the filter passed, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="AsyncAPY.filters.Filters.Fields">
 <em class="property">class </em><code class="sig-name descname">Fields</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.filters.Filters.Fields" title="Permalink to this definition">¶</a></dt>
@@ -510,7 +598,7 @@ Note: This filter is dynamic, it can be updated at runtime if assigned to a vari
 
 </div>
 <div class="section" id="module-AsyncAPY.objects">
-<span id="objects-asyncapy-objects"></span><h2>Objects - AsyncAPY.objects<a class="headerlink" href="#module-AsyncAPY.objects" title="Permalink to this headline">¶</a></h2>
+<span id="asyncapy-objects-module"></span><h2>AsyncAPY.objects module<a class="headerlink" href="#module-AsyncAPY.objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="AsyncAPY.objects.Client">
 <em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.objects.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">addr: str</em>, <em class="sig-param">server</em>, <em class="sig-param">stream=None</em>, <em class="sig-param">session: str = None</em>, <em class="sig-param">encoding: int = None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.objects.Client" title="Permalink to this definition">¶</a></dt>
@@ -693,7 +781,7 @@ with its priority and filters</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fields</strong> (<em>Union</em><em>[</em><em>dict</em><em>, </em><em>str</em><em>, </em><em>bytes</em><em>]</em>) – The payload, it can either be a Python dictionary or valid JSON string (it can also be encoded as bytes)</p></li>
 <li><p><strong>encoding</strong> (<em>str</em>) – The payload desired encoding, it can either be <code class="docutils literal notranslate"><span class="pre">json</span></code> or <code class="docutils literal notranslate"><span class="pre">ziproto</span></code></p></li>
-<li><p><strong>sender</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#AsyncAPY.objects.Client" title="AsyncAPY.objects.Client"><em>Client</em></a><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – This parameter is meant to be initialized internally, and points to the <code class="docutils literal notranslate"><span class="pre">Client</span></code> object that sent the associated payload, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>sender</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#AsyncAPY.defaultclient.Client" title="AsyncAPY.defaultclient.Client"><em>Client</em></a><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – This parameter is meant to be initialized internally, and points to the <code class="docutils literal notranslate"><span class="pre">Client</span></code> object that sent the associated payload, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -750,9 +838,106 @@ with its priority and filters</p>
 
 </dd></dl>
 
-<div class="versionadded">
-<p><span class="versionmodified added">New in version 0.3: </span>The <code class="docutils literal notranslate"><span class="pre">Session</span></code> class and related behavior in the <code class="docutils literal notranslate"><span class="pre">Client</span></code> and <code class="docutils literal notranslate"><span class="pre">AsyncAPY</span></code> class</p>
 </div>
+<div class="section" id="module-AsyncAPY.util">
+<span id="asyncapy-util-module"></span><h2>AsyncAPY.util module<a class="headerlink" href="#module-AsyncAPY.util" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="AsyncAPY.util.APIKeyFactory">
+<em class="property">class </em><code class="sig-prename descclassname">AsyncAPY.util.</code><code class="sig-name descname">APIKeyFactory</code><span class="sig-paren">(</span><em class="sig-param">size: int = 32</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.util.APIKeyFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generic class to manage a basic in-memory storage of API subscriptions, represented as keys of variable size, implementing functionality to issue, revoke and reissue keys</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>size</strong> (<em>int</em><em>, </em><em>optional</em>) – The desired size of the API key. By default, it’s just a random string, defaults to 32</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="AsyncAPY.util.APIKeyFactory.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key: str</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.util.APIKeyFactory.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the associated metadata with the given key, raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> if the key doesn’t exist</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The API key</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The associated metadata with the given API key</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If the given key does not exist</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.util.APIKeyFactory.issue">
+<code class="sig-name descname">issue</code><span class="sig-paren">(</span><em class="sig-param">metadata: dict = None</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.util.APIKeyFactory.issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new random API key of <code class="docutils literal notranslate"><span class="pre">self.size</span></code> length, saves it and attaches to it eventual metadata</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>metadata</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary object containing meaningful information that is returned with the <code class="docutils literal notranslate"><span class="pre">self.get</span></code> method. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Returns key</dt>
+<dd class="field-even"><p>The generated API key</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.util.APIKeyFactory.reissue">
+<code class="sig-name descname">reissue</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.util.APIKeyFactory.reissue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reissues an API key, replacing the old <code class="docutils literal notranslate"><span class="pre">key</span></code> with a new one, keeping the old metadata</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The API key to reissue</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If the given key does not exist</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The new API key</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.util.APIKeyFactory.revoke">
+<code class="sig-name descname">revoke</code><span class="sig-paren">(</span><em class="sig-param">key: str</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.util.APIKeyFactory.revoke" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revokes an API key, removing its associated data from the internal dictionary</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The API key to revoke</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If the given key does not exist</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="AsyncAPY.util.APIKeyFactory.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">key: str</em>, <em class="sig-param">metadata: dict</em><span class="sig-paren">)</span><a class="headerlink" href="#AsyncAPY.util.APIKeyFactory.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the associated metadata for the given key with the provided value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The API key to update data for</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em>) – A dictionary object containing meaningful information that is returned with the <code class="docutils literal notranslate"><span class="pre">self.get</span></code> method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyError</strong> – If the given key does not exist</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-AsyncAPY">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-AsyncAPY" title="Permalink to this headline">¶</a></h2>

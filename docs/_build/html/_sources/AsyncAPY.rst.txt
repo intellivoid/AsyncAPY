@@ -1,48 +1,57 @@
-AsyncAPY - API Documentation
-============================
+AsyncAPY package
+================
 
-Modules
+Submodules
 ----------
 
-BaseClass - AsyncAPY.base
--------------------------
+AsyncAPY.base module
+--------------------
 
 .. automodule:: AsyncAPY.base
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. versionadded:: 0.3
-   The ``session_limit`` parameter
+AsyncAPY.defaultclient module
+-----------------------------
 
+.. automodule:: AsyncAPY.defaultclient
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
-Exceptions - AsyncAPY.errors
-----------------------------
+AsyncAPY.errors module
+----------------------
 
 .. automodule:: AsyncAPY.errors
    :members:
    :undoc-members:
    :show-inheritance:
 
-Filters - AsyncAPY.filters
---------------------------
+AsyncAPY.filters module
+-----------------------
 
 .. automodule:: AsyncAPY.filters
    :members:
    :undoc-members:
    :show-inheritance:
 
-
-Objects - AsyncAPY.objects
---------------------------
+AsyncAPY.objects module
+-----------------------
 
 .. automodule:: AsyncAPY.objects
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. versionadded:: 0.3
-   The ``Session`` class and related behavior in the ``Client`` and ``AsyncAPY`` class
+AsyncAPY.util module
+--------------------
+
+.. automodule:: AsyncAPY.util
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Module contents
 ---------------
