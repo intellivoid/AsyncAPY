@@ -24,7 +24,7 @@ Some of its features are:
 - Easy to _code, read and understand_
 - **Minimize** boilerplate code
 - Native support for JSON and a custom standard (see [here](https://github.com/netkas/ZiProto-Python))
-
+- Simple protocol specifications: The protocol can be easily reimplemented in any language
 
 # Documentation
 
