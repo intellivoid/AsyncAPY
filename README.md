@@ -9,7 +9,7 @@
 ![Stars](https://img.shields.io/github/stars/nocturn9x/AsyncAPY)
 ![Python version](https://img.shields.io/badge/python-%3E%3D3.6-yellow)
 ![GitHub repo size](https://img.shields.io/github/repo-size/nocturn9x/AsyncAPY)
-![Version](https://img.shields.io/badge/version-0.3.0--alpha-blue)
+![Version](https://img.shields.io/badge/version-0.3.2-blue)
 
 AsyncAPY is a Python framework, supporting Python 3.6 and above, that simplifies the process of creating API backends with an async flavor without having to actually deal with the low-level I/O operation, cancellation/timeout handling and all that messy stuff, because AsyncAPY does that automatically under the hood, and it does so in a smart way that grants stability and low resource demand.
 
