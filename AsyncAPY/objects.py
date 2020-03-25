@@ -126,6 +126,7 @@ class Packet:
         self.length = len(self.payload)
         self.dict_payload = json.loads(self.payload)
         self.encoding = encoding
+
     async def stop_propagation(self):
         """Stops a packet within a group, see ``AsyncAPY.errors.StopPropagation``
 
@@ -278,10 +279,10 @@ class Group:
                 first = handler.priority
                 second = self.handlers[index + 1].priority
                 if first == second:
-                    raise RuntimeError("Handlers with identical filters cannot share priority level!")
+                    raise RuntimeError("Handlers with overlapping filters cannot share priority level!")
 
     def check(self, client: Client, packet: Packet):
-        """Checks the filters of the group, one time only on the first filter
+        """Checks the filters of the group
 
            :param client: The client to check for
            :type client: class: ``Client``
@@ -291,8 +292,11 @@ class Group:
            :rtype: bool
 
         """
+        for handler in self.handlers:
+            if not handler.check(client, packet):
+                return False
+        return True
 
-        return self.handlers[0].check(client, packet)
 
     def __repr__(self):
         """Returns ``repr(self)``
