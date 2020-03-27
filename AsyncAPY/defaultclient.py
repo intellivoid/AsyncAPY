@@ -132,4 +132,7 @@ class Client:
                 break
         if len(data[self.header_size:content_length]) > content_length:
             self._extra_data = data[content_length + 1:]
-        return data[self.header_size:content_length]
+            data = data[:content_length]
+        return data
+
+
