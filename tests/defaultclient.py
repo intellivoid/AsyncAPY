@@ -114,6 +114,9 @@ class Client:
             except socket.error as error:
                 logging.error(f"An error occurred while reading from socket -> {error}")
                 return None
+            if not data:
+                logging.debug('Socket closed')
+                break
             if not len(data) >= self.header_size:
                 time.sleep(0.1)
                 times += 1
@@ -130,6 +133,10 @@ class Client:
             if times == 600:
                 logging.debug("The 60 seconds timeout for reading the socket has expired, exiting...")
                 break
-        if len(data[self.header_size:content_length]) > content_length:
-            self._extra_data = data[content_length + 1:]
-        return data[self.header_size:content_length]
+            if data:
+                if len(data[self.header_size:content_length]) > content_length:
+                    self._extra_data = data[content_length + 1:]
+                    data = data[:content_length]
+        return data
+
+
