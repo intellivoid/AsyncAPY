@@ -153,7 +153,6 @@ class Filters(Filter):
                     if not regex.match(str(fields[field_name])):
                         return False
                 del fields[field_name]
-
             if fields:    # There are still some extra fields which aren't in filter, fail the check
                 return False
             return True    # If we are here, all filters match, good!

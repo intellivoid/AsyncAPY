@@ -145,6 +145,7 @@ class Packet:
     def __getitem__(self, key):
         return self.dict_payload.__getitem__(key)
 
+
 class Handler:
 
     """An object meant for internal use. Every function is wrapped inside a ``Handler`` object together
@@ -261,6 +262,7 @@ class Handler:
     def __hash__(self):
         return hash(self.function.__name__)
 
+
 class Group:
 
     """Implements a ``Group`` object, used to group multiple handlers with identical filters
@@ -316,6 +318,7 @@ class Group:
 
     def __hash__(self):
         return hash(self.handlers[0].function.__name__)
+
 
 class Session:
 
