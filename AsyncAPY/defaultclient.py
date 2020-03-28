@@ -132,7 +132,7 @@ class Client:
                         return None
             if times == 600:
                 logging.debug("The 60 seconds timeout for reading the socket has expired, exiting...")
-                break
+                return
             if data:
                 if len(data[self.header_size:content_length]) > content_length:
                     self._extra_data = data[content_length + 1:]
