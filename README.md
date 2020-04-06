@@ -2,8 +2,8 @@
 
 ![Logo](https://i.ibb.co/2jsY3Kv/IMG-20200316-114028-125.png)
 
-[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=dev)](https://asyncapy.readthedocs.io/en/dev/?badge=dev) 
-[![Build Status](https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=master)](https://travis-ci.com/intellivoid/AsyncAPY)
+[![Documentation Status](https://readthedocs.org/projects/asyncapy/badge/?version=giambio)](https://asyncapy.readthedocs.io/en/dev/?badge=giambio) 
+[![Build Status](https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=giambio)](https://travis-ci.com/intellivoid/AsyncAPY)
 ![Open Issues](https://img.shields.io/github/issues/intellivoid/AsyncAPY) 
 ![License](https://img.shields.io/github/license/intellivoid/AsyncAPY)
 ![Stars](https://img.shields.io/github/stars/intellivoid/AsyncAPY)
@@ -28,6 +28,10 @@ Some of its features are:
 - Automatic handling of API subscriptions (API keys)
 
 # Documentation
+
+## Warning
+
+### This version of AsyncAPY is highly unstable and not recommended for a production environment as it uses an async library that is in the early stages of development and is therefore not fully tested
 
 The official documentation is available [here](https://asyncapy.readthedocs.io)
 

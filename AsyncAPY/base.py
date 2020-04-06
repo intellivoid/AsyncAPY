@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with AsyncAPY.  If not, see <http://www.gnu.org/licenses/>.
 
-import trio
+import giambio
 import logging
 import sys
 import uuid
@@ -119,7 +119,7 @@ class AsyncAPY:
 
           This is just a shorthand for ``trio.to_thread.run_sync()``, check `trio's documentation <https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync>`_ to know more
        """
-
+       # TODO: This will not work as is currently unsupported on giambio
        return await trio.to_thread.run_sync(sync_fn, *args, cancellable=cancellable, limiter=limiter)
 
 
@@ -140,7 +140,7 @@ class AsyncAPY:
 
     # API RESPONSE HANDLERS #
 
-    async def malformed_request(self, session_id: uuid.uuid4, stream: trio.SocketStream, encoding=None):
+    async def malformed_request(self, session_id: uuid.uuid4, stream: giambio.AsyncSocket, encoding=None):
         """This is an internal method used to reply to a malformed packet/payload. Please note, that this function deals with raw objects, not with the high-level API objects used inside handlers
 
         :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the logging output
@@ -175,7 +175,7 @@ class AsyncAPY:
             self.add_handler(func, filters, priority)
         return decorator
 
-    async def send_response(self, stream: trio.SocketStream, response_data: bytes, session_id, close: bool = True, encoding=None, from_client: bool = True):
+    async def send_response(self, stream: giambio.AsyncSocket, response_data: bytes, session_id, close: bool = True, encoding=None, from_client: bool = True):
         """
         This function sends the passed response to the client after elaboration
 
@@ -212,7 +212,7 @@ class AsyncAPY:
             try:
                 logging.debug(f"({session_id}) {{Response handler}} Sending response to client")
                 await stream.send_all(response_data)
-            except trio.BrokenResourceError:
+            except trio.BrokenResourceError:     # TODO: These do not exist
                 logging.info(f"({session_id}) {{Response Handler}} The connection was closed")
                 await stream.aclose()
                 return False
@@ -232,7 +232,7 @@ class AsyncAPY:
                 await stream.aclose()
             return True
 
-    async def _rebuild_incomplete_stream(self, session_id: uuid.uuid4, stream: trio.SocketStream, raw_data: bytes):
+    async def _rebuild_incomplete_stream(self, session_id: uuid.uuid4, stream: giambio.AsyncSocket, raw_data: bytes):
         """
         This function gets called when a stream's length is smaller than ``self.header_size`` bytes, which
         is the minimum amount of data needed to parse an API call (The length header)
@@ -265,7 +265,7 @@ class AsyncAPY:
         logging.debug(f"({session_id}) {{Stream rebuilder}} Stream is now {self.header_size} byte(s) long")
         return raw_data
 
-    async def _complete_stream(self, header, stream: trio.SocketStream, session_id: uuid.uuid4):
+    async def _complete_stream(self, header, stream: giambio.AsyncSocket, session_id: uuid.uuid4):
         """
         This functions completes the stream until the specified length is reached
 
@@ -301,7 +301,7 @@ class AsyncAPY:
             return None
         return stream_data
 
-    async def _decode_content(self, content, session_id: str, stream: trio.SocketStream, encoding=None):
+    async def _decode_content(self, content, session_id: str, stream: giambio.AsyncSocket, encoding=None):
         """Decodes the payload with the specified encoding, if any, or falls back to ``self.encoding``
 
            :param content: The byte-encoded payload
@@ -337,7 +337,7 @@ class AsyncAPY:
 
         return data
 
-    async def _parse_call(self, session_id: uuid.uuid4, request: bytes, stream: trio.SocketStream):
+    async def _parse_call(self, session_id: uuid.uuid4, request: bytes, stream: giambio.AsyncSocket):
 
         """This function parses the API request and acts accordingly (e.g. decoding the payload and calling handlers)
 
@@ -447,7 +447,7 @@ class AsyncAPY:
             logging.debug(f"{{BanHammer}} '{ip}' unbanned!")
             self._banned.remove(ip)
 
-    async def _handle_client(self, stream: trio.SocketStream):
+    async def _handle_client(self, stream: giambio.AsyncSocket):
         """This function handles a single client connection, assigning it a unique UUID, and acts accordingly
 
            :param stream: The trio asynchronous socket associated with the client
