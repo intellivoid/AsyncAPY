@@ -13,7 +13,9 @@ AsyncAPY - Official Documentation
 
 
 .. image:: https://travis-ci.com/nocturn9x/AsyncAPY.svg?branch=dev
-    :target: https://travis-ci.com/intellivoid/AsyncAPY
+    :target: https://asyncapy.readthedocs.io/en/dev/?badge=dev
+    :alt: Documentation Status
+
     
 AsyncAPY is a fully fledged framework to easily deploy asynchronous API 
 endpoints over a custom-made protocol (`AsyncAProto`)
