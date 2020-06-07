@@ -27,6 +27,7 @@ from .errors import StopPropagation
 import ziproto
 import configparser
 import time
+import socket
 # import ssl -> TODO Add TLS support soon, not a priority though
 
 
@@ -105,6 +106,7 @@ class AsyncAPY:
         self.console_format = console_format
         self.datefmt = datefmt
         self.timeout = timeout
+        socket.setdefaulttimeout(self.timeout)
         self.header_size = header_size
         self.byteorder = byteorder
         self.encoding = encoding
