@@ -8,7 +8,7 @@ import time
 class TestAsyncAPY:
 
     def test_headers(self):
-        client = defaultclient.Client("127.0.0.1", 1501, tls=False)
+        client = defaultclient.Client("127.0.0.1", 1500, tls=False)
         enc = 'json'
         client.connect()
         client.send({"test": 1}, encoding=enc)
@@ -27,7 +27,7 @@ class TestAsyncAPY:
         client.disconnect()
 
     def test_encodings(self):
-        client = defaultclient.Client("127.0.0.1", 1501, tls=False)
+        client = defaultclient.Client("127.0.0.1", 1500, tls=False)
         client.connect()
         encodings = ("json", "ziproto")
         payload = {"req": "bar"}
@@ -45,7 +45,7 @@ class TestAsyncAPY:
         client.disconnect()
 
     def test_header_rebuilding(self):
-        client = defaultclient.Client("127.0.0.1", 1501, tls=False)
+        client = defaultclient.Client("127.0.0.1", 1500, tls=False)
         client.connect()
         payload = {"foo": "test_payload"}
         payload = json.dumps(payload)
@@ -60,7 +60,7 @@ class TestAsyncAPY:
         assert json.loads(client.receive_all()[client.header_size + 2:]) == json.loads(payload)
 
     def test_invalid_v1_request(self):
-        client = defaultclient.Client("127.0.0.1", 1501, tls=False)
+        client = defaultclient.Client("127.0.0.1", 1500, tls=False)
         client.connect()
         payload = {"req": "test_payload"}
         payload = json.dumps(payload)
@@ -74,7 +74,7 @@ class TestAsyncAPY:
         assert json.loads(resp[client.header_size + 2:]) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}, resp[client.header_size + 2:]
 
     def test_wrong_encoding_header(self):
-        client = defaultclient.Client("127.0.0.1", 1501, tls=False)
+        client = defaultclient.Client("127.0.0.1", 1500, tls=False)
         client.connect()
         payload = {"invalid": True}
         payload = json.dumps(payload)
@@ -88,7 +88,7 @@ class TestAsyncAPY:
         assert json.loads(ziproto.decode(resp[client.header_size + 2:]).tobytes()) == {"status": "failure", "error": "ERR_REQUEST_MALFORMED"}
 
     def test_timeout(self):
-        client = defaultclient.Client("127.0.0.1", 1501, tls=False)
+        client = defaultclient.Client("127.0.0.1", 1500, tls=False)
         client.connect()
         time.sleep(60)
         try:

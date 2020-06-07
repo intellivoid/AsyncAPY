@@ -28,6 +28,7 @@ import ziproto
 import configparser
 import time
 import socket
+from collections import defaultdict
 # import ssl -> TODO Add TLS support soon, not a priority though
 
 
@@ -68,7 +69,7 @@ class AsyncAPY:
     _banned = set()
     _handlers = []
     _levels = {0: "NOTSET", 10: "DEBUG", 20: "INFO", 30: "WARNING", 40: "ERROR", 50: "Critical"}
-    _sessions = {}
+    _sessions = defaultdict(list)
 
     def __init__(self, addr: Optional[str] = "127.0.0.1", port: Optional[int] = 8081, buf: Optional[int] = 1024,
                  logging_level: int = logging.INFO,
@@ -215,19 +216,19 @@ class AsyncAPY:
                 logging.debug(f"({session_id}) {{Response handler}} Sending response to client")
                 await stream.send_all(response_data)
             except trio.BrokenResourceError:
-                logging.info(f"({session_id}) {{Response Handler}} The connection was closed")
+                logging.info(f"({session_id}) {{Response Handler}} The connection was closed abruptly")
                 await stream.aclose()
-                return False
+                return
             except trio.ClosedResourceError:
                 logging.info(f"({session_id}) {{Response Handler}} The connection was closed")
                 await stream.aclose()
-                return False
+                return
             except trio.BusyResourceError as busy:
                 logging.error(f"({session_id}) {{Response Handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
                 await stream.aclose()
-                return False
+                return
         if cancel_scope.cancelled_caught:
-            return None
+            return
         else:
             logging.debug(f"({session_id}) {{Response Handler}} Response sent")
             if close:
@@ -255,15 +256,19 @@ class AsyncAPY:
                     logging.debug(f"({session_id}) {{Stream rebuilder}} Requesting 1 more byte")
                     raw_data += await stream.receive_some(1)
                 except trio.BrokenResourceError:
-                    logging.info(f"({session_id}) {{Stream rebuilder}} The connection was closed")
+                    logging.info(f"({session_id}) {{Stream rebuilder}} The connection was closed abruptly")
                     await stream.aclose()
                     break
                 except trio.ClosedResourceError:
                     logging.info(f"({session_id}) {{Stream rebuilder}} The connection was closed")
                     await stream.aclose()
                     break
+                except trio.BusyResourceError as busy:
+                    logging.error(f"({session_id}) {{Response Handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
+                    await stream.aclose()
+                    return
         if cancel_scope.cancelled_caught:
-            return None
+            return
         logging.debug(f"({session_id}) {{Stream rebuilder}} Stream is now {self.header_size} byte(s) long")
         return raw_data
 
@@ -287,8 +292,12 @@ class AsyncAPY:
             while len(stream_data) < header:
                 try:
                     stream_data += await stream.receive_some(max_bytes=self.buf)
+                except trio.BusyResourceError as busy:
+                    logging.error(f"({session_id}) {{Response Handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
+                    await stream.aclose()
+                    return
                 except trio.BrokenResourceError:
-                    logging.info(f"({session_id}) {{Stream completer}} The connection was closed")
+                    logging.info(f"({session_id}) {{Stream completer}} The connection was closed abruptly")
                     await stream.aclose()
                     break
                 except trio.ClosedResourceError:
@@ -300,7 +309,7 @@ class AsyncAPY:
                     await stream.aclose()
                     break
         if cancel_scope.cancelled_caught:
-            return None
+            return
         return stream_data
 
     async def _decode_content(self, content, session_id: str, stream: trio.SocketStream, encoding=None):
@@ -352,20 +361,19 @@ class AsyncAPY:
         """
 
         req_valid = False
-        protocol_version = request[0]
-        content_encoding = request[1]
+        protocol_version, content_encoding = request[0], request[1]
         if len(request) < 5:
             logging.error(f"({session_id}) {{API Parser}} Stream is too short, ignoring!")
             await stream.aclose()
-            return None
+            return
         if protocol_version not in (11, 22):
             logging.error(f"({session_id}) {{API Parser}} Invalid Protocol-Version header in packet!")
             await stream.aclose()
-            return None
+            return
         if content_encoding not in (0, 1):
             logging.error(f"({session_id}) {{API Parser}} Invalid Content-Encoding header in packet!")
             await stream.aclose()
-            return None
+            return
         if protocol_version == 11 and content_encoding in (0, 1):
             logging.error(f"({session_id}) {{API Parser}} V1 packets shouldn't include a Content-Encoding header!")
             await self.malformed_request(session_id, stream, encoding=content_encoding)
@@ -380,24 +388,20 @@ class AsyncAPY:
         content_encoding = "json" if not content_encoding else "ziproto"
         packet = Packet(payload, sender=client, encoding=content_encoding)
         session = Session(session_id, client, time.time())
-        if not self._sessions.get(client.address, None):
-            self._sessions[client.address] = [session, ]
-        else:
-            self._sessions[client.address].append(session)
+        self._sessions[client.address].append(session)
         client.session = session
         if self.session_limit:
-            if len(client.get_sessions()) >= self.session_limit:
+            if len(client.get_sessions()) > self.session_limit:
                 logging.warning(f"({session_id}) {{API Parser}} Maximum number of concurrent sessions reached! Closing the current one")
-                if session in self._sessions[client.address]:
-                    self._sessions[client.address].remove(session)
+                self._sessions[client.address].remove(session)
                 await stream.aclose()
-                return None
+                return
         if client.address not in self._banned:
             for handler in self._handlers:
                 if isinstance(handler, Group):
                     if handler.check(client, packet):
                         req_valid = True
-                        logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, running group of functions")
+                        logging.debug(f"({session_id}) {{API Parser}} Done! Filters check passed, running group of handlers")
                         for group_handler in handler:
                             logging.debug(f"({session_id}) {{API Parser}} Calling '{group_handler.function.__name__}'")
                             await group_handler.call(client, packet)
@@ -416,13 +420,13 @@ class AsyncAPY:
             if session in self._sessions[client.address]:
                 self._sessions[client.address].remove(session)
             await stream.aclose()
-            return None
+            return
         if not req_valid:
             logging.warning(f"({session_id}) {{API Parser}} No such handler for this request, closing the connection to spare memory!")
             await stream.aclose()
             if session in self._sessions[client.address]:
                 self._sessions[client.address].remove(session)
-            return None
+            return
 
     async def setup(self):
         """This function is called when the server is started.
@@ -455,6 +459,7 @@ class AsyncAPY:
            :param stream: The trio asynchronous socket associated with the client
            :type stream: class: ``trio.SocketStream``
         """
+
         session_id = uuid.uuid4()
         logging.info(f" {{Client handler}} New session started, UUID is {session_id}")
         with trio.move_on_after(self.timeout) as cancel_scope:
@@ -469,19 +474,22 @@ class AsyncAPY:
                     logging.info(f"({session_id}) {{Client handler}} The connection was closed")
                     await stream.aclose()
                     break
+                except trio.BusyResourceError as busy:
+                    logging.error(f"({session_id}) {{Response Handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
+                    await stream.aclose()
+                    return
                 if not raw_data:
                     logging.info(f"({session_id}) {{Client handler}} Stream has ended")
                     await stream.aclose()
                     break
                 if len(raw_data) < self.header_size:
                     logging.debug(f"({session_id}) {{Client handler}} Stream is shorter than header size, rebuilding")
-                    stream_complete = await self._rebuild_incomplete_stream(session_id, stream, raw_data)
-                    if stream_complete is None:
+                    raw_data = await self._rebuild_incomplete_stream(session_id, stream, raw_data)
+                    if not raw_data:
                         logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
                         await stream.aclose()
                         break
                     else:
-                        raw_data = stream_complete
                         header = int.from_bytes(raw_data[0:self.header_size], self.byteorder)
                         logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
                         if len(raw_data) - self.header_size == header:
@@ -496,7 +504,7 @@ class AsyncAPY:
                             logging.debug(
                                 f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding in progress")
                             actual_data = await self._complete_stream(header, stream, session_id)
-                            if actual_data is None:
+                            if not actual_data:
                                 logging.error(f"({session_id}) {{Client Handler}} The operation has timed out")
                                 await stream.aclose()
                                 break
@@ -521,7 +529,7 @@ class AsyncAPY:
                     else:
                         logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
                         stream_complete = await self._complete_stream(header, stream, session_id)
-                        if stream_complete is None:
+                        if not stream_complete:
                             logging.debug(f"({session_id}) {{Client handler}} The operation has timed out")
                             await stream.aclose()
                             break
