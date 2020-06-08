@@ -55,12 +55,12 @@ class Client:
 
         self._server._banned.add(self.address)
 
-    async def send(self, packet, close: bool = True):
+    async def send(self, packet, close: bool = False):
         """High-level wrapper function around `AsyncAPY.send_response()`
 
            :param packet: A ``Packet`` object
            :type packet: class: ``Packet``
-           :param close: If ``True``, the connection will be closed right after the packet is sent, it has to be set to ``False`` to take full advantages of packet propagation, defaults to ``True``
+           :param close: If ``True``, the connection will be closed right after the packet is sent, it has to be set to ``False`` to take full advantages of packet propagation, defaults to ``False``
            :type close: bool, optional
         """
 
@@ -75,8 +75,7 @@ class Client:
         protocol_version = (22).to_bytes(1, self._server.byteorder)
         headers = length_header + protocol_version + content_encoding
         data = headers + payload
-
-        return await self._server.send_response(self._stream, data, self.session, close, from_client=True)
+        return await self._server._send(self._stream, data, self.session, close, from_client=True)
 
     async def close(self):
         """Closes the client connection
@@ -106,7 +105,7 @@ class Packet:
     :param sender: This parameter is meant to be initialized internally, and points to the ``Client`` object that sent the associated payload, defaults to ``None``
     :type sender: Union[Client, None], optional
 
-    ``Packet`` objects have a dict-like interface to access the payload easily. If the packet's payload is ``{"foo": "bar"}``, you can get the value of foo by doing ``yourpacket["foo"]``
+    ``Packet`` objects behave mostly like Python dictionaries and can be iterated over, used with the ``in`` operator and support item access trough slicing.
     """
 
     def __init__(self, fields: Union[dict, str, bytes], encoding: str, sender: Union[Client, None] = None):
@@ -128,9 +127,10 @@ class Packet:
         self.encoding = encoding
 
     async def stop_propagation(self):
-        """Stops a packet within a group, see ``AsyncAPY.errors.StopPropagation``
+        """Stops a packet from being propagated, see ``AsyncAPY.errors.StopPropagation``
 
         :raises: StopPropagation"""
+
         raise StopPropagation
 
     def __repr__(self):
@@ -148,24 +148,24 @@ class Packet:
 
 class Handler:
 
-    """An object meant for internal use. Every function is wrapped inside a ``Handler`` object together
-    with its priority and filters
+    """
+    An object meant for internal use. Every function is wrapped inside a ``Handler`` object together
+    with its filters
 
     :param function: The asynchronous function, accepting two positional parameters (a ``Client`` object and a ``Packet`` object)
     :type function: function
     :param filters: A list of ``AsyncAPY.filters.Filter`` objects, defaults to ``None``
     :type filters: List[Filter]
-    :param priority: An integer representing the priority of the handler within a group, the lower this number, the higher execution precedence, defaults to 0
-    :type priority: int"""
 
-    def __init__(self, function: FunctionType, filters: List[Filter] = None, priority: int = 0):
+    """
+
+    def __init__(self, function: FunctionType, filters: List[Filter] = None):
         """Object constructor"""
 
-        if filters is None:
+        if not filters:
             filters = []
         self.filters = filters
         self.function = function
-        self.priority = priority
 
     def __repr__(self):
         """Returns ``repr(self)``
@@ -174,68 +174,7 @@ class Handler:
         :rtype: str
         """
 
-        return f"Handler({self.function}, {self.filters}, {self.priority})"
-
-    def compare_priority(self, other):
-        """Method meant for internal use to compare 2 handlers priorities, used for grouping
-
-        :param other: Another instance of ``Handler``
-        :type other: class: ``Handler``
-        :returns comparison: ``True`` if the priorities are equal, ``False`` otherwhise
-        :rtype: bool
-        """
-
-        return self.priority == other.priority
-
-    def compare_filters(self, other):
-        """A method meant for internal use, used inside ``self.__eq__()``, compares filters instead of priorities
-
-        :param other: Another instance of ``Handler``
-        :type other: class: ``Handler``
-        """
-
-        if len(self.filters) != len(other.filters):
-            return False
-        for index, filter in enumerate(self.filters):
-            ofilter = other.filters[index]
-            if ofilter != filter:
-                return False
-        return True
-
-    def compare(self, others: List):
-        """Compares one or more handlers to self, returns the list of the matching handlers and the original list
-
-        :param others: A list of one or more handlers to compare to ``self``
-        :type others: List[Handler]
-        :returns ret: The list of the handlers with common filters and different priorities, please note that this always contains at least one element (which is ``self``)
-        :rtype: List[Handler]
-        """
-
-        ret = [self]
-        for handler in others:
-            if handler == self:
-                ret.append(handler)
-        return ret
-
-    def __eq__(self, other):
-        """Implements ``self == other``, only meant to compare ``Handler`` objects
-
-        :param other: Another instance of ``Handler``
-        :type other: class: ``Handler``
-        """
-
-        if not isinstance(other, Handler):
-            raise TypeError(f"The __eq__ operator is meant to compare Handler objects only, not {other}!")
-        filters_equals = self.compare_filters(other)
-        priority_equals = self.compare_priority(other)
-        if not priority_equals:
-            if filters_equals:
-                return True
-            else:
-                return False
-        else:
-            if filters_equals and other is not self:
-                raise RuntimeError("Handlers with identical filters cannot share priority level!")
+        return f"Handler({self.function}, {self.filters})"
 
     def check(self, client: Client, packet: Packet):
         """Iteratively calls the ``check()`` method on ``self.filters``, returns ``True`` if all filters return ``True``, ``False`` otherwise
@@ -249,76 +188,12 @@ class Handler:
 
         """
 
-        for obj in self.filters:
-            if not obj.check(client, packet):
-                return False
-        return True
+        return all(filter(lambda f: f.check(client, packet), self.filters))
 
     async def call(self, *args):
         """Calls ``self.function`` asynchronously, passing ``*args`` as parameters"""
 
         return await self.function(*args)
-
-    def __hash__(self):
-        return hash(self.function.__name__)
-
-
-class Group:
-
-    """Implements a ``Group`` object, used to group multiple handlers with identical filters
-       and different priorities, this object is meant to be initialized internally
-
-       :param handlers: The list of handlers that has to be grouped, they will be sorted by their ``priority`` attribute
-       :type handlers: List[Handler]
-    """
-
-    def __init__(self, handlers: List[Handler]):
-        """Object constructor"""
-
-        self.handlers = sorted(handlers, key=lambda x: x.priority)
-        for index, handler in enumerate(self.handlers):
-            if not len(self.handlers) - index == 1:
-                first = handler.priority
-                second = self.handlers[index + 1].priority
-                if first == second:
-                    raise RuntimeError("Handlers with overlapping filters cannot share priority level!")
-
-    def check(self, client: Client, packet: Packet):
-        """Checks the filters of the group
-
-           :param client: The client to check for
-           :type client: class: ``Client``
-           :param packet: The packet object to check for
-           :type packet: class: ``Packet``
-           :returns shall_pass: ``True`` if the group matches all filters, ``False`` otherwise
-           :rtype: bool
-
-        """
-        for handler in self.handlers:
-            if not handler.check(client, packet):
-                return False
-        return True
-
-
-    def __repr__(self):
-        """Returns ``repr(self)``
-
-           :returns repr: A string representation of the object
-           :rtype: str
-        """
-
-        return f"Group({self.handlers})"
-
-    def __iter__(self):
-        """Implements the ``__iter__()`` method of ``self.handlers`` in ``self``,
-        thus making the ``Group`` object itself an iterable
-        """
-
-        return self.handlers.__iter__()
-
-    def __hash__(self):
-        return hash(self.handlers[0].function.__name__)
-
 
 class Session:
 
@@ -349,7 +224,7 @@ class Session:
 
         return self.client
 
-    def ban_client(self, close=False):
+    def ban_client(self, close: bool = False):
         """Bans the associated client' IP from the server
 
            :param close: If ``True``, the associated client connection will be closed after its IP gets banned, defaults to ``False``
@@ -362,10 +237,13 @@ class Session:
     def __repr__(self):
         return f"Session({str(self.session_id)})"
 
+    def __str__(self):
+        return str(self.session_id)
+
     def __hash__(self):
         return hash(self.session_id)
 
     def __eq__(self, other):
-        if self.__hash__() == other.__hash__() and other.date == self.date:
+        if hash(self) == hash(other):
             return True
         return False

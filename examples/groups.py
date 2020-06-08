@@ -1,20 +1,21 @@
-from AsyncAPY.base import AsyncAPY
+from AsyncAPY import Server
 
-server = AsyncAPY(addr='127.0.0.1', port=1500, encoding="json", logging_level=10, byteorder='big')
+server = Server(addr='127.0.0.1', port=1500)
 
 
-@server.handler_add()
+@server.add_handler()
 async def echo_server(client, packet):
     print(f"Hello world from {client}!")
     print(f"Echoing back {packet}...")
-    await client.send(packet, close=False)
-    # packet.stop_propagation()  # Uncomment to prevent the packet from being forwarded to the next handler
+    await client.send(packet)
+    # packet.stop_propagation()  # This would prevent the packet from being forwarded to the next handler
 
 
-@server.handler_add(priority=1)    # Adding a priority is compulsory, or a RuntimeError exception will be raised
+@server.add_handler(group=-1)
 async def echo_server_2(client, packet):
     print(f"Hello world from {client} inside a group!")
     print(f"Echoing back {packet}...")
     await client.send(packet)
+    await client.close()
 
 server.start()

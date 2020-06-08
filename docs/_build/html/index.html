@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>AsyncAPY - Official Documentation &mdash; AsyncAPY 0.3.0 documentation</title>
+  <title>AsyncAPY - Official Documentation &mdash; AsyncAPY 0.3.3 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="AsyncAPY" href="modules.html" /> 
+    <link rel="next" title="AsyncAPY - Getting started" href="intro.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,7 +81,6 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">AsyncAPY</a></li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">AsyncAPY - Getting started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faqs.html">AsyncAPY - Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">AsyncAPY - Code Examples</a></li>
@@ -153,9 +152,10 @@
   <div class="section" id="asyncapy-official-documentation">
 <h1>AsyncAPY - Official Documentation<a class="headerlink" href="#asyncapy-official-documentation" title="Permalink to this headline">¶</a></h1>
 <img alt="_images/logo.png" src="_images/logo.png" />
-<a class="reference external image-reference" href="https://asyncapy.readthedocs.io/en/v0.3-alpha/?badge=v0.3-alpha"><img alt="Documentation Status" src="https://readthedocs.org/projects/asyncapy/badge/?version=v0.3-alpha" /></a>
-<a class="reference external image-reference" href="https://travis-ci.com/nocturn9x/AsyncAPY"><img alt="https://travis-ci.com/nocturn9x/AsyncAPY.svg?branch=master" src="https://travis-ci.com/nocturn9x/AsyncAPY.svg?branch=master" /></a>
-<p>AsyncAPY is a fully fledged framework to easily deploy asynchronous API endpoints over a custom-made protocol (<cite>AsyncAProto</cite>)</p>
+<a class="reference external image-reference" href="https://asyncapy.readthedocs.io/en/dev/?badge=dev"><img alt="Documentation Status" src="https://readthedocs.org/projects/asyncapy/badge/?version=dev" /></a>
+<a class="reference external image-reference" href="https://asyncapy.readthedocs.io/en/dev/?badge=dev"><img alt="Documentation Status" src="https://travis-ci.com/nocturn9x/AsyncAPY.svg?branch=dev" /></a>
+<p>AsyncAPY is a fully fledged framework to easily deploy asynchronous API
+endpoints over a custom-made protocol (<cite>AsyncAProto</cite>)</p>
 <p>It deals with all the low level I/O stuff, error handling and async calls, exposing a high-level and easy-to-use API designed with simplicity in mind.</p>
 <p>Some of its features include:</p>
 <ul class="simple">
@@ -166,29 +166,18 @@
 <li><p><strong>Powerful, easy-to-use and high level</strong> API for clients, packets and sessions</p></li>
 <li><p>Packets filtering</p></li>
 </ul>
-<p>As of today, there is no native TLS support, as AsyncAPY is meant to be ran behind a load balancer/reverse proxy such as HaProxy. If you really want to use it as a stand-alone API server,
-feel free to open an issue on the <a class="reference external" href="https://github.com/nocturn9x/AsyncAPY">repository</a>  with the label “enhancement” and I’ll consider adding optional TLS support.</p>
-<div class="section" id="what-s-new-in-asyncapy-0-3">
-<h2>What’s new in AsyncAPY 0.3<a class="headerlink" href="#what-s-new-in-asyncapy-0-3" title="Permalink to this headline">¶</a></h2>
-<p>The version 0.3 brought some great changes, listed below:</p>
+<div class="section" id="what-s-new-in-asyncapy-0-4">
+<h2>What’s new in AsyncAPY 0.4<a class="headerlink" href="#what-s-new-in-asyncapy-0-4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>The way both <code class="docutils literal notranslate"><span class="pre">Client</span></code> and <code class="docutils literal notranslate"><span class="pre">Packet</span></code> object get their <code class="docutils literal notranslate"><span class="pre">encoding</span></code> parameter has changed for consistency purposes, check the <a class="reference external" href="https://asyncapy.readthedocs.io/en/dev/AsyncAPY.html">docs</a></p></li>
-<li><p>Sessions are no longer just a useful way to recognize different clients in the console output, but are now <code class="docutils literal notranslate"><span class="pre">Session</span></code> objects which can be handy in a number of cases to interact with different clients in the same handler</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Packet</span></code> objects now have a <code class="docutils literal notranslate"><span class="pre">dict_payload</span></code> attribute, which is a dictionary representation of the <code class="docutils literal notranslate"><span class="pre">payload</span></code> attribute</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Packet</span></code> objects now suppport dict-like accessing! With a payload like <code class="docutils literal notranslate"><span class="pre">{&quot;foo&quot;:</span> <span class="pre">&quot;bar&quot;}</span></code>, you can do <code class="docutils literal notranslate"><span class="pre">packet[&quot;foo&quot;]</span></code> to get <code class="docutils literal notranslate"><span class="pre">&quot;bar&quot;</span></code></p></li>
+<li><p>Groups and handlers have been completely reworked, check the docs</p></li>
+<li><p>The <cite>AsyncAPY</cite> class has been renamed to <cite>Server</cite> and some breaking changes have been done</p></li>
+<li><p>The V1 protocol has been deprecated</p></li>
+<li><p>The <cite>AsyncAPY.objects</cite> module has been made private. <cite>Client</cite> and <cite>Packet</cite> objects can be imported from the top-level package</p></li>
+<li><p>The code for the server has been polished and improved</p></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>AsyncAPY 0.3 has been thoroughly tested and is now stable enough for production.</p>
-<p>If you find any bugs, please let us know by opening an <a class="reference external" href="https://github.com/nocturn9x/AsyncAPY/issues/new/choose">issue on the repository</a></p>
-</div>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">AsyncAPY</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="AsyncAPY.html">AsyncAPY package</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">AsyncAPY - Getting started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="intro.html#installing">Installing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="intro.html#hello-world">Hello, world!</a></li>
@@ -236,7 +225,7 @@ feel free to open an issue on the <a class="reference external" href="https://gi
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="modules.html" class="btn btn-neutral float-right" title="AsyncAPY" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="intro.html" class="btn btn-neutral float-right" title="AsyncAPY - Getting started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
