@@ -116,3 +116,18 @@ Decorators are a nicer way to add handlers to your server. The line ``Server.reg
 
 The decorator behaves the same as ``Server.register_handler`` and take the filter object(s) and the group identifier as optional parameters.
 
+
+Groups
+------
+
+The way AsyncAPY handles incoming requests has been specifically designed to be simple yet effective.
+
+If you register two or more handlers with conflicting/overlapping filters, only the first one that was registered will be executed.
+
+To handle the same request more than once, you need to register the handler in a different handlers group, like in the following example:
+
+
+
+The ``group`` parameter defaults to 0, the lower this number, the higher will be the position of the handler in the queue.
+In the example above, ``group`` equals ``-1``, that is lower than ``0`` and therefore causes that handler to execute first. You could have also set it to 1 (or any other value greather than 0) to make it execute last instead.
+

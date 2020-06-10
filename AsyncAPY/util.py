@@ -98,9 +98,3 @@ class APIKeyFactory(object):
         """Implements item in self"""
 
         return self._keys.__contains__(item)
-
-    def __eq__(self, other):
-        """Implements ``self == other``"""
-
-        if isinstance(other, APIKeyFactory):
-            return True      # This kind of object is always considered equal to other instances of itself
