@@ -23,7 +23,7 @@ from .errors import StopPropagation
 import json
 import ziproto
 import uuid
-
+import trio
 
 class Client:
     """This class represents a client, it is a high-level wrapper around the methods and objects of AsyncAPY
@@ -81,7 +81,7 @@ class Client:
         """Closes the client connection
         """
 
-        await self._stream.close()
+        await self._stream.aclose()
         if self.session in self._server._sessions[self.address]:
             self._server._sessions[self.address].remove(self.session)
 
