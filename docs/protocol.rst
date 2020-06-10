@@ -14,20 +14,12 @@ and so I thought that creating a simpler and dedicated application protocol to h
 The protocol - A simple header system
 --------------------------------------
 
-AsyncAProto is divided into 2 versions, V1 and V2, which differ in the number of headers that are used.
+AsyncAProto has just three headers that must be prepended to the payload in this exact order:
 
-.. note::
-   AsyncAProto V1 does not have the ``Content-Encoding`` header and has been thought for the cases when it's not possible to determine the payload's encoding.
-
-The three headers are:
-
-- ``Content-Length``: A byte-encoded integer representing the length of the packet (excluding itself). The recommended size is 4 bytes
-- ``Protocol-Version``: A 1 byte-encoded integer that can either be 11, for V1 version, or 22, for V2 
+- ``Content-Length``: A byte-encoded integer representing the length of the packet (excluding this header itself, but including the next ones). The recommended size is 4 bytes
+- ``Protocol-Version``: A 1 byte-encoded integer that indicates the protocol version. Will be used in future releases, for now it must be set to 22
 - ``Content-Encoding``: A 1 byte-encoded integer that can either be 0, for JSON, or 1, for ZiProto. Consider that if the server cannot decode the payload because of an error in the header, the server will reject the packet
 
-.. warning::
-   Note that V1 requests **CANNOT** contain the ``Content-Encoding`` header. Also consider that the headers order must follow the one exposed above
-          
     
 The protocol - Supported encodings
 -----------------------------------
@@ -66,8 +58,6 @@ AsyncAProto's Default Behaviours:
 - If either the ``Content-Encoding`` or the ``Protocol-Version`` headers are not valid, the packet will be rejected
 
 - If both ``Content-Encoding`` and ``Protocol-Version`` are correct, but the actual encoding of the payload is different from the specified one, the packet will be rejected
-
-- In case of a V1 request, the server will use the server's default encoding to decode the payload (and reject the packet on decoding failure)
 
 - If the complete stream is shorter than ``AsyncAPY.header_size + 5`` bytes, which is the minimum size of a packet, the packet will be rejected
 

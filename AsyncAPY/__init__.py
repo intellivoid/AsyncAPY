@@ -18,7 +18,9 @@
 
 
 __author__ = "Intellivoid Technologies"
-__version__ = (0, 3, 2)
+__version__ = (0, 4, 0)
 
-from .base import AsyncAPY
-from .defaultclient import Client
+from .base import Server
+from ._internal import Client, Packet
+
+__all__ = ["Server", "Client", "Packet"]

@@ -14,6 +14,6 @@ before_install:
   - python travis_setup.py install 
       
 script:
-   - nohup python example.py &
+   - nohup python server_example.py &
    - pytest tests/tests_asyncapy.py
 
