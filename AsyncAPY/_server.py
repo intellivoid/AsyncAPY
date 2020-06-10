@@ -270,7 +270,7 @@ class Server:
                 response_data = header + json.dumps(payload).encode("utf-8")
         with trio.move_on_after(self.timeout) as cancel_scope:
             try:
-                logging.debug(f"({session_id}) {{Response handler}} Sending response to client")
+                logging.debug(f"({session_id}) {{Response Handler}} Sending response to client")
                 await stream.send_all(response_data)
             except trio.BrokenResourceError:
                 logging.info(f"({session_id}) {{Response Handler}} The connection was closed abruptly")
@@ -363,7 +363,7 @@ class Server:
                 break
         return stream_data
 
-    async def _decode_content(self, content, session_id: str, stream: trio.SocketStream, encoding=None):
+    async def _decode_payload(self, content, session_id: str, stream: trio.SocketStream, encoding=None):
         """Decodes the payload with the specified encoding, if any, or falls back to ``self.encoding``
 
            :param content: The byte-encoded payload
@@ -398,6 +398,58 @@ class Server:
                 await self._malformed_request(session_id, stream, encoding=1)
         return data
 
+    async def _set_session(self, session_id: uuid.uuid4, client: Client):
+        """Internal method to perform session setup"""
+
+        self._sessions[client.address].append(Session(session_id, client, time.time()))
+        client.session = self._sessions[client.address][-1]
+        if self.session_limit:
+            if len(client.get_sessions()) > self.session_limit:
+                logging.warning(f"({session_id}) {{Session Handler}} Maximum number of concurrent sessions reached! Closing the current one")
+                self._sessions[client.address].remove(session)
+                self._session_limit_reached(session_id, client._stream)
+                await client.close()
+                return
+            return True
+        return True
+
+    async def _parse_packet(self, session_id: uuid.uuid4, raw: bytes, stream: trio.SocketStream):
+        """Internal method to parse a packet"""
+
+        protocol_version, content_encoding = raw[0], raw[1]
+        if len(raw) < 5:
+            logging.error(f"({session_id}) {{Packet Parser}} Stream is too short, ignoring!")
+            await self._malformed_request(session_id, stream)
+            return None, None, None
+        if protocol_version != 22:
+            logging.error(f"({session_id}) {{Packet Parser}} Invalid Protocol-Version header in packet!")
+            await self._invalid_header(session_id, stream)
+            return None, None, None
+        if content_encoding not in (0, 1):
+            logging.error(f"({session_id}) {{Packet Parser}} Invalid Content-Encoding header in packet!")
+            await self._invalid_header(session_id, stream)
+            return None, None, None
+        logging.debug(f"({session_id}) {{Packet Parser}} Protocol-Version is V2, Content-Encoding is {'json' if not content_encoding else 'ziproto'}")
+        return await self._decode_payload(raw[2:], session_id, stream, encoding=content_encoding), content_encoding, protocol_version
+
+    async def _dispatch(self, session_id: uuid.uuid4, client: Client, packet: Packet):
+        """Dispatches packets and clients to handlers"""
+
+        for group, handlers in self._handlers.items():
+           logging.debug(f"({session_id}) {{Dispatcher}} Checking group {group}")
+           for handler in handlers:
+               if handler.check(client, packet):
+                   logging.debug(f"({session_id}) {{Dispatcher}} Calling '{handler.function.__name__}' in group {group}")
+                   await handler.call(client, packet)
+                   break
+
+    async def _close_session(self, client: Client):
+        """Deletes a client session and closes the underlying client connection"""
+
+        if client.session in self._sessions[client.address]:
+            self._sessions[client.address].remove(client.session)
+        await client.close()
+
     async def _parse_call(self, session_id: uuid.uuid4, request: bytes, stream: trio.SocketStream):
 
         """This function parses the API request and acts accordingly (e.g. decoding the payload and calling handlers)
@@ -410,52 +462,20 @@ class Server:
            :type session_id: class: ``uuid.uuid4``
         """
 
-        protocol_version, content_encoding = request[0], request[1]
-        if len(request) < 5:
-            logging.error(f"({session_id}) {{API Parser}} Stream is too short, ignoring!")
-            await self._malformed_request(session_id, stream)
-            return
-        if protocol_version != 22:
-            logging.error(f"({session_id}) {{API Parser}} Invalid Protocol-Version header in packet!")
-            await self._invalid_header(session_id, stream)
-            return
-        if content_encoding not in (0, 1):
-            logging.error(f"({session_id}) {{API Parser}} Invalid Content-Encoding header in packet!")
-            await self._invalid_header(session_id, stream)
-            return
-        payload = await self._decode_content(request[2:], session_id, stream, encoding=content_encoding)
-        logging.debug(f"({session_id}) {{API Parser}} Protocol-Version is V2, Content-Encoding is {'json' if not content_encoding else 'ziproto'}")
-        try:
-            client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=content_encoding)
-        except OSError:
-            await stream.aclose()
-            return
-        content_encoding = "json" if not content_encoding else "ziproto"
-        packet = Packet(payload, sender=client, encoding=content_encoding)
-        self._sessions[client.address].append(Session(session_id, client, time.time()))
-        client.session = self._sessions[client.address][-1]
-        if self.session_limit:
-            if len(client.get_sessions()) > self.session_limit:
-                logging.warning(f"({session_id}) {{API Parser}} Maximum number of concurrent sessions reached! Closing the current one")
-                self._sessions[client.address].remove(session)
-                self._session_limit_reached(session_id, stream)
-                await client.close()
+        payload, encoding, protocol_version = await self._parse_packet(session_id, request, stream)
+        if payload:
+            encoding = "json" if not encoding else "ziproto"
+            try:
+                client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=encoding)
+            except OSError:
                 return
-        if client.address not in self._banned:
-           for group, handlers in self._handlers.items():
-               logging.debug(f"({session_id}) {{API Parser}} Checking group {group}")
-               for handler in handlers:
-                   if handler.check(client, packet):
-                       logging.debug(f"({session_id}) {{API Parser}} Calling '{handler.function.__name__}' in group {group}")
-                       await handler.call(client, packet)
-                       break
-           await stream.aclose()
-        else:
-            logging.debug(f"({session_id}) {{API Parser}} That user is banned! Ignoring")
-            if client.session in self._sessions[client.address]:
-                self._sessions[client.address].remove(client.session)
-            await stream.aclose()
-            return
+            packet = Packet(payload, sender=client, encoding=encoding)
+            if await self._set_session(session_id, client):
+                if client.address not in self._banned:
+                    await self._dispatch(session_id, client, packet)
+                else:
+                    logging.debug(f"({session_id}) {{API Parser}} {client.address} is banned! Ignoring")
+            await self._close_session(client)
 
     async def setup(self):
         """This function is called when the server is started.
@@ -490,7 +510,7 @@ class Server:
         """
 
         session_id = uuid.uuid4()
-        logging.info(f" {{Client handler}} New session started, UUID is {session_id}")
+        logging.info(f"{{Client handler}} New session started, UUID is {session_id}")
         with trio.move_on_after(self.timeout) as cancel_scope:
             while True:
                 try:
@@ -533,27 +553,27 @@ class Server:
             logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
             await self._timed_out(session_id, stream)
 
-    async def serve_forever(self):
+    async def _serve_forever(self):
         """This function is the server's main loop
         """
 
         logging.basicConfig(datefmt=self.datefmt, format=self.console_format, level=self.logging_level)
-        logging.info(" {API main} AsyncAPY server is starting up")
+        logging.info("{API main} AsyncAPY server is starting up")
         logging.debug("{API main} Running setup function...")
         await self.setup()
         try:
-            logging.info(f" {{API main}} Now serving  at {self.addr}:{self.port}")
+            logging.info(f"{{API main}} Now serving  at {self.addr}:{self.port}")
             await trio.serve_tcp(self._handle_client, host=self.addr, port=self.port)
         except KeyboardInterrupt:
             logging.debug("{API main} Running shutdown function...")
             await self.shutdown()
-            logging.info(" {API main} Ctrl + C detected, exiting")
+            logging.info("{API main} Ctrl + C detected, exiting")
             sys.exit(0)
-        except PermissionError as perms_error:
+        except (PermissionError, OSError) as perms_error:
             logging.error(f"{{API main}} Could not bind to chosen port, full error: {perms_error}")
             sys.exit("PORT_UNAVAILABLE")
 
     def start(self):
         """Starts serving asynchronously on ``self.addr:self.port``"""
 
-        trio.run(self.serve_forever)
+        trio.run(self._serve_forever)

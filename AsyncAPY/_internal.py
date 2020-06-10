@@ -23,7 +23,7 @@ from .errors import StopPropagation
 import json
 import ziproto
 import uuid
-
+import trio
 
 class Client:
     """This class represents a client, it is a high-level wrapper around the methods and objects of AsyncAPY
@@ -40,12 +40,12 @@ class Client:
        :type encoding: int
     """
 
-    def __init__(self, addr: str, server, stream=None, session: str = None, encoding: int = None):
+    def __init__(self, addr: str, server, stream: trio.SocketStream, session: str, encoding: int):
         self.address = addr
         self._server = server
         self._stream = stream
         self.session = session
-        self.encoding = "json" if not encoding else "ziproto"
+        self.encoding = encoding
 
     def ban(self):
         """
@@ -56,7 +56,7 @@ class Client:
         self._server._banned.add(self.address)
 
     async def send(self, packet, close: bool = False):
-        """High-level wrapper function around `AsyncAPY.send_response()`
+        """High-level wrapper function around `AsyncAPY._send()`
 
            :param packet: A ``Packet`` object
            :type packet: class: ``Packet``
@@ -75,7 +75,7 @@ class Client:
         protocol_version = (22).to_bytes(1, self._server.byteorder)
         headers = length_header + protocol_version + content_encoding
         data = headers + payload
-        return await self._server._send(self._stream, data, self.session, close, from_client=True)
+        await self._server._send(self._stream, data, self.session, close, from_client=True)
 
     async def close(self):
         """Closes the client connection
@@ -194,6 +194,7 @@ class Handler:
         """Calls ``self.function`` asynchronously, passing ``*args`` as parameters"""
 
         return await self.function(*args)
+
 
 class Session:
 

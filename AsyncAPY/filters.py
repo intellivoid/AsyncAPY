@@ -62,23 +62,6 @@ class Filters(Filter):
             else:
                 self.ips = {ips}
 
-        def __eq__(self, other):
-            """Implements ``self == other``
-               :param other: A ``Filters.Ip`` object
-               :type other: class: ``Filters.Ip``
-               :returns ips_equals: ``True`` if the ``(self.ips - other.ips) == set()``, ``False`` otherwise
-               :rtype: bool
-            """
-
-            if other is None:
-                return False
-            if not isinstance(other, Filter):
-                raise ValueError("The equality comparison is meant for Filters objects only!")
-            if isinstance(other, Filters.Ip):
-                return True if self.ips - other.ips == set() else False
-            else:
-                return False
-
         def __repr__(self):
             """Returns ``repr(self)``
 
@@ -117,21 +100,6 @@ class Filters(Filter):
                     self.fields[key] = value
                 else:
                     self.fields[key] = re.compile(value)
-
-        def __eq__(self, other):
-            """Implements ``self == other``
-
-            :param other: A ``Filters.Fields`` object
-            :type other: class: ``Filters.Fields``
-            :returns fields_equal: ``True`` if the ``self.fields`` are equal to ``other.fields``, ``False`` otherwise
-            :rtype: bool
-            """
-
-            x, y = self.fields, other.fields
-            if len(x) > len(y):
-                return {k: x[k] for k in x if k in y and x[k] == y[k]} == y
-            else:
-                return {k: x[k] for k in x if k in y and x[k] == y[k]} == x
 
         def check(self, _, p):
             """Implements the method to check if a filter matches a given packet/client couple or not
@@ -197,10 +165,4 @@ class Filters(Filter):
                :rtype: bool
             """
 
-            if packet.dict_payload.get(self.field_name, None):
-                return packet.dict_payload[self.field_name] in self.factory
-
-        def __eq__(self, other):
-            """Implements equality comparison"""
-
-            return self.factory == other.factory and self.field_name == other.field_name
+            return packet.dict_payload.get(self.field_name, None) in self.factory

@@ -20,7 +20,7 @@
 __author__ = "Intellivoid Technologies"
 __version__ = (0, 4, 0)
 
-from .base import Server
+from ._server import Server
 from ._internal import Client, Packet
 
 __all__ = ["Server", "Client", "Packet"]
