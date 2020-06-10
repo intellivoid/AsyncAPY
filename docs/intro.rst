@@ -24,10 +24,9 @@ An echo server is fairly simple, it always replies with the same request that it
 
 .. code-block:: python
    
-   from AsyncAPY.base import AsyncAPY   # Import the base class
+   from AsyncAPY import Server
 
-
-   server = AsyncAPY(addr='0.0.0.0',
+   server = Server(addr='0.0.0.0',
                      logging_level=10,  # Debug mode
                      encoding="json",
                      port=1500
@@ -37,26 +36,16 @@ An echo server is fairly simple, it always replies with the same request that it
        print(f"Hello world from {client}!")
        print(f"Echoing back {packet}...")
        await client.send(packet)
+       await client.close()
 
-   server.add_handler(echo_server)   # Register our handler
+   server.register_handler(echo_server)   # Register our handler
 
    server.start()    # Start the server
 
 
-Save this script into a file named ``example.py`` and try running it; your output should look like the one below
- 
-::
-
-    [INFO] 10/02/2020 16:28:38 PM  {API main} AsyncAPY server is starting up
-
-    [DEBUG] 10/02/2020 16:28:38 PM {API main} Running setup function...
-
-    [DEBUG] 10/02/2020 16:28:38 PM {API main} The buffer is set to 1024 bytes, logging is set to DEBUG,...
-
-    [INFO] 10/02/2020 16:28:38 PM  {API main} Now serving  at 0.0.0.0:1500
+Save this script into a file named ``example.py``. 
 
 What happens if we send a packet to our new, shiny, echo server? Let's try to use the testing client to send a packet to our server: create a new empty file, name it ``testclient.py`` and paste the following
-
 
 .. code-block:: python
 
@@ -69,7 +58,7 @@ What happens if we send a packet to our new, shiny, echo server? Let's try to us
    response = client.receive_all()
    print(response)
 
-Now open two terminal windows, run ``example.py`` again and then ``testclient.py``, your server output should look like the following:
+Now open two terminal windows, run ``example.py`` and then ``testclient.py``, your server output should look like the following:
  
 ::
 
@@ -105,45 +94,23 @@ As you can see, we got the same JSON encoded packet that we sent!
 
 
 .. note::
-   Note that the line ``server.add_handler(echo_server)`` can be shortened the following way:
+   Note that the line ``server.register_handler(echo_server)`` can be shortened the following way:
           
    .. code-block:: python
 
-      @server.handler_add()
+      @server.add_handler()
       async def your_handler(c, p):
          ...
 
 
 
-Filtering payloads and clients
+Filters
 ------------------------------
 
-AsyncAPY gives you the possibility to set some conditions to your handlers, which must all be met for it to be executed. Those conditions are represented in Python trough ``Filter`` objects, which are located in the ``Filters`` class of the ``AsyncAPY.filters`` module (see `here <https://asyncapy.readthedocs.io/en/latest/AsyncAPY.html#module-AsyncAPY.filters>`_)
+You can allow only a subset of packet/client pair to reach your handler, see `here <https://asyncapy.readthedocs.io/en/latest/AsyncAPY.html#module-AsyncAPY.filters>`_ to know more.
 
-Filters can be applied to a handler by passing a list of the desired filter object(s) to the ``AsyncAPY.add_handler()`` method and of course to its decorator counterpart, ``@AsyncAPY.handler_add``.
+Filters can be applied to a handler by passing one or more ``Filter`` objects to the ``AsyncAPY.add_handler()`` method and of course to its decorator counterpart, ``@AsyncAPY.handler_add``.
 
 An example of a filtered handler can be found in our dedicated `examples section <https://asyncapy.readthedocs.io/en/dev/examples.html#filters-examples>`_
 						   
-If you have issues with non-passing filters, try reading our `FAQ <https://asyncapy.readthedocs.io/en/latest/faqs.html#why-don-t-my-filter-pass>`_ on this topic
-
-
-
-Groups - Handling the same request multiple times
--------------------------------------------------
-
-One of the most interesting features of AsyncAPY, is that it allows a client to interact with multiple handlers.
-So if, for example, you wanted to perform some authentication with a handler, but then you needed that same payload you would normally make a new request, but **with AsyncAPY there is no need for that**!
-
-Lucky you, AsyncAPY suppports handler grouping, meaning that handler with identical filters and different priorities will be grouped together and executed consecutively according on their priority: The lower priority, the higher execution precedence.
-
-.. warning
-
-   To take full advantages of groups, you have to pass ``close=False`` to ``Client.send()``, or the next handlers
-   won't be able to communicate with the client.
-
-   It's also worth noting that overlapping filters, that therefore share some common attributes (e.g. two ``Filters.Ip`` which have some IP addresses in common)
-   will be grouped too, if the conditions to make a group are met
-
-You may find an example of a group of handlers in `this <https://asyncapy.readthedocs.io/en/dev/examples.html#filters-examples>`_ section
-
-
+If you have issues with filters, try reading our `FAQ <https://asyncapy.readthedocs.io/en/latest/faqs.html#why-don-t-my-filter-pass>`_ on this topic
