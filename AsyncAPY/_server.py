@@ -53,8 +53,6 @@ class Server:
         :type header_size: int, optional
         :param byteorder: The order that the server will follow to read packets. It can either be ``'little'`` or ``'big'``, defaults to ``'big'``
         :type byteorder: str, optional
-        :param encoding: The server's default encoding for payloads. It is used for V1 packets and it can either be ``'json'`` or ``'ziproto'``, defaults to ``'json'``
-        :type encoding: str, optional
         :param config: The path to the configuration file, defaults to ``None`` (no config)
         :type config: str, None, optional
         :param cfg_parser:  If you want to use a custom configparser object, you can specify it here
@@ -72,7 +70,7 @@ class Server:
                  logging_level: int = logging.INFO,
                  console_format: Optional[str] = "[%(levelname)s] %(asctime)s %(message)s",
                  datefmt: Optional[str] = "%d/%m/%Y %H:%M:%S %p", timeout: Optional[int] = 60, header_size: int = 4,
-                 byteorder: str = "big", encoding: str = "json", config: str or None = None, cfg_parser=None, session_limit: int = 0):
+                 byteorder: str = "big", config: str or None = None, cfg_parser=None, session_limit: int = 0):
         """Object constructor"""
 
         # Type checking
@@ -85,8 +83,6 @@ class Server:
             raise TypeError("buf must be an integer!")
         if byteorder not in ("big", "little"):
             raise TypeError("byteorder must either be 'little' or 'big'!")
-        if encoding not in ("json", "ziproto"):
-            raise TypeError("encoding must either be 'json' or 'ziproto'!")
         if not isinstance(header_size, int):
             raise TypeError("header_size must be an integer!")
         if not isinstance(timeout, int):
@@ -107,7 +103,6 @@ class Server:
         socket.setdefaulttimeout(self.timeout)
         self.header_size = header_size
         self.byteorder = byteorder
-        self.encoding = encoding
         self.config = None
         self.session_limit = session_limit
         if config:
@@ -235,7 +230,6 @@ class Server:
             self.register_handler(func, *filters, **kwargs)
         return wrapper
 
-
     async def _send(self, stream: trio.SocketStream, response_data: bytes, session_id, close: bool = True, encoding=None, from_client: bool = True):
         """
         This function sends the passed response to the client
@@ -248,18 +242,16 @@ class Server:
         :type session_id: class: ``uuid.uuid4``
         :param close: If ``True``, the client connection will be closed right after the payload has been sent, it must be set to ``False`` to take full advantage of packets propagation, defaults to ``True``
         :type close: bool, optional
-        :param encoding: The encoding with which the packet should be encoded in, if ``None``, the server will fall back to ``self.encoding``. Other possible values are `'json'` or `'ziproto'`, defaults to ``None``
-        :type encoding: Union[None, str], optional
+        :param encoding: The encoding with which the packet should be encoded in, possible values are ``'json'`` or ``'ziproto'``
+        :type encoding: str
         :param from_client: If ``True``, the payload will undergo no modifications and will be sent straight away: This parameter is needed to distinguish internal calls to the method from the Client API calls which behave differently, defaults to ``False``
         :type from_client: bool, optional
-        :returns Union[bool, None]: Returns ``True`` on success, ``False`` on failure (e.g. the client disconnects abruptly) or ``None`` if the operation takes longer than ``self.timeout`` seconds
-        :rtype: Union[bool, None]
+        :returns: Returns ``True`` on success, ``False`` on failure (e.g. the client disconnects abruptly)
+        :rtype: bool
 
         """
 
         if not from_client:
-            if not encoding:
-               encoding = 0 if self.encoding == 'json' else 1
             if encoding == 1:
                 payload = ziproto.encode(response_data[self.header_size:])
                 header = (len(payload) + 2).to_bytes(self.header_size, self.byteorder) + (22).to_bytes(1, self.byteorder) + (1).to_bytes(1, self.byteorder)
@@ -268,24 +260,21 @@ class Server:
                 header = response_data[0:self.header_size] + (22).to_bytes(1, self.byteorder) + (0).to_bytes(1, self.byteorder)
                 payload = json.loads(response_data[self.header_size:])
                 response_data = header + json.dumps(payload).encode("utf-8")
-        with trio.move_on_after(self.timeout) as cancel_scope:
-            try:
-                logging.debug(f"({session_id}) {{Response Handler}} Sending response to client")
-                await stream.send_all(response_data)
-            except trio.BrokenResourceError:
-                logging.info(f"({session_id}) {{Response Handler}} The connection was closed abruptly")
-                await stream.aclose()
-                return
-            except trio.ClosedResourceError:
-                logging.info(f"({session_id}) {{Response Handler}} The connection was closed")
-                await stream.aclose()
-                return
-            except trio.BusyResourceError as busy:
-                logging.error(f"({session_id}) {{Response Handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
-                await stream.aclose()
-                return
-        if cancel_scope.cancelled_caught:
-            return
+        try:
+            logging.debug(f"({session_id}) {{Response Handler}} Sending response to client")
+            await stream.send_all(response_data)
+        except trio.BrokenResourceError:
+            logging.info(f"({session_id}) {{Response Handler}} The connection was closed abruptly")
+            await stream.aclose()
+            return False
+        except trio.ClosedResourceError:
+            logging.info(f"({session_id}) {{Response Handler}} The connection was closed")
+            await stream.aclose()
+            return False
+        except trio.BusyResourceError as busy:
+            logging.error(f"({session_id}) {{Response Handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
+            await stream.aclose()
+            return False
         else:
             logging.debug(f"({session_id}) {{Response Handler}} Response sent")
             if close:
@@ -297,13 +286,13 @@ class Server:
         This function gets called when a stream's length is smaller than ``self.header_size`` bytes, which
         is the minimum amount of data needed to parse an API call (The length header)
 
-        :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
+        :param session_id: A unique UUID, used to identify the current session
         :type session_id: class: ``uuid.uuid4``
         :param stream: The trio asynchronous socket associated with the client
         :type stream: class : ``trio.SocketStream``
         :param raw_data: If some data was received already, it has to be passed here as paramater
         :type raw_data: bytes
-        :returns: At least ``self.header_size`` bytes, and at most the whole packet, or None if the timeout expires or the connection gets closed
+        :returns: The rebuilt length header or None if the connection dies
         :rtype: Union[bytes, None]
         """
 
@@ -334,37 +323,37 @@ class Server:
         :type header: int
         :param stream: The trio asynchronous socket associated with the client
         :type stream: class : ``trio.SocketStream``
-        :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
+        :param session_id: A unique UUID, used to identify the current session
         :type session_id: class: ``uuid.uuid4``
-        :returns: The complete packet, or ``None`` if the timeout expires or the connection gets closed
+        :returns: The complete packet, or ``None`` if the connection dies
         :rtype: Union[bytes, None]
         """
 
         stream_data = b""
-        logging.debug(f"({session_id}) {{Stream completer}} Requesting {self.buf} more bytes until length {header}")
+        logging.debug(f"({session_id}) {{Rebuilder}} Requesting {self.buf} more bytes until length {header}")
         while len(stream_data) < header:
             try:
                 stream_data += await stream.receive_some(max_bytes=self.buf)
             except trio.BusyResourceError as busy:
-                logging.error(f"({session_id}) {{Response Handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
+                logging.error(f"({session_id}) {{Rebuilder}} Client is sending too fast! Or is the server overloaded? -> {busy}")
                 await stream.aclose()
                 return
             except trio.BrokenResourceError:
-                logging.info(f"({session_id}) {{Stream completer}} The connection was closed abruptly")
+                logging.info(f"({session_id}) {{Rebuilder}} The connection was closed abruptly")
                 await stream.aclose()
                 break
             except trio.ClosedResourceError:
-                logging.info(f"({session_id}) {{Stream completer}} The connection was closed")
+                logging.info(f"({session_id}) {{Rebuilder}} The connection was closed")
                 await stream.aclose()
                 break
             if not stream:
-                logging.info(f"({session_id}) {{Stream completer}} Stream has ended")
+                logging.info(f"({session_id}) {{Rebuilder}} Stream has ended")
                 await stream.aclose()
                 break
         return stream_data
 
     async def _decode_payload(self, content, session_id: str, stream: trio.SocketStream, encoding=None):
-        """Decodes the payload with the specified encoding, if any, or falls back to ``self.encoding``
+        """Decodes the payload with the specified encoding
 
            :param content: The byte-encoded payload
            :type content: bytes
@@ -372,16 +361,14 @@ class Server:
            :type stream: class : ``trio.SocketStream``
            :param session_id: A unique UUID, used to identify the current session. Currently the session_id is used to distinguish between different clients in the console output
            :type session_id: class: ``uuid.uuid4``
-           :param encoding: The encoding with which the packet should be encoded in, if ``None``, the server will fall back to ``self.encoding``, it can either be 1 for ziproto, 0 for json or ``None`` if the encoding is unknown, defaults to ``None``
-           :type encoding: Union[None, int], optional
+           :param encoding: The encoding with which the packet should be encoded in, it can either be 1 for ziproto, 0 for json
+           :type encoding: int
            :returns: The decoded payload
            :rtype: dict
         """
 
         data = ""
         if not encoding:
-            encoding = 0 if self.encoding == "json" else 1
-        if encoding == 0:
             try:
                 data = json.loads(content, encoding="utf-8")
             except json.decoder.JSONDecodeError as json_error:
@@ -407,7 +394,7 @@ class Server:
             if len(client.get_sessions()) > self.session_limit:
                 logging.warning(f"({session_id}) {{Session Handler}} Maximum number of concurrent sessions reached! Closing the current one")
                 self._sessions[client.address].remove(session)
-                self._session_limit_reached(session_id, client._stream)
+                await self._session_limit_reached(session_id, client._stream)
                 await client.close()
                 return
             return True
@@ -451,7 +438,6 @@ class Server:
         await client.close()
 
     async def _parse_call(self, session_id: uuid.uuid4, request: bytes, stream: trio.SocketStream):
-
         """This function parses the API request and acts accordingly (e.g. decoding the payload and calling handlers)
 
            :param request: The byte-encoded payload
@@ -468,7 +454,7 @@ class Server:
             try:
                 client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=encoding)
             except OSError:
-                return
+                logging.warning(f"({session_id}) {{API Parser}} The client died")
             packet = Packet(payload, sender=client, encoding=encoding)
             if await self._set_session(session_id, client):
                 if client.address not in self._banned:
@@ -503,7 +489,7 @@ class Server:
             self._banned.remove(ip)
 
     async def _handle_client(self, stream: trio.SocketStream):
-        """This function handles a single client connection, assigning it a unique UUID, and acts accordingly
+        """This function handles a single client connection, assigning it a unique UUID
 
            :param stream: The trio asynchronous socket associated with the client
            :type stream: class: ``trio.SocketStream``
@@ -524,7 +510,7 @@ class Server:
                     await stream.aclose()
                     break
                 except trio.BusyResourceError as busy:
-                    logging.error(f"({session_id}) {{Response Handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
+                    logging.error(f"({session_id}) {{Client handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
                     await stream.aclose()
                     return
                 if not raw_data:
@@ -533,7 +519,11 @@ class Server:
                     break
                 if len(raw_data) < self.header_size:
                     logging.debug(f"({session_id}) {{Client handler}} Stream is shorter than header size, rebuilding")
-                    header = int.from_bytes(await self._rebuild_header(session_id, stream, raw_data), self.byteorder)
+                    header = await self._rebuild_header(session_id, stream, raw_data), self.byteorder
+                    if header:
+                        header = int.from_bytes(header, self.byteorder)
+                    else:
+                        logging.warning(f"({session_id}) {{Client handler}} The client did something nasty while attempting to complete the header!")
                 else:
                     header = int.from_bytes(raw_data[:self.header_size], self.byteorder)
                 logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
