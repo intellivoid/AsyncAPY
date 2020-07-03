@@ -56,7 +56,7 @@ class Client:
         self._server._banned.add(self.address)
 
     async def send(self, packet, close: bool = False):
-        """High-level wrapper function around `AsyncAPY._send()`
+        """High-level wrapper function around `Server._send()`
 
            :param packet: A ``Packet`` object
            :type packet: class: ``Packet``
@@ -225,7 +225,7 @@ class Session:
 
         return self.client
 
-    def ban_client(self, close: bool = False):
+    async def ban_client(self, close: bool = False):
         """Bans the associated client' IP from the server
 
            :param close: If ``True``, the associated client connection will be closed after its IP gets banned, defaults to ``False``
@@ -233,7 +233,7 @@ class Session:
 
         self.client.ban()
         if close:
-            self.close()
+            await self.close()
 
     def __repr__(self):
         return f"Session({str(self.session_id)})"

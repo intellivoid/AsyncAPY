@@ -7,12 +7,12 @@ AsyncAPY - Official Documentation
 ====================================
 .. image:: ./images/logo.png
 
-.. image:: https://readthedocs.org/projects/asyncapy/badge/?version=dev
-    :target: https://asyncapy.readthedocs.io/en/dev/?badge=dev
+.. image:: https://readthedocs.org/projects/asyncapy/badge/?version=latest
+    :target: https://asyncapy.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
 
-.. image:: https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=dev
+.. image:: https://travis-ci.com/intellivoid/AsyncAPY.svg?branch=master
     :target: https://travis-ci.com/intellivoid/AsyncAPY
     :alt: Build Status
 
