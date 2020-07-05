@@ -455,13 +455,14 @@ class Server:
                 client = Client(stream.socket.getsockname()[0], server=self, session=session_id, stream=stream, encoding=encoding)
             except OSError:
                 logging.warning(f"({session_id}) {{API Parser}} The client died")
-            packet = Packet(payload, sender=client, encoding=encoding)
-            if await self._set_session(session_id, client):
-                if client.address not in self._banned:
-                    await self._dispatch(session_id, client, packet)
-                else:
-                    logging.debug(f"({session_id}) {{API Parser}} {client.address} is banned! Ignoring")
-            await self._close_session(client)
+            else:
+                packet = Packet(payload, sender=client, encoding=encoding)
+                if await self._set_session(session_id, client):
+                    if client.address not in self._banned:
+                        await self._dispatch(session_id, client, packet)
+                    else:
+                        logging.debug(f"({session_id}) {{API Parser}} {client.address} is banned! Ignoring")
+                await self._close_session(client)
 
     async def setup(self):
         """This function is called when the server is started.
@@ -495,53 +496,57 @@ class Server:
            :type stream: class: ``trio.SocketStream``
         """
 
-        session_id = uuid.uuid4()
-        logging.info(f"{{Client handler}} New session started, UUID is {session_id}")
-        with trio.move_on_after(self.timeout) as cancel_scope:
-            while True:
-                try:
-                    raw_data = await stream.receive_some(max_bytes=self.buf)
-                except trio.BrokenResourceError:
-                    logging.info(f"({session_id}) {{Client handler}} The connection was closed")
-                    await stream.aclose()
-                    break
-                except trio.ClosedResourceError:
-                    logging.info(f"({session_id}) {{Client handler}} The connection was closed")
-                    await stream.aclose()
-                    break
-                except trio.BusyResourceError as busy:
-                    logging.error(f"({session_id}) {{Client handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
-                    await stream.aclose()
-                    return
-                if not raw_data:
-                    logging.info(f"({session_id}) {{Client handler}} Stream has ended")
-                    await stream.aclose()
-                    break
-                if len(raw_data) < self.header_size:
-                    logging.debug(f"({session_id}) {{Client handler}} Stream is shorter than header size, rebuilding")
-                    header = await self._rebuild_header(session_id, stream, raw_data), self.byteorder
-                    if header:
-                        header = int.from_bytes(header, self.byteorder)
+        try:
+            session_id = uuid.uuid4()
+            logging.info(f"{{Client handler}} New session started, UUID is {session_id}")
+            with trio.move_on_after(self.timeout) as cancel_scope:
+                while True:
+                    try:
+                        raw_data = await stream.receive_some(max_bytes=self.buf)
+                    except trio.BrokenResourceError:
+                        logging.info(f"({session_id}) {{Client handler}} The connection was closed")
+                        await stream.aclose()
+                        break
+                    except trio.ClosedResourceError:
+                        logging.info(f"({session_id}) {{Client handler}} The connection was closed")
+                        await stream.aclose()
+                        break
+                    except trio.BusyResourceError as busy:
+                        logging.error(f"({session_id}) {{Client handler}} Client is sending too fast! Or is the server overloaded? -> {busy}")
+                        await stream.aclose()
+                        return
+                    if not raw_data:
+                        logging.info(f"({session_id}) {{Client handler}} Stream has ended")
+                        await stream.aclose()
+                        break
+                    if len(raw_data) < self.header_size:
+                        logging.debug(f"({session_id}) {{Client handler}} Stream is shorter than header size, rebuilding")
+                        header = await self._rebuild_header(session_id, stream, raw_data)
+                        if header:
+                            header = int.from_bytes(header, self.byteorder)
+                        else:
+                            logging.warning(f"({session_id}) {{Client handler}} The client did something nasty while attempting to complete the header!")
                     else:
-                        logging.warning(f"({session_id}) {{Client handler}} The client did something nasty while attempting to complete the header!")
-                else:
-                    header = int.from_bytes(raw_data[:self.header_size], self.byteorder)
-                logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
-                if len(raw_data) - self.header_size == header:
-                    raw_data = raw_data[self.header_size:]
-                else:
-                    logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
-                    raw_data = await self._complete_stream(header, stream, session_id)
-                logging.debug(f"({session_id}) {{Client handler}} Stream complete, processing API call")
-                try:
-                    await self._parse_call(session_id, raw_data, stream)
-                except StopPropagation:
-                    await stream.aclose()
-                    logging.debug(f"({session_id}) {{Client Handler}} Uh oh! Propagation stopped, sorry next handlers")
-                    break
-        if cancel_scope.cancelled_caught:
-            logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
-            await self._timed_out(session_id, stream)
+                        header = int.from_bytes(raw_data[:self.header_size], self.byteorder)
+                    logging.debug(f"({session_id}) {{Client handler}} Expected stream length is {header}")
+                    if len(raw_data) - self.header_size == header:
+                        raw_data = raw_data[self.header_size:]
+                    else:
+                        logging.debug(f"({session_id}) {{Client handler}} Fragmented stream detected, rebuilding")
+                        raw_data = await self._complete_stream(header, stream, session_id)
+                    logging.debug(f"({session_id}) {{Client handler}} Stream complete, processing API call")
+                    try:
+                        await self._parse_call(session_id, raw_data, stream)
+                    except StopPropagation:
+                        await stream.aclose()
+                        logging.debug(f"({session_id}) {{Client handler}} Uh oh! Propagation stopped, sorry next handlers")
+                        break
+            if cancel_scope.cancelled_caught:
+                logging.error(f"({session_id}) {{Client handler}} The operation has timed out")
+                await self._timed_out(session_id, stream)
+        except BaseException as error:
+            logging.error(f"({session_id}) {{Client handler}} A fatal unhandled exception occurred -> {type(error).__name__}: {error}")
+
 
     async def _serve_forever(self):
         """This function is the server's main loop
