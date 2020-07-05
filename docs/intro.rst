@@ -126,8 +126,11 @@ If you register two or more handlers with conflicting/overlapping filters, only 
 
 To handle the same request more than once, you need to register the handler in a different handlers group, like in the following example:
 
+.. literalinclude:: ../examples/groups.py
+
 
 
 The ``group`` parameter defaults to 0, the lower this number, the higher will be the position of the handler in the queue.
 In the example above, ``group`` equals ``-1``, that is lower than ``0`` and therefore causes that handler to execute first. You could have also set it to 1 (or any other value greather than 0) to make it execute last instead.
+
 

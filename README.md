@@ -29,7 +29,7 @@ Some of its features are:
 
 # Documentation
 
-The official documentation is available [here](https://asyncapy.readthedocs.io)
+The official documentation is available [here](https://asyncapy.readthedocs.io/latest)
 
 # Getting started
 
