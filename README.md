@@ -45,7 +45,7 @@ __Note__: _On Windows systems, unless you are using PowerShell, you may need to 
 
 # Credits
 
-## The main mastereloper
+## The main developer
 
 Nocturn9x aka IsGiambyy - [Github](https://github.com/nocturn9x) & [Telegram](https://t.me/isgiambyy)
 
