@@ -43,12 +43,15 @@ What's new in AsyncAPY 0.4
 
 .. toctree::
    :maxdepth: 2
+
    :caption: Contents:
 
+   AsyncAPY
    intro
    faqs
    examples
    protocol
+
 
 Indices and tables
 ==================
