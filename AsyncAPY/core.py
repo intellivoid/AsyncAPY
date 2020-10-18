@@ -25,6 +25,7 @@ import ziproto
 import uuid
 import trio
 
+
 class Client:
     """This class represents a client, it is a high-level wrapper around the methods and objects of AsyncAPY
 
@@ -188,7 +189,7 @@ class Handler:
 
         """
 
-        return all(filter(lambda f: f.check(client, packet), self.filters))
+        return all(map(lambda f: f.check(client, packet), self.filters))
 
     async def call(self, *args):
         """Calls ``self.function`` asynchronously, passing ``*args`` as parameters"""

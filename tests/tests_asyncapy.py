@@ -1,4 +1,4 @@
-import defaultclient
+from AsyncAPY import defaultclient
 import json
 import ziproto
 import socket
@@ -7,6 +7,7 @@ import time
 
 class TestAsyncAPY:
 
+    
     def test_headers(self):
         client = defaultclient.Client("127.0.0.1", 1500, tls=False)
         enc = 'json'
@@ -25,6 +26,7 @@ class TestAsyncAPY:
             payload = ziproto.decode(response[client.header_size + 2:])
         assert payload == {"test": 1}
         client.disconnect()
+    
 
     def test_encodings(self):
         client = defaultclient.Client("127.0.0.1", 1500, tls=False)
@@ -36,14 +38,17 @@ class TestAsyncAPY:
         response_payload = response[client.header_size + 2:]
         assert json.loads(response_payload) == payload, response_payload
         del payload, response, response_payload
-        expected = {"response": "OK"}
-        client.send({"req": "test_payload"}, encoding="json")
+        client.disconnect()
+        client = defaultclient.Client("127.0.0.1", 1500, tls=False)
+        client.connect()
+        client.send({"foo": "lol"}, encoding="json")
         response = client.receive_all()
         print(response)
         response_payload = response[client.header_size + 2:]
-        assert json.loads(response_payload) == expected, response_payload
+        assert json.loads(response_payload) == {"foo": "lol"}, response_payload
         client.disconnect()
 
+    
     def test_header_rebuilding(self):
         client = defaultclient.Client("127.0.0.1", 1500, tls=False)
         client.connect()
@@ -58,6 +63,7 @@ class TestAsyncAPY:
             client.sock.send(byte.to_bytes(1, client.byteorder))
             time.sleep(0.1)
         response = client.receive_all()
+        print(response)
         assert json.loads(response[client.header_size + 2:]) == {"response": "OK"}
 
     def test_wrong_encoding_header(self):
@@ -83,3 +89,4 @@ class TestAsyncAPY:
         finally:
             print(stuff)
             assert json.loads(stuff[client.header_size + 2:]) == {"status": "failure", "error": "ERR_TIMED_OUT"}
+    

@@ -22,7 +22,7 @@ import sys
 import uuid
 import json
 from typing import Optional
-from ._internal import Handler, Client, Packet, Session
+from .core import Handler, Client, Packet, Session
 from .errors import StopPropagation
 import ziproto
 import configparser
@@ -61,9 +61,8 @@ class Server:
         :type session_limit: int, optional
     """
 
-    _banned = set()
+    _banned = set()   # TODO: Store this somewhere secure
     _handlers = {}
-    _levels = {0: "NOTSET", 10: "DEBUG", 20: "INFO", 30: "WARNING", 40: "ERROR", 50: "Critical"}
     _sessions = defaultdict(list)
 
     def __init__(self, addr: Optional[str] = "127.0.0.1", port: Optional[int] = 8081, buf: Optional[int] = 1024,
@@ -87,8 +86,6 @@ class Server:
             raise TypeError("header_size must be an integer!")
         if not isinstance(timeout, int):
             raise TypeError("timeout must be an integer!")
-        if logging_level not in list(self._levels.keys()):
-            raise TypeError("logging_level must either be 0, 10, 20, 30, 40 or 50!")
         if not isinstance(console_format, str):
             raise TypeError("console_format must be a string!")
         if not isinstance(session_limit, int):
@@ -100,7 +97,7 @@ class Server:
         self.console_format = console_format
         self.datefmt = datefmt
         self.timeout = timeout
-        socket.setdefaulttimeout(self.timeout)
+        socket.setdefaulttimeout(self.timeout)   # Just to make sure the socket doesn't die
         self.header_size = header_size
         self.byteorder = byteorder
         self.config = None
