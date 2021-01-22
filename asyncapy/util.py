@@ -24,8 +24,8 @@ class APIKeyFactory(object):
 
     """Generic class to manage a basic in-memory storage of API subscriptions, represented as keys of variable size, implementing functionality to issue, revoke and reissue keys
 
-       :param size: The desired size of the API key. By default, it's just a random string, defaults to 32
-       :type size: int, optional
+    :param size: The desired size of the API key. By default, it's just a random string, defaults to 32
+    :type size: int, optional
     """
 
     def __init__(self, size: int = 32):
@@ -35,64 +35,63 @@ class APIKeyFactory(object):
     def issue(self, metadata: dict = None):
         """Returns a new random API key of ``self.size`` length, saves it and attaches to it eventual metadata
 
-           :param metadata: A dictionary object containing meaningful information that is returned with the ``self.get`` method. Defaults to ``None``
-           :type metadata: dict, optional
-           :returns key: The generated API key
-           :rtype: str
+        :param metadata: A dictionary object containing meaningful information that is returned with the ``self.get`` method. Defaults to ``None``
+        :type metadata: dict, optional
+        :returns key: The generated API key
+        :rtype: str
         """
 
-        key = "".join(random.choice(string.ascii_letters + string.digits) for _ in range(self.size))
+        key = "".join(
+            random.choice(string.ascii_letters + string.digits)
+            for _ in range(self.size)
+        )
         self._keys[key] = metadata
         return key
 
     def get(self, key: str):
         """Returns the associated metadata with the given key, raises ``KeyError`` if the key doesn't exist
 
-           :param key: The API key
-           :type key: str
-           :returns: The associated metadata with the given API key
-           :rtype: str
-           :raises KeyError: If the given key does not exist
+        :param key: The API key
+        :type key: str
+        :returns: The associated metadata with the given API key
+        :rtype: str
+        :raises KeyError: If the given key does not exist
         """
 
         return self._keys[key]
 
-
     def revoke(self, key: str):
         """Revokes an API key, removing its associated data from the internal dictionary
 
-           :param key: The API key to revoke
-           :type key: str
-           :raises KeyError: If the given key does not exist
+        :param key: The API key to revoke
+        :type key: str
+        :raises KeyError: If the given key does not exist
         """
 
         self._keys.pop(key)
 
-
     def reissue(self, key):
         """Reissues an API key, replacing the old ``key`` with a new one, keeping the old metadata
 
-           :param key: The API key to reissue
-           :type key: str
-           :raises KeyError: If the given key does not exist
-           :returns: The new API key
+        :param key: The API key to reissue
+        :type key: str
+        :raises KeyError: If the given key does not exist
+        :returns: The new API key
         """
 
         return self.issue(self.get(key))
 
-
     def update(self, key: str, metadata: dict):
         """Updates the associated metadata for the given key with the provided value
 
-           :param key: The API key to update data for
-           :type key: str
-           :param metadata: A dictionary object containing meaningful information that is returned with the ``self.get`` method
-           :type metadata: dict
-           :raises KeyError: If the given key does not exist
+        :param key: The API key to update data for
+        :type key: str
+        :param metadata: A dictionary object containing meaningful information that is returned with the ``self.get`` method
+        :type metadata: dict
+        :raises KeyError: If the given key does not exist
         """
 
         self._keys[key] = metadata
-
 
     def __contains__(self, item):
         """Implements item in self"""

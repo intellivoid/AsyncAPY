@@ -1,7 +1,7 @@
-from AsyncAPY import Server
-from AsyncAPY.filters import Filters
+from asyncapy import Server
+from asyncapy.filters import Filters
 
-server = Server(addr='0.0.0.0', port=1500)
+server = Server(addr="0.0.0.0", port=1500)
 
 # This filter will match any digit in the 'foo' field,
 # and anything in the 'bar' field, e.g.:
@@ -10,7 +10,9 @@ server = Server(addr='0.0.0.0', port=1500)
 # this handler
 
 
-@server.add_handler(Filters.Fields(foo='\d+', bar=None), Filters.Ip(["127.0.0.1", "151.53.88.15"]))
+@server.add_handler(
+    Filters.Fields(foo=r"\d+", bar=None), Filters.Ip(["127.0.0.1", "151.53.88.15"])
+)
 async def filtered_handler(client, packet):
     # code here
     ...

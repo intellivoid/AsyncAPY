@@ -22,4 +22,3 @@ class StopPropagation(Exception):
     to prevent the dispatcher forwarding the packet to the next handler in the queue"""
 
     pass
-

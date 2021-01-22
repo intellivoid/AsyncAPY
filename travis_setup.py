@@ -17,16 +17,14 @@
 # along with AsyncAPY.  If not, see <http://www.gnu.org/licenses/>.
 
 import setuptools
-import os
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-os.system("python3 -m pip install git+https://github.com/netkas/ZiProto-Python")
 
 setuptools.setup(
-    name="AsyncAPY",
-    version="0.4.2",
+    name="asyncapy",
+    version="0.5.0",
     author="Intellivoid Technologies",
     author_email="nocturn9x@intellivoid.net",
     description="A fully fledged Python 3.6+ library to serve APIs asynchronously",
@@ -37,7 +35,7 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
-        "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)"
+        "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
 )

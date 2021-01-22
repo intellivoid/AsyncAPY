@@ -32,20 +32,24 @@ class Filter(object):
 
 class Filters(Filter):
 
-    """This class implements all the filters in AsyncAPY
+    """
+    This class implements all the filters in AsyncAPY
     """
 
     class Ip(Filter):
-        """Filters one or more IP addresses, allowing only the ones inside the filter to pass
-           Note: This filter is dynamic, it can be updated at runtime if assigned to a variable
+        """
+        Filters one or more IP addresses, allowing only the ones inside the filter to pass
+        Note: This filter is dynamic, it can be updated at runtime if assigned to a variable
 
-           :param ips: An ip or a list of ip addresses
-           :type ips: Union[List[str], str]
-           :raises ValueError: If the provided ip, or ips, isn't a valid IP address
+        :param ips: An ip or a list of ip addresses
+        :type ips: Union[List[str], str]
+        :raises ValueError: If the provided ip, or ips, isn't a valid IP address
         """
 
         def __init__(self, ips: Union[List[str], str]):
-            """Object constructor"""
+            """
+            Object constructor
+            """
 
             pat = re.compile(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
             if isinstance(ips, list):
@@ -63,7 +67,8 @@ class Filters(Filter):
                 self.ips = {ips}
 
         def __repr__(self):
-            """Returns ``repr(self)``
+            """
+            Returns ``repr(self)``
 
             :returns repr: A string representation of ``self``
             :rtype: str
@@ -72,7 +77,8 @@ class Filters(Filter):
             return f"Filters.Ip({self.ips})"
 
         def check(self, c, _):
-            """Implements the method to check if a filter matches a given packet/client couple or not
+            """
+            Implements the method to check if a filter matches a given packet/client couple or not
 
             :param c: A client object
             :type c: class: ``Client``
@@ -85,7 +91,8 @@ class Filters(Filter):
             return c.address in self.ips
 
     class Fields(Filter):
-        """Filters fields inside packets.
+        """
+        Filters fields inside packets.
         This filter accepts an unlimited number of keyword arguments, that can either be ``None``, or a valid regex.
         In the first case, the filter will match if the request contains the specified field name, while in the other case
         the field value will also be checked with ``re.match()``, using the provided parameter as pattern.
@@ -102,14 +109,15 @@ class Filters(Filter):
                     self.fields[key] = re.compile(value)
 
         def check(self, _, p):
-            """Implements the method to check if a filter matches a given packet/client couple or not
+            """
+            Implements the method to check if a filter matches a given packet/client couple or not
 
-               :param _: A client object
-               :type _: class: ``Client``, unused in this specific case
-               :param p: A packet object
-               :type p: class: ``Packet``
-               :returns shall_pass: ``True`` if the packet's payload follows the given structure, ``False`` otherwise
-               :rtype: bool
+            :param _: A client object
+            :type _: class: ``Client``, unused in this specific case
+            :param p: A packet object
+            :type p: class: ``Packet``
+            :returns shall_pass: ``True`` if the packet's payload follows the given structure, ``False`` otherwise
+            :rtype: bool
             """
 
             fields = deepcopy(p.dict_payload)
@@ -121,48 +129,56 @@ class Filters(Filter):
                     if not regex.match(str(fields[field_name])):
                         return False
                 del fields[field_name]
-            if fields:    # There are still some extra fields which aren't in filter, fail the check
+            if (
+                fields
+            ):  # There are still some extra fields which aren't in filter, fail the check
                 return False
-            return True    # If we are here, all filters match, good!
+            return True  # If we are here, all filters match, good!
 
         def __repr__(self):
-            """Returns ``repr(self)``
+            """
+            Returns ``repr(self)``
 
-               :returns repr: A string representation of ``self``
-               :rtype: str
+            :returns repr: A string representation of ``self``
+            :rtype: str
             """
 
             return f"Filter.Fields({self.fields})"
 
-
     class APIFactory(Filter):
 
-        """A class that wraps around the ``APIKeyFactory`` class and its children, but as a filter
-           This filter passes if the provided field name is in the incoming packet and its value is a valid API key inside ``self.factory``
+        """
+        A class that wraps around the ``APIKeyFactory`` class and its children, but as a filter.
+        This filter passes if the provided field name is in the incoming packet and its value is a valid API key inside
+        ``self.factory``
 
-           :param factory: The ``APIKeyFactory`` object
-           :type factory: class: APIKeyFactory
-           :param field_name: The name of the field to lookup into incoming packets, if the field if not present, the filter won't pass
-           :type field_name: str
+        :param factory: The ``APIKeyFactory`` object
+        :type factory: class: APIKeyFactory
+        :param field_name: The name of the field to lookup into incoming packets, if the field is not present
+        the filter won't pass
+        :type field_name: str
 
         """
 
         def __init__(self, factory: APIKeyFactory, field_name: str):
-            """Object constructor"""
+            """
+            Object constructor
+            """
 
             self.factory = factory
             self.field_name = field_name
 
+        def check(self, _, p):
+            """
+            Implements ``self.check``, returns ``True`` if ``self.field_name`` exist in the provided packet and
+            its value is a valid API key
 
-        def check(self, _, packet):
-            """Implements ``self.check``, returns ``True`` if ``self.field_name`` exist in the provided packet and its value is a valid API key
-
-               :param _: A client object
-               :type _: class: ``Client``, unused in this specific case
-               :param p: A packet object
-               :type p: class: ``Packet``
-               :returns shall_pass: ``True`` if the filter passed, ``False`` otherwise
-               :rtype: bool
+            :param _: A client object
+            :type _: class: ``Client``, unused in this specific case
+            :param p: A packet object
+            :type p: class: ``Packet``
+            :returns shall_pass: ``True`` if the filter passed, ``False`` otherwise
+            :rtype: bool
             """
 
-            return packet.dict_payload.get(self.field_name, None) in self.factory
+            return p.dict_payload.get(self.field_name, None) in self.factory
